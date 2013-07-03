@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.parceler</groupId>
+    <artifactId>parceler-project</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Parceler Project</name>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <url>http://parceler.org</url>
+    <description>An automatic Android Parcelable generator.</description>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>http://github.com/johncarl81/parceler</url>
+        <connection>scm:git:git@github.com:johncarl81/parceler.git</connection>
+        <developerConnection>scm:git:git@github.com:johncarl81/parceler.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>johncarl81</id>
+            <name>John Ericksen</name>
+            <email>johncarl81@gmail.com</email>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>parceler-api</module>
+        <module>parceler</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <header>NOTICE</header>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/*.xml</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/.*/**</exclude>
+                        <exclude>target/**</exclude>
+                        <exclude>**/AndroidManifest.xml</exclude>
+                    </excludes>
+                    <properties>
+                        <year>2013</year>
+                        <name>John Ericksen</name>
+                    </properties>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <strictCheck>true</strictCheck>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,8 @@
+.idea/*
+_site/*
+*~
+*.iml
+build.sh
+target
+tmp
+out
