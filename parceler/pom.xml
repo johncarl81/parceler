@@ -18,6 +18,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>2.1_r1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.androidtransfuse</groupId>
             <artifactId>transfuse-bootstrap</artifactId>
             <version>0.2.2-SNAPSHOT</version>
