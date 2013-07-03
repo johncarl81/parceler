@@ -30,7 +30,7 @@ import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.annotations.ParcelConverter;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.UniqueVariableNamer;
-import org.androidtransfuse.util.ParcelWrapper;
+import org.parceler.ParcelWrapper;
 
 import javax.inject.Inject;
 import java.io.Serializable;

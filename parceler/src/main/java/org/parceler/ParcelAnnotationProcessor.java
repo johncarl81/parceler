@@ -17,11 +17,9 @@ package org.parceler;
 
 import org.androidtransfuse.AnnotationProcessorBase;
 import org.androidtransfuse.SupportedAnnotations;
-import org.androidtransfuse.annotations.Parcel;
-import org.androidtransfuse.annotations.ScopeReference;
+import org.parceler.Parcel;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
-import org.androidtransfuse.config.EnterableScope;
 import org.parceler.internal.ParcelProcessor;
 import org.parceler.internal.ReloadableASTElementFactory;
 

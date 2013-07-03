@@ -24,6 +24,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.parceler</groupId>
+            <artifactId>parceler-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.androidtransfuse</groupId>
             <artifactId>transfuse-bootstrap</artifactId>
             <version>0.2.2-SNAPSHOT</version>

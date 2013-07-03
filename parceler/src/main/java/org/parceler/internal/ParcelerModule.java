@@ -19,17 +19,13 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.analysis.module.ModuleRepository;
-import org.androidtransfuse.analysis.repository.AnalysisRepository;
-import org.androidtransfuse.annotations.*;
+import org.androidtransfuse.annotations.DefineScope;
+import org.androidtransfuse.annotations.Install;
+import org.androidtransfuse.annotations.Provides;
 import org.androidtransfuse.bootstrap.BootstrapModule;
 import org.androidtransfuse.gen.FilerResourceWriter;
 import org.androidtransfuse.gen.FilerSourceCodeWriter;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
-import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
-import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
-import org.androidtransfuse.gen.variableDecorator.ExpressionDecoratorFactory;
-import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilder;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
@@ -54,14 +50,6 @@ public class ParcelerModule {
 
     public static final String PARCELS_TRANSACTION_WORKER = "parcelsTransactionWorker";
     public static final String PARCEL_TRANSACTION_WORKER = "parcelTransactionWorker";
-    public static final String FACTORY_TRANSACTION_WORKER = "factoryTransactionWorker";
-    public static final String FACTORIES_TRANSACTION_WORKER = "factoriessTransactionWorker";
-    public static final String PACKAGE_HELPER_TRANSACTION_WORKER = "packageHelperTransactionWorker";
-    public static final String COMPONENTS_TRANSACTION_WORKER = "componentsTransactionWorker";
-    public static final String VIRTUAL_PROXY_TRANSACTION_WORKER = "virtualProxyTransactionWorker";
-    public static final String SCOPES_UTIL_TRANSACTION_WORKER = "scopesUtilTransactionWorker";
-    public static final String ORIGINAL_MANIFEST = "originalManifest";
-    public static final String MANIFEST_FILE = "manifestFile";
 
     @Provides
     @CodeGenerationScope

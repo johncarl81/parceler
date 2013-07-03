@@ -26,7 +26,7 @@ public final class Parcels {
 
     public static final String PARCELS_NAME = "Parcels";
     public static final String PARCELS_REPOSITORY_NAME = "Transfuse$Parcels";
-    public static final String PARCELS_PACKAGE = "org.androidtransfuse";
+    public static final String PARCELS_PACKAGE = "org.parceler";
     public static final String IMPL_EXT = "$Parcel";
 
     private static final GeneratedCodeRepository<ParcelableFactory> REPOSITORY =
