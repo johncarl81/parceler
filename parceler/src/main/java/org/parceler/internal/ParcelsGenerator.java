@@ -16,13 +16,13 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.*;
-import org.androidtransfuse.Parcels;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.PackageClass;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.UniqueVariableNamer;
-import org.androidtransfuse.util.Repository;
-import org.androidtransfuse.util.TransfuseRuntimeException;
+import org.parceler.ParcelerRuntimeException;
+import org.parceler.Parcels;
+import org.parceler.Repository;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -87,7 +87,7 @@ public class ParcelsGenerator {
             getMethod.body()._return(parcelWrappers);
 
         } catch (JClassAlreadyExistsException e) {
-            throw new TransfuseRuntimeException("Class already exists", e);
+            throw new ParcelerRuntimeException("Class already exists", e);
         }
 
 

@@ -27,9 +27,9 @@ import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTPrimitiveType;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
-import org.androidtransfuse.annotations.ParcelConverter;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
 
 import javax.inject.Inject;
@@ -177,7 +177,7 @@ public class ParcelableGenerator {
         } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
             parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
                     .arg(JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable")));
-        } else if (returnType.isAnnotated(org.androidtransfuse.annotations.Parcel.class)) {
+        } else if (returnType.isAnnotated(org.parceler.Parcel.class)) {
 
             JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(returnType));
 
@@ -209,7 +209,7 @@ public class ParcelableGenerator {
         } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
             body.invoke(parcel, "writeSerializable")
                     .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (returnType.isAnnotated(org.androidtransfuse.annotations.Parcel.class)) {
+        } else if (returnType.isAnnotated(org.parceler.Parcel.class)) {
 
             JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME)
                     .staticInvoke(WRAP_METHOD).arg(wrapped.invoke(propertyMutator.getGetter().getName()));
