@@ -30,42 +30,29 @@ import java.util.concurrent.ConcurrentMap;
 public final class Parcels {
 
     public static final String PARCELS_NAME = "Parcels";
-    public static final String PARCELS_REPOSITORY_NAME = "Transfuse$Parcels";
+    public static final String PARCELS_REPOSITORY_NAME = "Parceler$Parcels";
     public static final String PARCELS_PACKAGE = "org.parceler";
     public static final String IMPL_EXT = "$Parcel";
 
-    private static final GeneratedCodeRepository<ParcelableFactory> REPOSITORY =
-            new GeneratedCodeRepository<ParcelableFactory>(PARCELS_PACKAGE, PARCELS_REPOSITORY_NAME) {
-                @Override
-                public ParcelableFactory findClass(Class clazz) {
-
-                    try {
-                        Class parcelWrapperClass = Class.forName(clazz.getName() + IMPL_EXT);
-                        return new ParcelableFactoryReflectionProxy(clazz, parcelWrapperClass);
-                    } catch (ClassNotFoundException e) {
-                        return null;
-                    }
-                }
-            };
+    private static final ParcelCodeRepository REPOSITORY = new ParcelCodeRepository();
 
     private Parcels(){
         // private utility class constructor
     }
 
     /**
-     * Testing method for replacing the Transfuse$Parcels class with one referenced in the given classloader.
+     * Testing method for replacing the Parceler$Parcels class with one referenced in the given classloader.
      *
      * @param classLoader
      */
     protected static void update(ClassLoader classLoader){
-        REPOSITORY.loadRepository(classLoader, PARCELS_PACKAGE, PARCELS_REPOSITORY_NAME);
+        REPOSITORY.loadRepository(classLoader);
     }
 
     /**
      * Wraps the input `@Parcel` annotated class with a `Parcelable` wrapper.
      *
-     * @throws ParcelerRuntimeException if there was an error looking up the wrapped
-     * Transfuse$Parcels class.
+     * @throws ParcelerRuntimeException if there was an error looking up the wrapped Parceler$Parcels class.
      * @param input Parcel
      * @return Parcelable wrapper
      */
@@ -117,18 +104,18 @@ public final class Parcels {
         }
     }
 
-    private static abstract class GeneratedCodeRepository<T> {
+    private static final class ParcelCodeRepository {
 
-        private ConcurrentMap<Class, T> generatedMap = new ConcurrentHashMap<Class, T>();
+        private ConcurrentMap<Class, ParcelableFactory> generatedMap = new ConcurrentHashMap<Class, ParcelableFactory>();
 
-        public GeneratedCodeRepository(String repositoryPackage, String repositoryName) {
-            loadRepository(getClass().getClassLoader(), repositoryPackage, repositoryName);
+        public ParcelCodeRepository() {
+            loadRepository(getClass().getClassLoader());
         }
 
-        public T get(Class clazz){
-            T result = generatedMap.get(clazz);
+        public ParcelableFactory get(Class clazz){
+            ParcelableFactory result = generatedMap.get(clazz);
             if (result == null) {
-                T value = findClass(clazz);
+                ParcelableFactory value = findClass(clazz);
                 if(value == null){
                     return null;
                 }
@@ -141,19 +128,26 @@ public final class Parcels {
             return result;
         }
 
-        public abstract T findClass(Class clazz);
+        public ParcelableFactory findClass(Class clazz){
+            try {
+                Class parcelWrapperClass = Class.forName(clazz.getName() + IMPL_EXT);
+                return new ParcelableFactoryReflectionProxy(clazz, parcelWrapperClass);
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }
 
         /**
          * Update the repository class from the given classloader.  If the given repository class cannot be instantiated
-         * then this method will throw a TransfuseRuntimeException.
+         * then this method will throw a ParcelerRuntimeException.
          *
          * @throws ParcelerRuntimeException
          * @param classLoader
          */
-        public final void loadRepository(ClassLoader classLoader, String repositoryPackage, String repositoryName){
+        public final void loadRepository(ClassLoader classLoader){
             try{
-                Class repositoryClass = classLoader.loadClass(repositoryPackage + "." + repositoryName);
-                Repository<T> instance = (Repository<T>) repositoryClass.newInstance();
+                Class repositoryClass = classLoader.loadClass(PARCELS_PACKAGE + "." + PARCELS_REPOSITORY_NAME);
+                Repository<ParcelableFactory> instance = (Repository<ParcelableFactory>) repositoryClass.newInstance();
                 generatedMap.putAll(instance.get());
 
             } catch (ClassNotFoundException e) {

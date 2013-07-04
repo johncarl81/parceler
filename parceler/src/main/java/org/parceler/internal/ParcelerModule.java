@@ -89,7 +89,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(PARCEL_TRANSACTION_WORKER)
-    public TransactionWorker<Provider<ASTType>, JDefinedClass> getParcelTransactionWorker(JCodeModel codeModel,
+    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, JDefinedClass> getParcelTransactionWorker(JCodeModel codeModel,
                                                                                           FilerSourceCodeWriter codeWriter,
                                                                                           FilerResourceWriter resourceWriter,
                                                                                           ParcelTransactionWorker worker) {
@@ -98,7 +98,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(PARCELS_TRANSACTION_WORKER)
-    public TransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void> getParcelsTransactionWorker(JCodeModel codeModel,
+    public CodeGenerationScopedTransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void> getParcelsTransactionWorker(JCodeModel codeModel,
                                                                                                       FilerSourceCodeWriter codeWriter,
                                                                                                       FilerResourceWriter resourceWriter,
                                                                                                       ParcelsTransactionWorker worker) {

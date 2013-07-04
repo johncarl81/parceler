@@ -47,11 +47,11 @@ import java.lang.annotation.Target;
  * - `Exception`
  * - Other classes annotated with `@Parcel`
  *
- * Instances annotated with `@Parcel` may be used as extras when passing values between Components.  Transfuse
+ * Instances annotated with `@Parcel` may be used as extras when passing values between Components.  Parceler
  * will automatically wrap and unwrap the given instance with the generated wrapper.
  *
  * Properties that should not be serialized can be annotated with the `@Transient` annotation on either the getter
- * or setter.  Transfuse will ignore `@Transient` annotated properties during Parcelable serialization.
+ * or setter.  Parceler will ignore `@Transient` annotated properties during Parcelable serialization.
  *
  * @author John Ericksen
  */
@@ -66,7 +66,7 @@ public @interface Parcel {
 
     /**
      * Noop ParcelConverter used as a empty placeholder for the Parcel.value annotation parameter.  Performs no mapping
-     * and throws `TransfuseRuntimeExceptions` upon calling any method.
+     * and throws `ParcelerRuntimeExceptions` upon calling any method.
      */
     class EmptyConverter implements ParcelConverter<Object> {
         @Override

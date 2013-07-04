@@ -16,7 +16,7 @@
 package org.parceler;
 
 /**
- * General RuntimeException in the Transfuse library.
+ * General RuntimeException in the Parceler library.
  *
  * @author John Ericksen
  */

@@ -17,6 +17,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
 import org.androidtransfuse.transaction.Transaction;
 import org.androidtransfuse.transaction.TransactionFactory;
 import org.androidtransfuse.transaction.TransactionWorker;
@@ -31,13 +32,13 @@ import java.util.Map;
  */
 public class ParcelsTransactionFactory implements TransactionFactory<Map<Provider<ASTType>, JDefinedClass>, Void> {
 
-    private final Provider<TransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void>> workerProvider;
+    private final Provider<CodeGenerationScopedTransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void>> workerProvider;
     private final ScopedTransactionFactory scopedTransactionFactory;
 
     @Inject
     public ParcelsTransactionFactory(
             @Named(ParcelerModule.PARCELS_TRANSACTION_WORKER)
-            Provider<TransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void>> workerProvider,
+            Provider<CodeGenerationScopedTransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void>> workerProvider,
             ScopedTransactionFactory scopedTransactionFactory) {
         this.workerProvider = workerProvider;
         this.scopedTransactionFactory = scopedTransactionFactory;
