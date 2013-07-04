@@ -1,0 +1,96 @@
+= TODO:Remove me when github upgrades asciidoctor
+
+= Parceler
+
+Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
+
+Parceler is super easy to use.  Just annotate a POJO with +@Parcel+ and Parceler does the rest.
+
+[source,java]
+----
+@Parcel
+public class Example {
+    private String name;
+    private int age;
+
+    public Example(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+----
+
+You may reference the generated code directly, or via the +Parcels+ utility class:
+
+[source,java]
+----
+    ParcelWrapper<Example> wrapped = Parcels.wrap(new Example("Andy", 42);
+----
+
+To dereference the +@Parcel+, just call the +.getParcel()+ method:
+
+[source,java]
+----
+    Example example = wrapped.getParcel();
+    example.getName(); // Andy
+    example.getAge(); // 42
+----
+
+Of course, the ParcelWrapper can be added to an Android Bundle to transfer from Activity to Activity:
+
+[source,java]
+----
+    Bundle bundle = new Bundle();
+    bundle.putParcelable("example", Parcels.wrap(example));
+----
+
+And dereferenced in the +onCreate()+ method:
+
+[source,java]
+----
+    Example example = ((ParcelWrapper<Extra>) this.getIntent().getExtras().get("example")).getParcel();
+----
+
+== Getting Parceler
+
+You may download Parceler as a Maven dependency:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.parceler</groupId>
+    <artifactId>parceler</artifactId>
+    <version>${parceler.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.parceler</groupId>
+    <artifactId>parceler-api</artifactId>
+    <version>${parceler.version}</version>
+</dependency>
+----
+
+Or from http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.parceler%22[Maven Central].
+
+.License
+----
+Copyright 2013 John Ericksen
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+----
