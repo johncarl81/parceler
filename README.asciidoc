@@ -30,14 +30,14 @@ You may reference the generated code directly, or via the +Parcels+ utility clas
 
 [source,java]
 ----
-    ParcelWrapper<Example> wrapped = Parcels.wrap(new Example("Andy", 42);
+    Parcelable wrapped = Parcels.wrap(new Example("Andy", 42);
 ----
 
 To dereference the +@Parcel+, just call the +.getParcel()+ method:
 
 [source,java]
 ----
-    Example example = wrapped.getParcel();
+    Example example = ((ParcelableWrapper<Example>)wrapped).getParcel();
     example.getName(); // Andy
     example.getAge(); // 42
 ----

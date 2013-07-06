@@ -42,6 +42,7 @@
     <modules>
         <module>parceler-api</module>
         <module>parceler</module>
+        <module>examples</module>
     </modules>
 
     <build>
