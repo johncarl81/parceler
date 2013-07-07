@@ -13,6 +13,8 @@ public class Example {
     private String name;
     private int age;
 
+    public Example(){ /*Required empty bean constructor*/ }
+
     public Example(int age, String name) {
         this.age = age;
         this.name = name;
