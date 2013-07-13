@@ -2,9 +2,18 @@
 
 = Parceler
 
-Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
+In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
+http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization Percelables take on the
+order of 10x less time to both serialize and deserialize.  There is a major flaw with Parcelables, however.
+Parcelables contain a ton of boilerplate code.
+To implement a Parcelable, you must mirror the writeToParcel() and createFromParcel() methods such that they read and write to the Parcel in the same order.
+Also, a Parcelable must define a +public final static Parcelable.Creator CREATOR+ in order for the Android infrastructure to be able to leverage the serialization code.
 
-Parceler is super easy to use.  Just annotate a POJO with +@Parcel+ and Parceler does the rest.
+Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
+No longer do you have to implement the Parcelable interface, the writeToParcel or createFromParcel() or the public static final CREATOR.
+You simply annotate a POJO with +@Parcel+ and Parceler does the rest.
+Because Parceler uses the Java JSR-269 Annotation Processor, there is no need to run a tool manually to generate the Parcelable code.
+Just annotate your Java Bean and you are finished:
 
 [source,java]
 ----
@@ -28,7 +37,7 @@ public class Example {
 }
 ----
 
-You may reference the generated code directly, or via the +Parcels+ utility class:
+To use the generated code, you may reference the generated class directly, or via the +Parcels+ utility class:
 
 [source,java]
 ----

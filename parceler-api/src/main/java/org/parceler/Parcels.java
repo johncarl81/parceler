@@ -117,7 +117,7 @@ public final class Parcels {
             if (result == null) {
                 ParcelableFactory value = findClass(clazz);
                 if(value == null){
-                    return null;
+                    throw new ParcelerRuntimeException("Unable to create ParcelableFactory");
                 }
                 result = generatedMap.putIfAbsent(clazz, value);
                 if (result == null) {
