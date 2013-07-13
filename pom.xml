@@ -4,7 +4,7 @@
 
     <groupId>org.parceler</groupId>
     <artifactId>parceler-project</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <name>Parceler Project</name>
