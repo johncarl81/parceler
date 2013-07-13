@@ -20,7 +20,6 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
 import org.androidtransfuse.transaction.Transaction;
 import org.androidtransfuse.transaction.TransactionFactory;
-import org.androidtransfuse.transaction.TransactionWorker;
 
 import javax.inject.Inject;
 import javax.inject.Named;

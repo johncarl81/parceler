@@ -27,7 +27,10 @@ import org.androidtransfuse.gen.FilerResourceWriter;
 import org.androidtransfuse.gen.FilerSourceCodeWriter;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
-import org.androidtransfuse.transaction.*;
+import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
+import org.androidtransfuse.transaction.TransactionProcessor;
+import org.androidtransfuse.transaction.TransactionProcessorChannel;
+import org.androidtransfuse.transaction.TransactionProcessorPool;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
 

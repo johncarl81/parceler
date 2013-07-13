@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.parceler.ParcelWrapper;
 import org.parceler.RepositoryUpdater;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import javax.inject.Inject;
@@ -26,7 +25,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author John Ericksen

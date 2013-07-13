@@ -8,7 +8,8 @@ import org.junit.Test;
 import javax.inject.Provider;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author John Ericksen

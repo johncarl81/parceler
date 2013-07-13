@@ -11,7 +11,8 @@ import org.junit.Test;
 import javax.inject.Provider;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**

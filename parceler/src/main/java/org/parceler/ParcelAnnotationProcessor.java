@@ -17,7 +17,6 @@ package org.parceler;
 
 import org.androidtransfuse.AnnotationProcessorBase;
 import org.androidtransfuse.SupportedAnnotations;
-import org.parceler.Parcel;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.parceler.internal.ParcelProcessor;

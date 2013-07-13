@@ -9,9 +9,6 @@ import org.junit.Test;
 import org.parceler.Parcel;
 import org.parceler.ParcelConverter;
 import org.parceler.Transient;
-import org.parceler.internal.GetterSetterMethodPair;
-import org.parceler.internal.ParcelableAnalysis;
-import org.parceler.internal.ParcelableDescriptor;
 
 import javax.inject.Inject;
 import java.util.List;

@@ -21,9 +21,9 @@ import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.ASTVoidType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
-import org.parceler.Transient;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Parcel;
+import org.parceler.Transient;
 
 import javax.inject.Inject;
 import java.util.HashMap;
