@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>org.parceler</groupId>
-        <artifactId>parceler-project</artifactId>
+        <artifactId>parceler-examples</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
