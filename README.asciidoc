@@ -2,11 +2,13 @@
 
 = Parceler
 
+image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
+
 In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
 http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization Percelables take on the
 order of 10x less time to both serialize and deserialize.  There is a major flaw with Parcelables, however.
 Parcelables contain a ton of boilerplate code.
-To implement a Parcelable, you must mirror the writeToParcel() and createFromParcel() methods such that they read and write to the Parcel in the same order.
+To implement a Parcelable, you must mirror the +writeToParcel()+ and +createFromParcel()+ methods such that they read and write to the Parcel in the same order.
 Also, a Parcelable must define a +public final static Parcelable.Creator CREATOR+ in order for the Android infrastructure to be able to leverage the serialization code.
 
 Parceler is a code generation library that generates the Android Parcelable boilerplate source code.

@@ -32,7 +32,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author John Ericksen
  */
 @Bootstrap
-@PrepareForTest(Parcel.class)
 public class ParcelableGeneratorTest {
 
     private static final String TEST_VALUE = "test value";
