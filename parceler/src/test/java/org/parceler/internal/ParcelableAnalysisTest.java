@@ -53,7 +53,7 @@ public class ParcelableAnalysisTest {
         }
 
         ASTType basicAst = astClassFactory.getType(Basic.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(2, analysis.getGetterSetterPairs().size());
@@ -82,7 +82,7 @@ public class ParcelableAnalysisTest {
         }
 
         ASTType basicAst = astClassFactory.getType(MissingSetter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(1, analysis.getGetterSetterPairs().size());
@@ -111,7 +111,7 @@ public class ParcelableAnalysisTest {
         }
 
         ASTType basicAst = astClassFactory.getType(MissingGetter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(1, analysis.getGetterSetterPairs().size());
@@ -139,7 +139,7 @@ public class ParcelableAnalysisTest {
 
         ASTType targetAst = astClassFactory.getType(Target.class);
         ASTType converterAst = astClassFactory.getType(Converter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, converterAst);
 
         assertEquals(converterAst, analysis.getParcelConverterType());
     }
@@ -171,7 +171,7 @@ public class ParcelableAnalysisTest {
         }
 
         ASTType basicAst = astClassFactory.getType(Basic.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getGetterSetterPairs().size());

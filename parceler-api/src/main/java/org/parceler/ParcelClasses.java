@@ -10,9 +10,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE, ElementType.PACKAGE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParcelClass {
-
-    Class value();
-
-    Class<? extends ParcelConverter> converter() default Parcel.EmptyConverter.class;
+public @interface ParcelClasses {
+    ParcelClass[] value();
 }

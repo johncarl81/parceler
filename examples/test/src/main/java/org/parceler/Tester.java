@@ -5,7 +5,9 @@ import android.os.Parcelable;
 /**
  * @author John Ericksen
  */
-@ParcelClass(SubParcel.class)
+@ParcelClasses({
+    @ParcelClass(SubParcel.class)
+})
 public class Tester {
 
     public static void main(String[] args){

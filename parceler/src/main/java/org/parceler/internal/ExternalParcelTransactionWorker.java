@@ -18,8 +18,11 @@ package org.parceler.internal;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
+import org.parceler.Parcel;
 import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -35,30 +38,51 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
+    private final ASTClassFactory astClassFactory;
 
     @Inject
-    public ExternalParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator) {
+    public ExternalParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTClassFactory astClassFactory) {
         this.parcelableAnalysis = parcelableAnalysis;
         this.parcelableGenerator = parcelableGenerator;
+        this.astClassFactory = astClassFactory;
     }
 
     @Override
     public Map<Provider<ASTType>, JDefinedClass> innerRun(Provider<ASTType> valueProvider) {
 
         ASTType value = valueProvider.get();
-
-        ASTAnnotation astAnnotation = value.getASTAnnotation(ParcelClass.class);
-        ASTType[] parcelTypes = astAnnotation.getProperty("value", ASTType[].class);
-
         Map<Provider<ASTType>, JDefinedClass> generatedSource = new HashMap<Provider<ASTType>, JDefinedClass>();
 
-        for (ASTType parcelType : parcelTypes) {
-            ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType);
+        ASTAnnotation parcelClassesAnnotation = value.getASTAnnotation(ParcelClasses.class);
+        if(parcelClassesAnnotation != null){
+            ASTAnnotation[] parcelTypes = parcelClassesAnnotation.getProperty("value", ASTAnnotation[].class);
+
+            for(ASTAnnotation annotation : parcelTypes){
+                ASTType parcelType = annotation.getProperty("value", ASTType.class);
+                ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(annotation));
+                generatedSource.put(new ASTTypeProvider(parcelType), parcelableGenerator.generateParcelable(parcelType, analysis));
+            }
+        }
+
+        ASTAnnotation astAnnotation = value.getASTAnnotation(ParcelClass.class);
+        if(astAnnotation != null){
+            ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
+            ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(astAnnotation));
             generatedSource.put(new ASTTypeProvider(parcelType), parcelableGenerator.generateParcelable(parcelType, analysis));
         }
 
         return generatedSource;
     }
+
+    private ASTType getConverterType(ASTAnnotation parcelClassAnnotation) {
+        ASTType converterType = parcelClassAnnotation.getProperty("converter", ASTType.class);
+        ASTType emptyConverterType = astClassFactory.getType(Parcel.EmptyConverter.class);
+        if(!emptyConverterType.equals(converterType)){
+            return converterType;
+        }
+        return null;
+    }
+
 
     private static class ASTTypeProvider implements Provider<ASTType>{
 

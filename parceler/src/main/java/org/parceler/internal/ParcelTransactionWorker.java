@@ -16,8 +16,11 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
+import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
+import org.parceler.Parcel;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -31,11 +34,13 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
+    private final ASTClassFactory astClassFactory;
 
     @Inject
-    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator) {
+    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTClassFactory astClassFactory) {
         this.parcelableAnalysis = parcelableAnalysis;
         this.parcelableGenerator = parcelableGenerator;
+        this.astClassFactory = astClassFactory;
     }
 
     @Override
@@ -43,8 +48,20 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
 
         ASTType value = valueProvider.get();
 
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(value);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, getConverterType(value));
 
         return parcelableGenerator.generateParcelable(value, analysis);
+    }
+
+    private ASTType getConverterType(ASTType astType) {
+        ASTAnnotation astAnnotation = astType.getASTAnnotation(Parcel.class);
+        if(astAnnotation != null){
+            ASTType converterType = astAnnotation.getProperty("value", ASTType.class);
+            ASTType emptyConverterType = astClassFactory.getType(Parcel.EmptyConverter.class);
+            if(!emptyConverterType.equals(converterType)){
+                return converterType;
+            }
+        }
+        return null;
     }
 }

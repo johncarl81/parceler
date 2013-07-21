@@ -19,6 +19,7 @@ import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -42,13 +43,21 @@ public class ExternalParcelRepositoryTransactionWorker extends AbstractCompletio
 
         ASTType value = valueProvider.get();
 
-        ASTAnnotation astAnnotation = value.getASTAnnotation(ParcelClass.class);
-        ASTType[] parcelTypes = astAnnotation.getProperty("value", ASTType[].class);
+        ASTAnnotation parcelClassesAnnotation = value.getASTAnnotation(ParcelClasses.class);
+        if(parcelClassesAnnotation != null){
+            ASTAnnotation[] parcelTypes = parcelClassesAnnotation.getProperty("value", ASTAnnotation[].class);
 
-        for (ASTType parcelType : parcelTypes) {
-            repository.add(parcelType);
+            for(ASTAnnotation annotation : parcelTypes){
+                repository.add(annotation.getProperty("value", ASTType.class));
+            }
         }
 
+        ASTAnnotation astAnnotation = value.getASTAnnotation(ParcelClass.class);
+        if(astAnnotation != null){
+            ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
+
+            repository.add(parcelType);
+        }
         return valueProvider;
     }
 }

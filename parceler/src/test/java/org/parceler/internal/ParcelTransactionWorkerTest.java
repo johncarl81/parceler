@@ -2,6 +2,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,14 +33,15 @@ public class ParcelTransactionWorkerTest {
         inputProvider = mock(Provider.class);
         input = mock(ASTType.class);
         output = mock(JDefinedClass.class);
+        ASTClassFactory astClassFactory = mock(ASTClassFactory.class);
 
-        parcelTransaction = new ParcelTransactionWorker(mockAnalysis, mockGenerator);
+        parcelTransaction = new ParcelTransactionWorker(mockAnalysis, mockGenerator, astClassFactory);
     }
 
     @Test
     public void test() {
         when(inputProvider.get()).thenReturn(input);
-        when(mockAnalysis.analyze(input)).thenReturn(mockDescriptor);
+        when(mockAnalysis.analyze(input, null)).thenReturn(mockDescriptor);
         when(mockGenerator.generateParcelable(input, mockDescriptor)).thenReturn(output);
 
         assertFalse(parcelTransaction.isComplete());

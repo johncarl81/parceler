@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.parceler.ParcelWrapper;
 import org.parceler.RepositoryUpdater;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -60,8 +59,8 @@ public class ParcelableGeneratorTest {
         ASTType mockParcelASTType = astClassFactory.getType(ParcelTarget.class);
         ASTType mockParcelTwoASTType = astClassFactory.getType(ParcelSecondTarget.class);
 
-        ParcelableDescriptor parcelableDescriptor = parcelableAnalysis.analyze(mockParcelASTType);
-        ParcelableDescriptor parcelableTwoDescriptor = parcelableAnalysis.analyze(mockParcelTwoASTType);
+        ParcelableDescriptor parcelableDescriptor = parcelableAnalysis.analyze(mockParcelASTType, null);
+        ParcelableDescriptor parcelableTwoDescriptor = parcelableAnalysis.analyze(mockParcelTwoASTType, null);
 
         JDefinedClass parcelableDefinedClass = parcelableGenerator.generateParcelable(mockParcelASTType, parcelableDescriptor);
         JDefinedClass parcelableTwoDefinedClass = parcelableGenerator.generateParcelable(mockParcelTwoASTType, parcelableTwoDescriptor);

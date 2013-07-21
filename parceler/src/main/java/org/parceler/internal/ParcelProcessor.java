@@ -22,6 +22,7 @@ import org.androidtransfuse.transaction.TransactionProcessor;
 import org.androidtransfuse.transaction.TransactionProcessorPool;
 import org.parceler.Parcel;
 import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
 
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
@@ -59,7 +60,7 @@ public class ParcelProcessor {
 
     public void submit(Class<? extends Annotation> annotation, Collection<Provider<ASTType>> parcelProviders) {
         for (Provider<ASTType> parcelProvider : parcelProviders) {
-            if(annotation == ParcelClass.class){
+            if(annotation == ParcelClass.class || annotation == ParcelClasses.class){
                 externalParcelRepositoryProcessor.submit(externalParcelRepositoryTransactionFactory.buildTransaction(parcelProvider));
                 externalParcelProcessor.submit(externalParcelTransactionFactory.buildTransaction(parcelProvider));
             }

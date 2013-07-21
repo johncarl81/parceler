@@ -16,18 +16,14 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.TransfuseAnalysisException;
-import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.ASTVoidType;
-import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.validation.Validator;
-import org.parceler.Parcel;
 import org.parceler.Transient;
 
 import javax.inject.Inject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,42 +37,27 @@ public class ParcelableAnalysis {
     private static final String SET = "set";
     private static final String[] PREPENDS = {GET, IS, SET};
     private final Map<ASTType, ParcelableDescriptor> parcelableCache = new HashMap<ASTType, ParcelableDescriptor>();
-    private final ASTClassFactory astClassFactory;
     private final Validator validator;
 
     @Inject
-    public ParcelableAnalysis(ASTClassFactory astClassFactory, Validator validator) {
-        this.astClassFactory = astClassFactory;
+    public ParcelableAnalysis(Validator validator) {
         this.validator = validator;
     }
 
-    public ParcelableDescriptor analyze(ASTType astType) {
+    public ParcelableDescriptor analyze(ASTType astType, ASTType converter) {
         if (!parcelableCache.containsKey(astType)) {
-            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType);
+            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, converter);
             parcelableCache.put(astType, parcelableDescriptor);
-
-            //this needs to occur after adding to the cache to avoid infinite loops
-            analyzeDependencies(parcelableDescriptor.getGetterSetterPairs());
         }
         return parcelableCache.get(astType);
     }
 
-    private void analyzeDependencies(List<GetterSetterMethodPair> propertyPairs) {
-        for (GetterSetterMethodPair propertyPair : propertyPairs) {
-            ASTType type = propertyPair.getGetter().getReturnType();
-
-            if (type.isAnnotated(Parcel.class)) {
-                analyze(type);
-            }
-        }
-    }
-
-    private ParcelableDescriptor innerAnalyze(ASTType astType) {
+    private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter) {
 
         ParcelableDescriptor parcelableDescriptor;
 
-        if (converterDefined(astType)) {
-            parcelableDescriptor = new ParcelableDescriptor(getConverterType(astType));
+        if (converter != null) {
+            parcelableDescriptor = new ParcelableDescriptor(converter);
         } else {
             Map<String, ASTMethod> methodNameMap = new HashMap<String, ASTMethod>();
             parcelableDescriptor = new ParcelableDescriptor();
@@ -113,21 +94,6 @@ public class ParcelableAnalysis {
         }
 
         return parcelableDescriptor;
-    }
-
-    private boolean converterDefined(ASTType astType) {
-
-        ASTType converterType = getConverterType(astType);
-        ASTType emptyConverterType = astClassFactory.getType(Parcel.EmptyConverter.class);
-        return converterType != null && !converterType.equals(emptyConverterType);
-    }
-
-    private ASTType getConverterType(ASTType astType) {
-        ASTAnnotation astAnnotation = astType.getASTAnnotation(Parcel.class);
-        if(astAnnotation != null){
-            return astAnnotation.getProperty("value", ASTType.class);
-        }
-        return null;
     }
 
     private boolean isGetter(ASTMethod astMethod) {

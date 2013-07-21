@@ -62,6 +62,7 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
     public boolean process(Set<? extends TypeElement> typeElements, RoundEnvironment roundEnvironment) {
 
         parcelProcessor.submit(ParcelClass.class, reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(ParcelClass.class)));
+        parcelProcessor.submit(ParcelClasses.class, reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(ParcelClasses.class)));
         parcelProcessor.submit(Parcel.class, reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(Parcel.class)));
 
         parcelProcessor.execute();
