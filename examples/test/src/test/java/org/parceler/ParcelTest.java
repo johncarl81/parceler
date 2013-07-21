@@ -30,4 +30,50 @@ public class ParcelTest {
         assertEquals(sub, parcel.getFour());
         assertEquals(name, parcel.getFour().getName());
     }
+
+    @Test
+    public void testManualSerialization(){
+
+        String value = "test";
+
+        Manual input = new Manual();
+        input.setValue(value);
+
+        Parcelable parcelable = Parcels.wrap(input);
+
+        Manual output = ((ParcelWrapper<Manual>)parcelable).getParcel();
+
+        assertEquals(input.getValue(), output.getValue());
+    }
+
+    @Test
+    public void testManuallyRegistered(){
+
+        String value = "test";
+
+        ExternalParcel input = new ExternalParcel();
+        input.setValue(value);
+
+        Parcelable parcelable = Parcels.wrap(input);
+
+        ExternalParcel output = ((ParcelWrapper<ExternalParcel>)parcelable).getParcel();
+
+        assertEquals(input.getValue(), output.getValue());
+    }
+
+    @Test
+    public void testManuallyRegisteredSerialization(){
+
+        String value = "test";
+
+        ManuallyRegistered input = new ManuallyRegistered();
+        input.setValue(value);
+
+        Parcelable parcelable = Parcels.wrap(input);
+
+        ManuallyRegistered output = ((ParcelWrapper<ManuallyRegistered>)parcelable).getParcel();
+
+        assertEquals(input.getValue(), output.getValue());
+    }
+
 }

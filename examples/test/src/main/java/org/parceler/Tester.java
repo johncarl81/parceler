@@ -6,7 +6,8 @@ import android.os.Parcelable;
  * @author John Ericksen
  */
 @ParcelClasses({
-    @ParcelClass(SubParcel.class)
+    @ParcelClass(ExternalParcel.class),
+    @ParcelClass(value = ManuallyRegistered.class, converter = ManuallyRegisteredConverter.class)
 })
 public class Tester {
 
