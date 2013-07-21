@@ -3,7 +3,6 @@ package org.parceler;
 /**
  * @author John Ericksen
  */
-@Parcel
 public class SubParcel {
 
     private String name;

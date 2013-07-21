@@ -27,10 +27,7 @@ import org.androidtransfuse.gen.FilerResourceWriter;
 import org.androidtransfuse.gen.FilerSourceCodeWriter;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
-import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
-import org.androidtransfuse.transaction.TransactionProcessor;
-import org.androidtransfuse.transaction.TransactionProcessorChannel;
-import org.androidtransfuse.transaction.TransactionProcessorPool;
+import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
 
@@ -53,6 +50,8 @@ public class ParcelerModule {
 
     public static final String PARCELS_TRANSACTION_WORKER = "parcelsTransactionWorker";
     public static final String PARCEL_TRANSACTION_WORKER = "parcelTransactionWorker";
+    public static final String EXTERNAL_PARCEL_TRANSACTION_WORKER = "externalParcelTransactionWorker";
+    public static final String EXTERNAL_PARCEL_REPOSITORY_TRANSACTION_WORKER = "externalParcelRepositoryTransactionWorker";
 
     @Provides
     @CodeGenerationScope
@@ -109,17 +108,44 @@ public class ParcelerModule {
     }
 
     @Provides
-    public ParcelProcessor getParcelProcessor(ParcelTransactionFactory parcelTransactionFactory,
-                                              ParcelsTransactionFactory parcelsTransactionFactory) {
+    @Named(EXTERNAL_PARCEL_TRANSACTION_WORKER)
+    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> getExternalParcelTransactionWorker(JCodeModel codeModel,
+                                                                                                                          FilerSourceCodeWriter codeWriter,
+                                                                                                                          FilerResourceWriter resourceWriter,
+                                                                                                                          ExternalParcelTransactionWorker worker) {
+        return new CodeGenerationScopedTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>>(codeModel, codeWriter, resourceWriter, worker);
+    }
 
+    @Provides
+    @Named(EXTERNAL_PARCEL_REPOSITORY_TRANSACTION_WORKER)
+    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, Provider<ASTType>> getExternalParcelRepositorylTransactionWorker(JCodeModel codeModel,
+                                                                                                                                              FilerSourceCodeWriter codeWriter,
+                                                                                                                                              FilerResourceWriter resourceWriter,
+                                                                                                                                              ExternalParcelRepositoryTransactionWorker worker) {
+        return new CodeGenerationScopedTransactionWorker<Provider<ASTType>, Provider<ASTType>>(codeModel, codeWriter, resourceWriter, worker);
+    }
+
+    @Provides
+    public ParcelProcessor getParcelProcessor(ParcelTransactionFactory parcelTransactionFactory,
+                                              ParcelsTransactionFactory parcelsTransactionFactory,
+                                              ExternalParcelTransactionFactory externalParcelTransactionFactory,
+                                              ExternalParcelRepositoryTransactionFactory externalParcelRepositoryTransactionFactory) {
+
+        TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
+                new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
+        TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor =
+                new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>>();
         TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, JDefinedClass>();
         TransactionProcessorPool<Map<Provider<ASTType>, JDefinedClass>, Void> parcelsProcessor =
                 new TransactionProcessorPool<Map<Provider<ASTType>, JDefinedClass>, Void>();
 
         TransactionProcessor processor =
-                new TransactionProcessorChannel<Provider<ASTType>, JDefinedClass, Void>(parcelProcessor, parcelsProcessor, parcelsTransactionFactory);
+                new TransactionProcessorChannel<Provider<ASTType>, JDefinedClass, Void>(
+                        new TransactionProcessorParcelJoin<Provider<ASTType>, JDefinedClass>(externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor), parcelsProcessor, parcelsTransactionFactory);
 
-        return new ParcelProcessor(processor, parcelProcessor, parcelTransactionFactory);
+        TransactionProcessor processorChain = new TransactionProcessorChain(externalParcelProcessor, processor);
+
+        return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionFactory, externalParcelTransactionFactory, parcelTransactionFactory);
     }
 }

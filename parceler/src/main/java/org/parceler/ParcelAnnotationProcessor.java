@@ -39,7 +39,7 @@ import java.util.Set;
  *
  * @author John Ericksen
  */
-@SupportedAnnotations(Parcel.class)
+@SupportedAnnotations({Parcel.class, ParcelClass.class})
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @Bootstrap
 public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
@@ -61,7 +61,8 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
     @Override
     public boolean process(Set<? extends TypeElement> typeElements, RoundEnvironment roundEnvironment) {
 
-        parcelProcessor.submit(reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(Parcel.class)));
+        parcelProcessor.submit(ParcelClass.class, reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(ParcelClass.class)));
+        parcelProcessor.submit(Parcel.class, reloadableASTElementFactory.buildProviders(roundEnvironment.getElementsAnnotatedWith(Parcel.class)));
 
         parcelProcessor.execute();
 

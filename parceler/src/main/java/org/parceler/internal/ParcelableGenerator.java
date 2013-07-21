@@ -55,16 +55,18 @@ public class ParcelableGenerator {
     private final UniqueVariableNamer namer;
     private final ASTClassFactory astClassFactory;
     private final ClassGenerationUtil generationUtil;
+    private final ExternalParcelRepository externalParcelRepository;
     private final Map<ASTType, ReadWritePair> arrayParceableModfier = new HashMap<ASTType, ReadWritePair>();
     private final Map<ASTType, ReadWritePair> parceableModifier = new HashMap<ASTType, ReadWritePair>();
     private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
 
     @Inject
-    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer namer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil) {
+    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer namer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
         this.codeModel = codeModel;
         this.namer = namer;
         this.astClassFactory = astClassFactory;
         this.generationUtil = generationUtil;
+        this.externalParcelRepository = externalParcelRepository;
 
         setup();
     }
@@ -177,7 +179,7 @@ public class ParcelableGenerator {
         } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
             parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
                     .arg(JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable")));
-        } else if (returnType.isAnnotated(org.parceler.Parcel.class)) {
+        } else if (returnType.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(returnType)) {
 
             JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(returnType));
 
@@ -209,7 +211,7 @@ public class ParcelableGenerator {
         } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
             body.invoke(parcel, "writeSerializable")
                     .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (returnType.isAnnotated(org.parceler.Parcel.class)) {
+        } else if (returnType.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(returnType)) {
 
             JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME)
                     .staticInvoke(WRAP_METHOD).arg(wrapped.invoke(propertyMutator.getGetter().getName()));

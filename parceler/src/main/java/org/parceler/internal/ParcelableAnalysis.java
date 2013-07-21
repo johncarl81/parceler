@@ -124,7 +124,10 @@ public class ParcelableAnalysis {
 
     private ASTType getConverterType(ASTType astType) {
         ASTAnnotation astAnnotation = astType.getASTAnnotation(Parcel.class);
-        return astAnnotation.getProperty("value", ASTType.class);
+        if(astAnnotation != null){
+            return astAnnotation.getProperty("value", ASTType.class);
+        }
+        return null;
     }
 
     private boolean isGetter(ASTMethod astMethod) {
