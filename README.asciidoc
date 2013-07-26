@@ -70,6 +70,52 @@ And dereferenced in the +onCreate()+ method:
     Example example = ((ParcelWrapper<Extra>) this.getIntent().getExtras().get("example")).getParcel();
 ----
 
+Only a select number of types may be used as attributes of a +@Parcel+ class.  The following list includes the mapped
+types:
+
+ * +byte+
+ * +byte[]+
+ * +double+
+ * +double[]+
+ * +float+
+ * +float[]+
+ * +int+
+ * +int[]+
+ * +long+
+ * +long[]+
+ * +String+
+ * +String[]+
+ * +IBinder+
+ * +Bundle+
+ * +Object[]+
+ * +SparseArray+
+ * +SparseBooleanArray+
+ * +Exception+
+ * Other classes annotated with +@Parcel+
+
+Each attribute must have a Java Bean standard getter and setter.  For attributes that should not be serialized with
+Parceler, the attribute getter or setter may be annotated by +@Transient+.
+
++@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
+serialization is necessary.  Ths provides a still cleaner option for using Parcelable classes than implementing them by
+hand.
+
+For classes whose corresponding Java source is not available, one may include the class as a Parcel by using the
++@ParcelClass+ annotation.  This annotation may be declared anywhere in the compiled source that is convenient.  For
+instance, one could include the +@ParcelClass+ along with the Android Application:
+
+[source,java]
+----
+@ParcelClass(LibraryParcel.class)
+public class AndroidApplication extends Application{
+
+}
+----
+
+Multiple +@ParcelClass+ annotations may be declared using the +@ParcelClasses+ annotation.
+
+
+
 == Getting Parceler
 
 You may download Parceler as a Maven dependency:
