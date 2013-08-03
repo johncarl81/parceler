@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.androidtransfuse</groupId>
             <artifactId>transfuse-bootstrap</artifactId>
-            <version>0.2.2</version>
+            <version>0.2.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

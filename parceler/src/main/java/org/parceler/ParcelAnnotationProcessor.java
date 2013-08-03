@@ -19,6 +19,7 @@ import org.androidtransfuse.AnnotationProcessorBase;
 import org.androidtransfuse.SupportedAnnotations;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
+import org.androidtransfuse.scope.ScopeKey;
 import org.parceler.internal.ParcelProcessor;
 import org.parceler.internal.ReloadableASTElementFactory;
 
@@ -54,7 +55,7 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
         super.init(processingEnv);
 
         Bootstraps.getInjector(ParcelAnnotationProcessor.class)
-                .add(Singleton.class, ProcessingEnvironment.class, processingEnv)
+                .add(Singleton.class, ScopeKey.of(ProcessingEnvironment.class), processingEnv)
                 .inject(this);
     }
 
