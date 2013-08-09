@@ -2,7 +2,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
+import org.androidtransfuse.transaction.TransactionWorker;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class ParcelTransactionFactoryTest {
         input = mock(Provider.class);
         ThreadLocalScope simpleScope = new ThreadLocalScope();
         ScopedTransactionFactory scopedTransactionFactory = new ScopedTransactionFactory(simpleScope);
-        Provider<CodeGenerationScopedTransactionWorker<Provider<ASTType>, JDefinedClass>> workerProvider = mock(Provider.class);
+        Provider<TransactionWorker<Provider<ASTType>, JDefinedClass>> workerProvider = mock(Provider.class);
         factory = new ParcelTransactionFactory(scopedTransactionFactory, workerProvider);
     }
 

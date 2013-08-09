@@ -16,7 +16,6 @@
 package org.parceler;
 
 import org.junit.Test;
-import org.parceler.ParcelConverter;
 
 import java.lang.reflect.Method;
 

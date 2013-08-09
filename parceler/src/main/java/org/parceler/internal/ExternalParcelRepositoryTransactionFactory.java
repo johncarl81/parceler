@@ -16,9 +16,9 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.transaction.CodeGenerationScopedTransactionWorker;
 import org.androidtransfuse.transaction.Transaction;
 import org.androidtransfuse.transaction.TransactionFactory;
+import org.androidtransfuse.transaction.TransactionWorker;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,12 +30,12 @@ import javax.inject.Provider;
 public class ExternalParcelRepositoryTransactionFactory implements TransactionFactory<Provider<ASTType>, Provider<ASTType>> {
 
     private final ScopedTransactionFactory scopedTransactionFactory;
-    private final Provider<CodeGenerationScopedTransactionWorker<Provider<ASTType>, Provider<ASTType>>> workerProvider;
+    private final Provider<TransactionWorker<Provider<ASTType>, Provider<ASTType>>> workerProvider;
 
     @Inject
     public ExternalParcelRepositoryTransactionFactory(ScopedTransactionFactory scopedTransactionFactory,
                                                       @Named(ParcelerModule.EXTERNAL_PARCEL_REPOSITORY_TRANSACTION_WORKER)
-                                                      Provider<CodeGenerationScopedTransactionWorker<Provider<ASTType>, Provider<ASTType>>> workerProvider) {
+                                                      Provider<TransactionWorker<Provider<ASTType>, Provider<ASTType>>> workerProvider) {
         this.scopedTransactionFactory = scopedTransactionFactory;
         this.workerProvider = workerProvider;
     }

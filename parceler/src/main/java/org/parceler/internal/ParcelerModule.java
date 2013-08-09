@@ -23,6 +23,7 @@ import org.androidtransfuse.annotations.DefineScope;
 import org.androidtransfuse.annotations.Install;
 import org.androidtransfuse.annotations.Provides;
 import org.androidtransfuse.bootstrap.BootstrapModule;
+import org.androidtransfuse.bootstrap.Namespace;
 import org.androidtransfuse.gen.FilerResourceWriter;
 import org.androidtransfuse.gen.FilerSourceCodeWriter;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
@@ -46,6 +47,7 @@ import java.util.Map;
         ASTFactory.class,
         VariableExpressionBuilderFactory.class,
         InjectionBuilderContextFactory.class})
+@Namespace("Parceler")
 public class ParcelerModule {
 
     public static final String PARCELS_TRANSACTION_WORKER = "parcelsTransactionWorker";
@@ -91,7 +93,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(PARCEL_TRANSACTION_WORKER)
-    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, JDefinedClass> getParcelTransactionWorker(JCodeModel codeModel,
+    public TransactionWorker<Provider<ASTType>, JDefinedClass> getParcelTransactionWorker(JCodeModel codeModel,
                                                                                           FilerSourceCodeWriter codeWriter,
                                                                                           FilerResourceWriter resourceWriter,
                                                                                           ParcelTransactionWorker worker) {
@@ -100,7 +102,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(PARCELS_TRANSACTION_WORKER)
-    public CodeGenerationScopedTransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void> getParcelsTransactionWorker(JCodeModel codeModel,
+    public TransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void> getParcelsTransactionWorker(JCodeModel codeModel,
                                                                                                       FilerSourceCodeWriter codeWriter,
                                                                                                       FilerResourceWriter resourceWriter,
                                                                                                       ParcelsTransactionWorker worker) {
@@ -109,7 +111,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(EXTERNAL_PARCEL_TRANSACTION_WORKER)
-    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> getExternalParcelTransactionWorker(JCodeModel codeModel,
+    public TransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> getExternalParcelTransactionWorker(JCodeModel codeModel,
                                                                                                                           FilerSourceCodeWriter codeWriter,
                                                                                                                           FilerResourceWriter resourceWriter,
                                                                                                                           ExternalParcelTransactionWorker worker) {
@@ -118,7 +120,7 @@ public class ParcelerModule {
 
     @Provides
     @Named(EXTERNAL_PARCEL_REPOSITORY_TRANSACTION_WORKER)
-    public CodeGenerationScopedTransactionWorker<Provider<ASTType>, Provider<ASTType>> getExternalParcelRepositorylTransactionWorker(JCodeModel codeModel,
+    public TransactionWorker<Provider<ASTType>, Provider<ASTType>> getExternalParcelRepositoryTransactionWorker(JCodeModel codeModel,
                                                                                                                                               FilerSourceCodeWriter codeWriter,
                                                                                                                                               FilerResourceWriter resourceWriter,
                                                                                                                                               ExternalParcelRepositoryTransactionWorker worker) {

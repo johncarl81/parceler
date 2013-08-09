@@ -28,6 +28,7 @@ import org.androidtransfuse.adapter.ASTPrimitiveType;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
+import org.androidtransfuse.gen.UniqueClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
@@ -52,7 +53,8 @@ public class ParcelableGenerator {
     public static final String WRAP_METHOD = "wrap";
 
     private final JCodeModel codeModel;
-    private final UniqueVariableNamer namer;
+    private final UniqueVariableNamer variableNamer;
+    private final UniqueClassNamer classNamer;
     private final ASTClassFactory astClassFactory;
     private final ClassGenerationUtil generationUtil;
     private final ExternalParcelRepository externalParcelRepository;
@@ -61,9 +63,10 @@ public class ParcelableGenerator {
     private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
 
     @Inject
-    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer namer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
+    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer variableNamer, UniqueClassNamer classNamer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
         this.codeModel = codeModel;
-        this.namer = namer;
+        this.variableNamer = variableNamer;
+        this.classNamer = classNamer;
         this.astClassFactory = astClassFactory;
         this.generationUtil = generationUtil;
         this.externalParcelRepository = externalParcelRepository;
@@ -80,17 +83,17 @@ public class ParcelableGenerator {
                     ._implements(codeModel.ref(ParcelWrapper.class).narrow(inputType));
 
             //wrapped @Parcel
-            JFieldVar wrapped = parcelableClass.field(JMod.PRIVATE, inputType, namer.generateName(type));
+            JFieldVar wrapped = parcelableClass.field(JMod.PRIVATE, inputType, variableNamer.generateName(type));
 
             //Parcel constructor
             JMethod parcelConstructor = parcelableClass.constructor(JMod.PUBLIC);
-            JVar parcelParam = parcelConstructor.param(codeModel.ref(Parcel.class), namer.generateName(Parcel.class));
+            JVar parcelParam = parcelConstructor.param(codeModel.ref(Parcel.class), variableNamer.generateName(Parcel.class));
             JBlock parcelConstructorBody = parcelConstructor.body();
 
             //writeToParcel(android.os.Parcel,int)
             JMethod writeToParcelMethod = parcelableClass.method(JMod.PUBLIC, codeModel.VOID, WRITE_TO_PARCEL);
             writeToParcelMethod.annotate(Override.class);
-            JVar wtParcelParam = writeToParcelMethod.param(Parcel.class, namer.generateName(Parcel.class));
+            JVar wtParcelParam = writeToParcelMethod.param(Parcel.class, variableNamer.generateName(Parcel.class));
             JVar flags = writeToParcelMethod.param(codeModel.INT, "flags");
 
             if (parcelableDescriptor.getParcelConverterType() == null) {
@@ -108,7 +111,7 @@ public class ParcelableGenerator {
             } else {
                 JClass converterType = generationUtil.ref(parcelableDescriptor.getParcelConverterType());
                 JFieldVar converterField = parcelableClass.field(JMod.PRIVATE, converterType,
-                        namer.generateName(parcelableDescriptor.getParcelConverterType()), JExpr._new(converterType));
+                        variableNamer.generateName(parcelableDescriptor.getParcelConverterType()), JExpr._new(converterType));
 
                 parcelConstructorBody.assign(wrapped, JExpr.invoke(converterField, ParcelConverter.CONVERT_FROM_PARCEL).arg(parcelParam));
 
@@ -117,7 +120,7 @@ public class ParcelableGenerator {
 
             //@Parcel input
             JMethod inputConstructor = parcelableClass.constructor(JMod.PUBLIC);
-            JVar inputParam = inputConstructor.param(inputType, namer.generateName(type));
+            JVar inputParam = inputConstructor.param(inputType, variableNamer.generateName(type));
             inputConstructor.body().assign(wrapped, inputParam);
 
             //describeContents()
@@ -131,14 +134,14 @@ public class ParcelableGenerator {
             getWrappedMethod.body()._return(wrapped);
 
             //public static final CREATOR = ...
-            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, namer.generateClassName(Parcelable.Creator.class));
+            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.generateClassName(Parcelable.Creator.class).build().getClassName());
 
             creatorClass._implements(codeModel.ref(Parcelable.Creator.class).narrow(parcelableClass));
 
             //createFromParcel method
             JMethod createFromParcelMethod = creatorClass.method(JMod.PUBLIC, parcelableClass, CREATE_FROM_PARCEL);
             createFromParcelMethod.annotate(Override.class);
-            JVar cfpParcelParam = createFromParcelMethod.param(Parcel.class, namer.generateName(Parcel.class));
+            JVar cfpParcelParam = createFromParcelMethod.param(Parcel.class, variableNamer.generateName(Parcel.class));
 
             createFromParcelMethod.body()._return(JExpr._new(parcelableClass).arg(cfpParcelParam));
 
