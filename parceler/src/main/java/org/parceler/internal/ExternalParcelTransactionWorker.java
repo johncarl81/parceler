@@ -84,7 +84,7 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
     }
 
 
-    private static class ASTTypeProvider implements Provider<ASTType>{
+    private static final class ASTTypeProvider implements Provider<ASTType>{
 
         private ASTType parcelType;
 

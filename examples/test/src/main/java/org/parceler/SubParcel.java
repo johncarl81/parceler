@@ -26,14 +26,17 @@ public class SubParcel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SubParcel)) return false;
+        if (this == o){
+            return true;
+        }
+        if (!(o instanceof SubParcel)){
+            return false;
+        }
 
         SubParcel subParcel = (SubParcel) o;
 
-        if (name != null ? !name.equals(subParcel.name) : subParcel.name != null) return false;
+        return !(name != null ? !name.equals(subParcel.name) : subParcel.name != null);
 
-        return true;
     }
 
     @Override

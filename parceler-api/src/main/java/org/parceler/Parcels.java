@@ -144,7 +144,7 @@ public final class Parcels {
          * @throws ParcelerRuntimeException
          * @param classLoader
          */
-        public final void loadRepository(ClassLoader classLoader){
+        public void loadRepository(ClassLoader classLoader){
             try{
                 Class repositoryClass = classLoader.loadClass(PARCELS_PACKAGE + "." + PARCELS_REPOSITORY_NAME);
                 Repository<ParcelableFactory> instance = (Repository<ParcelableFactory>) repositoryClass.newInstance();
