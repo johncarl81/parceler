@@ -19,7 +19,7 @@ import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.PackageClass;
 import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.UniqueClassNamer;
+import org.androidtransfuse.gen.ClassNamer;
 import org.parceler.ParcelerRuntimeException;
 import org.parceler.Parcels;
 import org.parceler.Repository;
@@ -40,10 +40,10 @@ public class ParcelsGenerator {
 
     private final ClassGenerationUtil generationUtil;
     private final JCodeModel codeModel;
-    private final UniqueClassNamer classNamer;
+    private final ClassNamer classNamer;
 
     @Inject
-    public ParcelsGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel, UniqueClassNamer classNamer) {
+    public ParcelsGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel, ClassNamer classNamer) {
         this.generationUtil = generationUtil;
         this.codeModel = codeModel;
         this.classNamer = classNamer;
@@ -68,7 +68,7 @@ public class ParcelsGenerator {
 
                 JClass type = generationUtil.ref(astTypeJDefinedClassEntry.getKey().get());
 
-                String innerClassName = classNamer.generateClassName(astTypeJDefinedClassEntry.getValue()).append(Parcels.IMPL_EXT).namespaced().build().getClassName();
+                String innerClassName = classNamer.numberedClassName(astTypeJDefinedClassEntry.getValue()).append(Parcels.IMPL_EXT).namespaced().build().getClassName();
 
                 JDefinedClass factoryDefinedClass = parcelsDefinedClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, innerClassName);
 

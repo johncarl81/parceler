@@ -28,7 +28,7 @@ import org.androidtransfuse.adapter.ASTPrimitiveType;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.UniqueClassNamer;
+import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
@@ -49,12 +49,12 @@ public class ParcelableGenerator {
     private static final String NEW_ARRAY = "newArray";
     private static final String WRITE_TO_PARCEL = "writeToParcel";
     private static final String DESCRIBE_CONTENTS = "describeContents";
-    private static final String PARCELABLE_EXT = "$Parcelable";
+    private static final String PARCELABLE_EXT = "Parcelable";
     public static final String WRAP_METHOD = "wrap";
 
     private final JCodeModel codeModel;
     private final UniqueVariableNamer variableNamer;
-    private final UniqueClassNamer classNamer;
+    private final ClassNamer classNamer;
     private final ASTClassFactory astClassFactory;
     private final ClassGenerationUtil generationUtil;
     private final ExternalParcelRepository externalParcelRepository;
@@ -63,7 +63,7 @@ public class ParcelableGenerator {
     private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
 
     @Inject
-    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer variableNamer, UniqueClassNamer classNamer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
+    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer variableNamer, ClassNamer classNamer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
         this.classNamer = classNamer;
@@ -78,7 +78,7 @@ public class ParcelableGenerator {
         try {
             JType inputType = generationUtil.ref(type);
 
-            JDefinedClass parcelableClass = generationUtil.defineClass(type.getPackageClass().append(PARCELABLE_EXT));
+            JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(PARCELABLE_EXT).build());
             parcelableClass._implements(Parcelable.class)
                     ._implements(codeModel.ref(ParcelWrapper.class).narrow(inputType));
 
@@ -134,7 +134,7 @@ public class ParcelableGenerator {
             getWrappedMethod.body()._return(wrapped);
 
             //public static final CREATOR = ...
-            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.generateClassName(Parcelable.Creator.class).build().getClassName());
+            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(Parcelable.Creator.class).build().getClassName());
 
             creatorClass._implements(codeModel.ref(Parcelable.Creator.class).narrow(parcelableClass));
 
