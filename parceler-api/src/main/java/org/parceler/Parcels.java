@@ -43,7 +43,7 @@ public final class Parcels {
     /**
      * Testing method for replacing the Parceler$Parcels class with one referenced in the given classloader.
      *
-     * @param classLoader
+     * @param classLoader ClassLoader to use when loading repository.
      */
     protected static void update(ClassLoader classLoader){
         REPOSITORY.loadRepository(classLoader);
@@ -56,10 +56,25 @@ public final class Parcels {
      * @param input Parcel
      * @return Parcelable wrapper
      */
+    @SuppressWarnings("unchecked")
     public static <T> Parcelable wrap(T input) {
         ParcelableFactory parcelableFactory = REPOSITORY.get(input.getClass());
 
         return parcelableFactory.buildParcelable(input);
+    }
+
+    /**
+     * Unwraps the input wrapped `@Parcel` `Parcelable`
+     *
+     * @throws ClassCastException if the input Parcelable does not implement ParcelWrapper with the correct parameter type.
+     * @param input Parcelable implementing ParcelWrapper
+     * @param <T> type of unwrapped `@Parcel`
+     * @return Unwrapped `@Parcel`
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T unwrap(Parcelable input) {
+        ParcelWrapper<T> wrapper = (ParcelWrapper<T>) input;
+        return wrapper.getParcel();
     }
 
     /**
@@ -128,6 +143,7 @@ public final class Parcels {
             return result;
         }
 
+        @SuppressWarnings("unchecked")
         public ParcelableFactory findClass(Class clazz){
             try {
                 Class parcelWrapperClass = Class.forName(clazz.getName() + IMPL_EXT);
@@ -144,6 +160,7 @@ public final class Parcels {
          * @throws ParcelerRuntimeException
          * @param classLoader
          */
+        @SuppressWarnings("unchecked")
         public void loadRepository(ClassLoader classLoader){
             try{
                 Class repositoryClass = classLoader.loadClass(PARCELS_PACKAGE + "." + PARCELS_REPOSITORY_NAME);
