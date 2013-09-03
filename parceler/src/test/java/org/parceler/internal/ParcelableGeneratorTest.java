@@ -26,6 +26,7 @@ import org.androidtransfuse.util.Providers;
 import org.junit.Before;
 import org.junit.Test;
 import org.parceler.ParcelWrapper;
+import org.parceler.Parcels;
 import org.parceler.RepositoryUpdater;
 
 import javax.inject.Inject;
@@ -111,7 +112,7 @@ public class ParcelableGeneratorTest {
         when(mockParcel.readString()).thenReturn(TEST_VALUE);
         when(mockParcel.readDouble()).thenReturn(Math.PI);
         when(mockParcel.readParcelable(any(ClassLoader.class))).thenReturn(mockSecondParcel);
-        when(((ParcelWrapper) mockSecondParcel).getParcel()).thenReturn(parcelSecondTarget);
+        when(Parcels.unwrap(mockSecondParcel)).thenReturn(parcelSecondTarget);
 
         Parcelable outputParcelable = parcelableClass.getConstructor(ParcelTarget.class).newInstance(parcelTarget);
 
@@ -119,7 +120,7 @@ public class ParcelableGeneratorTest {
 
         Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(mockParcel);
 
-        ParcelTarget wrapped = ((ParcelWrapper<ParcelTarget>) inputParcelable).getParcel();
+        ParcelTarget wrapped = Parcels.unwrap(inputParcelable);
 
         assertEquals(parcelTarget, wrapped);
 
