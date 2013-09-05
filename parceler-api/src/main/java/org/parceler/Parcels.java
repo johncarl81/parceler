@@ -30,9 +30,9 @@ import java.util.concurrent.ConcurrentMap;
 public final class Parcels {
 
     public static final String PARCELS_NAME = "Parcels";
-    public static final String PARCELS_REPOSITORY_NAME = "Parceler$Parcels";
+    public static final String PARCELS_REPOSITORY_NAME = "Parceler$$Parcels";
     public static final String PARCELS_PACKAGE = "org.parceler";
-    public static final String IMPL_EXT = "$Parcel";
+    public static final String IMPL_EXT = "Parcelable";
 
     private static final ParcelCodeRepository REPOSITORY = new ParcelCodeRepository();
 
@@ -146,7 +146,7 @@ public final class Parcels {
         @SuppressWarnings("unchecked")
         public ParcelableFactory findClass(Class clazz){
             try {
-                Class parcelWrapperClass = Class.forName(clazz.getName() + IMPL_EXT);
+                Class parcelWrapperClass = Class.forName(clazz.getName() + "$$" + IMPL_EXT);
                 return new ParcelableFactoryReflectionProxy(clazz, parcelWrapperClass);
             } catch (ClassNotFoundException e) {
                 return null;

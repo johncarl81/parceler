@@ -32,6 +32,7 @@ import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -49,7 +50,6 @@ public class ParcelableGenerator {
     private static final String NEW_ARRAY = "newArray";
     private static final String WRITE_TO_PARCEL = "writeToParcel";
     private static final String DESCRIBE_CONTENTS = "describeContents";
-    private static final String PARCELABLE_EXT = "Parcelable";
     public static final String WRAP_METHOD = "wrap";
 
     private final JCodeModel codeModel;
@@ -78,7 +78,7 @@ public class ParcelableGenerator {
         try {
             JType inputType = generationUtil.ref(type);
 
-            JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(PARCELABLE_EXT).build());
+            JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(Parcels.IMPL_EXT).build());
             parcelableClass._implements(Parcelable.class)
                     ._implements(codeModel.ref(ParcelWrapper.class).narrow(inputType));
 
@@ -158,7 +158,7 @@ public class ParcelableGenerator {
 
             return parcelableClass;
         } catch (JClassAlreadyExistsException e) {
-            throw new TransfuseAnalysisException("Class Already Exists: " + type.getName() + PARCELABLE_EXT, e);
+            throw new TransfuseAnalysisException("Class Already Exists: " + ClassNamer.className(type).append(Parcels.IMPL_EXT).build(), e);
         }
     }
 
