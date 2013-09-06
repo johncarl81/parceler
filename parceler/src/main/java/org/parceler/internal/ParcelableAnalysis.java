@@ -86,7 +86,7 @@ public class ParcelableAnalysis {
                                             .element(astMethod).build();
                         }
                         else{
-                            parcelableDescriptor.getGetterSetterPairs().add(new GetterSetterMethodPair(getPropertyName(astMethod), astMethod, setterMethod));
+                            parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(getPropertyName(astMethod), new MethodReference(astMethod.getReturnType(), setterMethod), new MethodReference(astMethod.getReturnType(), astMethod)));
                         }
                     }
                 }

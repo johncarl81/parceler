@@ -71,9 +71,9 @@ public class ParcelableAnalysisTest {
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
-        assertEquals(2, analysis.getGetterSetterPairs().size());
-        assertTrue(contains(analysis.getGetterSetterPairs(), "intValue"));
-        assertTrue(contains(analysis.getGetterSetterPairs(), "stringValue"));
+        assertEquals(2, analysis.getMethodPairs().size());
+        assertTrue(contains(analysis.getMethodPairs(), "intValue"));
+        assertTrue(contains(analysis.getMethodPairs(), "stringValue"));
     }
 
     @Test
@@ -100,9 +100,9 @@ public class ParcelableAnalysisTest {
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
-        assertEquals(1, analysis.getGetterSetterPairs().size());
-        assertTrue(contains(analysis.getGetterSetterPairs(), "intValue"));
-        assertFalse(contains(analysis.getGetterSetterPairs(), "stringValue"));
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertTrue(contains(analysis.getMethodPairs(), "intValue"));
+        assertFalse(contains(analysis.getMethodPairs(), "stringValue"));
     }
 
     @Test
@@ -129,9 +129,9 @@ public class ParcelableAnalysisTest {
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
-        assertEquals(1, analysis.getGetterSetterPairs().size());
-        assertTrue(contains(analysis.getGetterSetterPairs(), "intValue"));
-        assertFalse(contains(analysis.getGetterSetterPairs(), "stringValue"));
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertTrue(contains(analysis.getMethodPairs(), "intValue"));
+        assertFalse(contains(analysis.getMethodPairs(), "stringValue"));
     }
 
     @Test
@@ -189,11 +189,11 @@ public class ParcelableAnalysisTest {
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
 
         assertNull(analysis.getParcelConverterType());
-        assertEquals(0, analysis.getGetterSetterPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
     }
 
-    private boolean contains(List<GetterSetterMethodPair> getterSetterPairs, String name) {
-        for (GetterSetterMethodPair getterSetterPair : getterSetterPairs) {
+    private boolean contains(List<ReferencePair<MethodReference>> getterSetterPairs, String name) {
+        for (ReferencePair<MethodReference> getterSetterPair : getterSetterPairs) {
             if (getterSetterPair.getName().equals(name)) {
                 return true;
             }
