@@ -1,15 +1,18 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.adapter.ASTConstructor;
-import org.androidtransfuse.adapter.ASTField;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.ASTParameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author John Ericksen
  */
-public class ConstructorReference implements Reference {
+public class ConstructorReference {
 
     private final ASTConstructor constructor;
+    private Map<ASTParameter, AccessibleReference> writeReferences = new HashMap<ASTParameter, AccessibleReference>();
 
     public ConstructorReference(ASTConstructor constructor) {
         this.constructor = constructor;
@@ -19,12 +22,11 @@ public class ConstructorReference implements Reference {
         return constructor;
     }
 
-    public <T, R> R accept(ReferenceVisitor<T, R> visitor, T input){
-        return visitor.visit(this, input);
+    public void putReference(ASTParameter parameter, AccessibleReference reference){
+        writeReferences.put(parameter, reference);
     }
 
-    @Override
-    public ASTType getType() {
-        return null;
+    public AccessibleReference getWriteReference(ASTParameter parameter) {
+        return writeReferences.get(parameter);
     }
 }

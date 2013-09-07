@@ -6,7 +6,7 @@ import org.androidtransfuse.adapter.ASTType;
 /**
  * @author John Ericksen
  */
-public class FieldReference implements Reference {
+public class FieldReference implements AccessibleReference {
 
     private final ASTField field;
 
@@ -22,7 +22,6 @@ public class FieldReference implements Reference {
         return visitor.visit(this, input);
     }
 
-    @Override
     public ASTType getType() {
         return field.getASTType();
     }

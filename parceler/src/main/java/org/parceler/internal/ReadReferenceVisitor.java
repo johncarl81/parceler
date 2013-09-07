@@ -3,6 +3,7 @@ package org.parceler.internal;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldVar;
+import org.androidtransfuse.util.TransfuseRuntimeException;
 
 /**
  * @author John Ericksen
@@ -10,12 +11,13 @@ import com.sun.codemodel.JFieldVar;
 public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void> {
 
     @Override
-    public Void visit(ConstructorReference constructorReference, ReadContext input) {
-        return null;
-    }
-
-    @Override
     public Void visit(FieldReference fieldReference, ReadContext input) {
+        JBlock body = input.getBody();
+        JFieldVar wrapped = input.getWrapped();
+        JExpression getExpression = input.getGetExpression();
+
+        //todo: generic field access
+        body.assign(wrapped.ref(fieldReference.getField().getName()), getExpression);
         return null;
     }
 

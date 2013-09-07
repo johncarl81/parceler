@@ -9,13 +9,10 @@ import com.sun.codemodel.JFieldVar;
 public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JExpression> {
 
     @Override
-    public JExpression visit(ConstructorReference constructorReference, WriteContext input) {
-        return null;
-    }
-
-    @Override
     public JExpression visit(FieldReference fieldReference, WriteContext input) {
-        return null;
+        JFieldVar wrapped = input.getWrapped();
+
+        return wrapped.ref(fieldReference.getField().getName());
     }
 
     @Override

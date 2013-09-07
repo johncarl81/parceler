@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class ParcelableDescriptor {
 
-    private final List<ReferencePair<ConstructorReference>> constructorPairs = new ArrayList<ReferencePair<ConstructorReference>>();
+    private ConstructorReference constructorPair;
     private final List<ReferencePair<FieldReference>> fieldPairs = new ArrayList<ReferencePair<FieldReference>>();
     private final List<ReferencePair<MethodReference>> methodPairs = new ArrayList<ReferencePair<MethodReference>>();
     private final ASTType parcelConverterType;
@@ -38,10 +38,6 @@ public class ParcelableDescriptor {
         this.parcelConverterType = parcelConverterType;
     }
 
-    public List<ReferencePair<ConstructorReference>> getConstructorPairs() {
-        return constructorPairs;
-    }
-
     public List<ReferencePair<FieldReference>> getFieldPairs() {
         return fieldPairs;
     }
@@ -52,5 +48,13 @@ public class ParcelableDescriptor {
 
     public ASTType getParcelConverterType() {
         return parcelConverterType;
+    }
+
+    public void setConstructorPair(ConstructorReference constructorPair) {
+        this.constructorPair = constructorPair;
+    }
+
+    public ConstructorReference getConstructorPair() {
+        return constructorPair;
     }
 }

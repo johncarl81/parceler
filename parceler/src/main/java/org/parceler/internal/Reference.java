@@ -8,8 +8,4 @@ import org.androidtransfuse.adapter.ASTType;
  */
 public interface Reference {
 
-    <T, R> R accept(ReferenceVisitor<T, R> visitor, T input);
-
-    ASTType getType();
-
 }

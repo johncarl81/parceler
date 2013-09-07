@@ -7,9 +7,9 @@ public class ReferencePair<T extends Reference> {
 
     private final String name;
     private final T setter;
-    private final Reference accessor;
+    private final AccessibleReference accessor;
 
-    public ReferencePair(String name, T setter, Reference accessor) {
+    public ReferencePair(String name, T setter, AccessibleReference accessor) {
         this.name = name;
         this.setter = setter;
         this.accessor = accessor;
@@ -23,7 +23,7 @@ public class ReferencePair<T extends Reference> {
         return setter;
     }
 
-    public Reference getAccessor() {
+    public AccessibleReference getAccessor() {
         return accessor;
     }
 }

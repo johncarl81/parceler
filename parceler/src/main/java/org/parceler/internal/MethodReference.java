@@ -6,7 +6,7 @@ import org.androidtransfuse.adapter.ASTType;
 /**
  * @author John Ericksen
  */
-public class MethodReference implements Reference {
+public class MethodReference implements AccessibleReference {
 
     private final ASTMethod method;
     private final ASTType type;
@@ -20,7 +20,6 @@ public class MethodReference implements Reference {
         return method;
     }
 
-    @Override
     public ASTType getType() {
         return type;
     }
