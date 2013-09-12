@@ -56,7 +56,6 @@ public class ParcelableGenerator {
     private final ASTClassFactory astClassFactory;
     private final ClassGenerationUtil generationUtil;
     private final ExternalParcelRepository externalParcelRepository;
-    private final Map<ASTType, ReadWritePair> arrayParceableModfier = new HashMap<ASTType, ReadWritePair>();
     private final Map<ASTType, ReadWritePair> parceableModifier = new HashMap<ASTType, ReadWritePair>();
     private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
     private final ReferenceVisitor<ReadContext, Void> readFromParcelVisitor = new ReadReferenceVisitor();
@@ -198,9 +197,6 @@ public class ParcelableGenerator {
         JClass returnJClassRef = generationUtil.ref(type);
         if (parceableModifier.containsKey(type)) {
             return parcelParam.invoke(parceableModifier.get(type).getReadMethod());
-        } else if (arrayParceableModfier.containsKey(type)) {
-            ReadWritePair readWritePair = arrayParceableModfier.get(type);
-            return JExpr.invoke(parcelParam, readWritePair.getReadMethod());
         } else if (classLoaderModifier.containsKey(type)) {
             ReadWritePair readWritePair = classLoaderModifier.get(type);
             return parcelParam.invoke(readWritePair.getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
@@ -223,8 +219,6 @@ public class ParcelableGenerator {
 
         if (parceableModifier.containsKey(type)) {
             body.invoke(parcel, parceableModifier.get(type).getWriteMethod()).arg(getExpression);
-        } else if (arrayParceableModfier.containsKey(type)) {
-            body.invoke(parcel, arrayParceableModfier.get(type).getWriteMethod()).arg(getExpression);
         } else if (classLoaderModifier.containsKey(type)) {
             body.invoke(parcel, classLoaderModifier.get(type).getWriteMethod()).arg(getExpression);
         } else if (type.implementsFrom(astClassFactory.getType(Parcelable.class))) {
@@ -268,7 +262,7 @@ public class ParcelableGenerator {
         addPrimitiveArrayPair(ASTPrimitiveType.BYTE, "createByteArray", "writeByteArray");
         addPrimitiveArrayPair(ASTPrimitiveType.CHAR, "createCharArray", "writeCharArray");
         addPrimitiveArrayPair(ASTPrimitiveType.BOOLEAN, "createBooleanArray", "writeBooleanArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.INT, "createByteArray", "writeIntArray");
+        addPrimitiveArrayPair(ASTPrimitiveType.INT, "createIntArray", "writeIntArray");
         addPrimitiveArrayPair(ASTPrimitiveType.LONG, "createLongArray", "writeLongArray");
         addPrimitiveArrayPair(ASTPrimitiveType.FLOAT, "createFloatArray", "writeFloatArray");
         addPrimitiveArrayPair(ASTPrimitiveType.DOUBLE, "createDoubleArray", "writeDoubleArray");
@@ -301,7 +295,7 @@ public class ParcelableGenerator {
     }
 
     private void addArrayPair(ASTType astArrayType, String readMethod, String writeMethod) {
-        arrayParceableModfier.put(astArrayType, new ReadWritePair(readMethod, writeMethod));
+        parceableModifier.put(astArrayType, new ReadWritePair(readMethod, writeMethod));
     }
 
     private void addPrimitivePair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {
