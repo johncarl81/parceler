@@ -148,7 +148,7 @@ public class ParcelableAnalysisTest {
             }
         }
 
-        @Parcel(Converter.class)
+        @Parcel(converter = Converter.class)
         class Target {
         }
 

@@ -18,7 +18,7 @@ package org.parceler;
 /**
  * @author John Ericksen
  */
-@Parcel
+@Parcel(Parcel.Serialization.FIELD)
 public class ExampleParcel {
     private String one;
     private int two;

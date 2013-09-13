@@ -20,6 +20,7 @@ import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.ASTVoidType;
 import org.androidtransfuse.validation.Validator;
+import org.parceler.Parcel;
 import org.parceler.Transient;
 
 import javax.inject.Inject;
@@ -53,6 +54,14 @@ public class ParcelableAnalysis {
     }
 
     private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter) {
+
+        Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
+
+        if(parcelAnnotation != null){
+            Parcel.Serialization serialization = parcelAnnotation.value();
+
+            System.out.println("Serialization: " + serialization);
+        }
 
         ParcelableDescriptor parcelableDescriptor;
 
