@@ -1,33 +1,51 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.JBlock;
-import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JFieldVar;
-import org.androidtransfuse.util.TransfuseRuntimeException;
+import org.androidtransfuse.gen.InvocationBuilder;
+
+import javax.inject.Inject;
+import java.util.Collections;
 
 /**
  * @author John Ericksen
  */
 public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void> {
 
+    private InvocationBuilder invocationBuilder;
+
+    @Inject
+    public ReadReferenceVisitor(InvocationBuilder invocationBuilder) {
+        this.invocationBuilder = invocationBuilder;
+    }
+
     @Override
     public Void visit(FieldReference fieldReference, ReadContext input) {
         JBlock body = input.getBody();
-        JFieldVar wrapped = input.getWrapped();
-        JExpression getExpression = input.getGetExpression();
 
-        //todo: generic field access
-        body.assign(wrapped.ref(fieldReference.getField().getName()), getExpression);
+        body.add(invocationBuilder.buildFieldSet(
+                fieldReference.getField().getAccessModifier(),
+                fieldReference.getField().getASTType(),
+                input.getGetExpression(),
+                input.getGetExpressionType(),
+                fieldReference.getField().getName(),
+                fieldReference.getType(),
+                input.getWrapped()
+        ));
         return null;
     }
 
     @Override
     public Void visit(MethodReference methodReference, ReadContext input) {
         JBlock body = input.getBody();
-        JFieldVar wrapped = input.getWrapped();
-        JExpression getExpression = input.getGetExpression();
 
-        body.invoke(wrapped, methodReference.getMethod().getName()).arg(getExpression);
+        body.add(invocationBuilder.buildMethodCall(
+                methodReference.getMethod().getAccessModifier(),
+                methodReference.getMethod().getReturnType(),
+                methodReference.getMethod().getName(),
+                Collections.singletonList(input.getGetExpression()),
+                Collections.singletonList(input.getGetExpressionType()),
+                methodReference.getType(),
+                input.getWrapped()));
         return null;
     }
 }
