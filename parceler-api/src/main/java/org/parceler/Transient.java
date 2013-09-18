@@ -27,6 +27,6 @@ import java.lang.annotation.Target;
  *
  * @author John Ericksen
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Transient {}

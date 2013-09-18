@@ -45,7 +45,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testBasic() {
-        @Parcel
+        @Parcel(Parcel.Serialization.METHOD)
         class Basic {
             String stringValue;
             int intValue;
@@ -78,7 +78,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testMissingSetter() {
-        @Parcel
+        @Parcel(Parcel.Serialization.METHOD)
         class MissingSetter {
             String stringValue;
             int intValue;
@@ -107,7 +107,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testMissingGetter() {
-        @Parcel
+        @Parcel(Parcel.Serialization.METHOD)
         class MissingGetter {
             String stringValue;
             int intValue;
@@ -161,7 +161,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testTransient() {
-        @Parcel
+        @Parcel(Parcel.Serialization.METHOD)
         class Basic {
             String stringValue;
             int intValue;

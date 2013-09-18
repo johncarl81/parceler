@@ -16,6 +16,7 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.TransfuseAnalysisException;
+import org.androidtransfuse.adapter.ASTField;
 import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.ASTVoidType;
@@ -56,18 +57,14 @@ public class ParcelableAnalysis {
     private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter) {
 
         Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
-
-        if(parcelAnnotation != null){
-            Parcel.Serialization serialization = parcelAnnotation.value();
-
-            System.out.println("Serialization: " + serialization);
-        }
+        Parcel.Serialization serialization = parcelAnnotation != null ? parcelAnnotation.value() : null;
 
         ParcelableDescriptor parcelableDescriptor;
 
         if (converter != null) {
             parcelableDescriptor = new ParcelableDescriptor(converter);
-        } else {
+        }
+        else if(Parcel.Serialization.METHOD.equals(serialization)) {
             Map<String, ASTMethod> methodNameMap = new HashMap<String, ASTMethod>();
             parcelableDescriptor = new ParcelableDescriptor();
 
@@ -82,7 +79,7 @@ public class ParcelableAnalysis {
                     ASTMethod setterMethod = methodNameMap.get(setterName);
 
                     if (setterMethod != null && !setterMethod.isAnnotated(Transient.class)) {
-                        if (setterMethod.getParameters().size() > 1){
+                        if (setterMethod.getParameters().size() < 1){
                             validator.error("Setter has too few parameters.")
                                     .element(astMethod).build();
                         }
@@ -92,12 +89,20 @@ public class ParcelableAnalysis {
                         }
                         else if(!setterMethod.getParameters().get(0).getASTType().equals(astMethod.getReturnType())) {
                             validator.error("Setter parameter does not match corresponding Getter return type")
-                                            .element(astMethod).build();
+                                    .element(astMethod).build();
                         }
                         else{
                             parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(getPropertyName(astMethod), new MethodReference(astMethod.getReturnType(), setterMethod), new MethodReference(astMethod.getReturnType(), astMethod)));
                         }
                     }
+                }
+            }
+        }
+        else { // default FIELD case
+            parcelableDescriptor = new ParcelableDescriptor();
+            for(ASTField astField : astType.getFields()){
+                if(!astField.isAnnotated(Transient.class)){
+                    parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(astField.getName(), new FieldReference(astField), new FieldReference(astField)));
                 }
             }
         }
