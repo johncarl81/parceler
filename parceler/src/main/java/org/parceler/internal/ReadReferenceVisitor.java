@@ -25,11 +25,11 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
         body.add(invocationBuilder.buildFieldSet(
                 fieldReference.getField().getAccessModifier(),
                 fieldReference.getField().getASTType(),
-                input.getGetExpression(),
-                input.getGetExpressionType(),
-                fieldReference.getField().getName(),
+                input.getWrapped(),
                 fieldReference.getType(),
-                input.getWrapped()
+                fieldReference.getField().getName(),
+                input.getGetExpressionType(),
+                input.getGetExpression()
         ));
         return null;
     }

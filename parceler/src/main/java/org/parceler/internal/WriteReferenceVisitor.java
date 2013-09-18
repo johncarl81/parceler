@@ -24,7 +24,7 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
         JFieldVar wrapped = input.getWrapped();
 
         return invocationBuilder.buildFieldGet(
-                input.getType(),
+                fieldReference.getType(),
                 input.getType(),
                 wrapped,
                 fieldReference.getField().getName(),
