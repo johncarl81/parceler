@@ -25,4 +25,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParcelProperty {}
+public @interface ParcelProperty {
+    String value();
+}

@@ -29,4 +29,8 @@ public class ConstructorReference {
     public AccessibleReference getWriteReference(ASTParameter parameter) {
         return writeReferences.get(parameter);
     }
+
+    public Map<ASTParameter, AccessibleReference> getWriteReferences() {
+        return writeReferences;
+    }
 }
