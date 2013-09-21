@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.parceler.internal;
+package org.parceler;
 
-import org.parceler.Parcel;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author John Ericksen
  */
-@Parcel(Parcel.Serialization.METHOD)
-public class ParcelSecondTarget {
-
-    private String value;
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-}
+@Target(ElementType.CONSTRUCTOR)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ParcelConstructor {}

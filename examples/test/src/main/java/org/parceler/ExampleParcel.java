@@ -18,12 +18,12 @@ package org.parceler;
 /**
  * @author John Ericksen
  */
-@Parcel
+@Parcel(Parcel.Serialization.FIELD)
 public class ExampleParcel {
-    private String one;
-    private int two;
-    private long three;
-    private SubParcel four;
+    String one;
+    int two;
+    long three;
+    SubParcel four;
 
     public ExampleParcel(){
         //empty bean constructor

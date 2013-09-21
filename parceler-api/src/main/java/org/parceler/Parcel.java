@@ -59,10 +59,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Parcel {
 
+    Serialization value() default Serialization.FIELD;
+
+    enum Serialization {
+        FIELD,
+        METHOD
+    }
+
     /**
      * Optional Converter class.
      */
-    Class<? extends ParcelConverter> value() default EmptyConverter.class;
+    Class<? extends ParcelConverter> converter() default EmptyConverter.class;
 
     /**
      * Noop ParcelConverter used as a empty placeholder for the Parcel.value annotation parameter.  Performs no mapping

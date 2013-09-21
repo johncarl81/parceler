@@ -18,7 +18,7 @@ package org.parceler;
 /**
  * @author John Ericksen
  */
-@Parcel(ManualConverter.class)
+@Parcel(converter = ManualConverter.class)
 public class Manual {
 
     private String value;
