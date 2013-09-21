@@ -68,6 +68,33 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
+    private static class TransientFieldSerialization {
+        @Transient
+        String value;
+
+        private String getValue() {
+            return value;
+        }
+
+        private void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testTransientFieldSerialization(){
+
+        ASTType fieldType = astClassFactory.getType(TransientFieldSerialization.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNull(analysis.getConstructorPair());
+        assertFalse(fieldsContain(analysis.getFieldPairs(), "value"));
+    }
+
+    @Parcel
     private static class ConstructorSerialization {
         String value;
 
