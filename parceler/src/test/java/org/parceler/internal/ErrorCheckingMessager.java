@@ -24,24 +24,37 @@ import javax.tools.Diagnostic;
 /**
  * @author John Ericksen
  */
-public class NoOpMessager implements Messager {
+public class ErrorCheckingMessager implements Messager {
+
+    private boolean errored = false;
+
     @Override
     public void printMessage(Diagnostic.Kind kind, CharSequence charSequence) {
-        //noop
+        checkError(kind);
     }
 
     @Override
     public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element) {
-        //noop
+        checkError(kind);
     }
 
     @Override
     public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element, AnnotationMirror annotationMirror) {
-        //noop
+        checkError(kind);
     }
 
     @Override
     public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element, AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
-        //noop
+        checkError(kind);
+    }
+
+    private void checkError(Diagnostic.Kind kind){
+        if(Diagnostic.Kind.ERROR.equals(kind)){
+            errored = true;
+        }
+    }
+
+    public boolean isErrored(){
+        return errored;
     }
 }

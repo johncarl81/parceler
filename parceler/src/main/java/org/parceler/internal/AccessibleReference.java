@@ -9,5 +9,7 @@ public interface AccessibleReference extends Reference{
 
     ASTType getType();
 
+    String getName();
+
     <T, R> R accept(ReferenceVisitor<T, R> visitor, T input);
 }

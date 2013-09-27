@@ -87,36 +87,34 @@ public class ParcelableAnalysis {
             validateSingleProperty(combine(defaultReadMethods, propertyReadMethods));
             validateSingleProperty(combine(defaultFields, propertyFields));
 
-            //todo: check for colliding properties
-
             Map<String, AccessibleReference> readReferences = new HashMap<String, AccessibleReference>();
             Map<String, FieldReference> fieldWriteReferences = new HashMap<String, FieldReference>();
             Map<String, MethodReference> methodWriteReferences = new HashMap<String, MethodReference>();
 
             for (Map.Entry<String, List<ASTMethod>> methodEntry : defaultReadMethods.entrySet()) {
-                readReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getValue().get(0).getReturnType(), methodEntry.getValue().get(0)));
+                readReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getKey(), methodEntry.getValue().get(0).getReturnType(), methodEntry.getValue().get(0)));
             }
             //overwrite with field accessor
             for (Map.Entry<String, List<ASTField>> fieldEntry : defaultFields.entrySet()) {
-                readReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getValue().get(0)));
-                fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getValue().get(0)));
+                readReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getKey(), fieldEntry.getValue().get(0)));
+                fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getKey(), fieldEntry.getValue().get(0)));
             }
             //overwrite with property methods
             for (Map.Entry<String, List<ASTMethod>> methodEntry : propertyReadMethods.entrySet()) {
-                readReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getValue().get(0).getReturnType(), methodEntry.getValue().get(0)));
+                readReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getKey(), methodEntry.getValue().get(0).getReturnType(), methodEntry.getValue().get(0)));
             }
             //overwrite with property fields
             for (Map.Entry<String, List<ASTField>> fieldEntry : propertyFields.entrySet()) {
-                readReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getValue().get(0)));
-                fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getValue().get(0)));
+                readReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getKey(), fieldEntry.getValue().get(0)));
+                fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(fieldEntry.getKey(), fieldEntry.getValue().get(0)));
             }
             //default write via methods
             for (Map.Entry<String, List<ASTMethod>> methodEntry : defaultWriteMethods.entrySet()) {
-                methodWriteReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getValue().get(0).getParameters().get(0).getASTType(), methodEntry.getValue().get(0)));
+                methodWriteReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getKey(), methodEntry.getValue().get(0).getParameters().get(0).getASTType(), methodEntry.getValue().get(0)));
             }
             //overwrite with property methods
             for (Map.Entry<String, List<ASTMethod>> methodEntry : propertyWriteMethods.entrySet()) {
-                methodWriteReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getValue().get(0).getParameters().get(0).getASTType(), methodEntry.getValue().get(0)));
+                methodWriteReferences.put(methodEntry.getKey(), new MethodReference(methodEntry.getKey(), methodEntry.getValue().get(0).getParameters().get(0).getASTType(), methodEntry.getValue().get(0)));
             }
 
             parcelableDescriptor = new ParcelableDescriptor();
@@ -133,19 +131,21 @@ public class ParcelableAnalysis {
                 parcelableDescriptor.setConstructorPair(constructorReference);
             }
 
-            //fields
-            for (Map.Entry<String, FieldReference> fieldReferenceEntry : fieldWriteReferences.entrySet()) {
-                if(!writeParameters.containsKey(fieldReferenceEntry.getKey()) && readReferences.containsKey(fieldReferenceEntry.getKey())){
-                    validateReadReference(readReferences, fieldReferenceEntry.getValue().getField(), fieldReferenceEntry.getKey());
-                    parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(fieldReferenceEntry.getKey(), fieldReferenceEntry.getValue(), readReferences.get(fieldReferenceEntry.getKey())));
-                }
-            }
-
             //methods
             for (Map.Entry<String, MethodReference> methodReferenceEntry : methodWriteReferences.entrySet()) {
                 if(!writeParameters.containsKey(methodReferenceEntry.getKey()) && readReferences.containsKey(methodReferenceEntry.getKey())){
                     validateReadReference(readReferences, methodReferenceEntry.getValue().getMethod(), methodReferenceEntry.getKey());
                     parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(methodReferenceEntry.getKey(), methodReferenceEntry.getValue(), readReferences.get(methodReferenceEntry.getKey())));
+                }
+            }
+
+            //fields
+            for (Map.Entry<String, FieldReference> fieldReferenceEntry : fieldWriteReferences.entrySet()) {
+                if(!writeParameters.containsKey(fieldReferenceEntry.getKey()) &&
+                        !methodWriteReferences.containsKey(fieldReferenceEntry.getKey()) &&
+                        readReferences.containsKey(fieldReferenceEntry.getKey())){
+                    validateReadReference(readReferences, fieldReferenceEntry.getValue().getField(), fieldReferenceEntry.getKey());
+                    parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(fieldReferenceEntry.getKey(), fieldReferenceEntry.getValue(), readReferences.get(fieldReferenceEntry.getKey())));
                 }
             }
         }
