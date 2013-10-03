@@ -5,24 +5,25 @@
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
 
 In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
-http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization Percelables take on the
+http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization, Parcelables take on the
 order of 10x less time to both serialize and deserialize.  There is a major flaw with Parcelables, however.
 Parcelables contain a ton of boilerplate code.
 To implement a Parcelable, you must mirror the +writeToParcel()+ and +createFromParcel()+ methods such that they read and write to the Parcel in the same order.
 Also, a Parcelable must define a +public final static Parcelable.Creator CREATOR+ in order for the Android infrastructure to be able to leverage the serialization code.
 
 Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
-No longer do you have to implement the Parcelable interface, the writeToParcel or createFromParcel() or the public static final CREATOR.
+No longer do you have to implement the Parcelable interface, the +writeToParcel()+ or +createFromParcel()+ or the +public static final CREATOR+.
 You simply annotate a POJO with +@Parcel+ and Parceler does the rest.
 Because Parceler uses the Java JSR-269 Annotation Processor, there is no need to run a tool manually to generate the Parcelable code.
-Just annotate your Java Bean and you are finished:
+Just annotate your Java Bean, compile and you are finished.
+By default, Parceler will serialize the fields of your instance directly:
 
 [source,java]
 ----
 @Parcel
 public class Example {
-    private String name;
-    private int age;
+    String name;
+    int age;
 
     public Example(){ /*Required empty bean constructor*/ }
 
@@ -32,12 +33,12 @@ public class Example {
     }
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
     public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
 }
 ----
+
+Be careful not to use private fields when using the default field serialization strategy as it will incur a performance penalty due to reflection.
 
 To use the generated code, you may reference the generated class directly, or via the +Parcels+ utility class:
 
@@ -93,8 +94,75 @@ types:
  * +Exception+
  * Other classes annotated with +@Parcel+
 
-Each attribute must have a Java Bean standard getter and setter.  For attributes that should not be serialized with
-Parceler, the attribute getter or setter may be annotated by +@Transient+.
+Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
+In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.
+This supports a number of bean strategies including immutability and traditional getter/setter beans.
+
+To configure default method serialization, simply configure the +@Parcel+ annotation with +Serialization.METHOD+:
+
+[source,java]
+----
+@Parcel(Serialization.METHOD)
+public class Example {
+    private String name;
+    private int age;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+----
+
+To use a constructor with serialization, annotate the desired constructor with the +@ParcelConstructor+ annotation:
+
+[source,java]
+----
+@Parcel(Serialization.METHOD)
+public class Example {
+    private final String name;
+    private final int age;
+
+    @ParcelConstructor
+    public Example(int age, String name) {
+        this.age = age;
+        this.name = name;
+    }
+
+    public String getName() { return name; }
+
+    public int getAge() { return age; }
+}
+----
+
+You may also mix and match serialization techniques using the +@ParcelParameter+ annotation.
+In the following example, +firstName+ and +lastName+ are written to the bean using the constructor while +firstName+
+is read from the bean using the field and +lastName+ is read using the +getLastName()+ method.  The paramters +firstName+
+and +lastName+ are coordinated by the parameter names +"first"+ and +"last"+ respectfully.
+
+[source,java]
+----
+@Parcel
+public class Example {
+    @ParcelParameter("first")
+    String firstName;
+    String lastName;
+
+    @ParcelConstructor
+    public Example(@ParcelParam("first") String firstName, @ParcelParam("last") String lastName){
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() { return firstName; }
+
+    @ParcelParameter("last");
+    public int getLastName() { return lastName; }
+}
+----
+
+For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by +@Transient+.
 
 +@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
 serialization is necessary.  Ths provides a still cleaner option for using Parcelable classes than implementing them by
@@ -108,7 +176,7 @@ instance, one could include the +@ParcelClass+ along with the Android Applicatio
 ----
 @ParcelClass(LibraryParcel.class)
 public class AndroidApplication extends Application{
-
+    //...
 }
 ----
 
