@@ -1,12 +1,7 @@
 package org.parceler;
 
-import android.os.*;
-import android.os.Parcel;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
+import android.os.Parcelable;
 import org.junit.Test;
-
-import java.io.FileDescriptor;
 
 import static junit.framework.Assert.assertEquals;
 

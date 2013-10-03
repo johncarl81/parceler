@@ -1,10 +1,5 @@
 package org.parceler;
 
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
-
 /**
  * @author John Ericksen
  */
