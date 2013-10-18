@@ -36,8 +36,7 @@ import javax.lang.model.util.Elements;
 @Bindings({
         @Bind(type = InvocationBuilderStrategy.class, to = DefaultInvocationBuilderStrategy.class),
         @Bind(type = Elements.class, to = NoOpElements.class),
-        @Bind(type = Filer.class, to = NoOpFiler.class),
-        @Bind(type = Messager.class, to = NoOpMessager.class)
+        @Bind(type = Filer.class, to = NoOpFiler.class)
 })
 @Install({
         ASTFactory.class,
@@ -51,5 +50,16 @@ public class TestParcelerModule {
     @Singleton
     public JCodeModel getCodeModel(){
         return new JCodeModel();
+    }
+
+    @Provides
+    @Singleton
+    public ErrorCheckingMessager getMessager(){
+        return new ErrorCheckingMessager();
+    }
+
+    @Provides
+    public Messager getMessager(ErrorCheckingMessager messager){
+        return messager;
     }
 }

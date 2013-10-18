@@ -19,6 +19,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.annotations.Bind;
 import org.androidtransfuse.annotations.DefineScope;
 import org.androidtransfuse.annotations.Install;
 import org.androidtransfuse.annotations.Provides;
@@ -27,6 +28,7 @@ import org.androidtransfuse.bootstrap.Namespace;
 import org.androidtransfuse.gen.FilerResourceWriter;
 import org.androidtransfuse.gen.FilerSourceCodeWriter;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
+import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
@@ -43,6 +45,7 @@ import java.util.Map;
 
 @BootstrapModule
 @DefineScope(annotation = CodeGenerationScope.class, scope = ThreadLocalScope.class)
+@Bind(type = InvocationBuilderStrategy.class, to = ParcelerInvocationBuilderStrategy.class)
 @Install({
         ASTFactory.class,
         VariableExpressionBuilderFactory.class,

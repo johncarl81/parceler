@@ -23,12 +23,11 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import com.sun.codemodel.*;
 import org.androidtransfuse.TransfuseAnalysisException;
-import org.androidtransfuse.adapter.ASTArrayType;
-import org.androidtransfuse.adapter.ASTPrimitiveType;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
+import org.androidtransfuse.gen.InvocationBuilder;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
@@ -36,7 +35,9 @@ import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -58,18 +59,31 @@ public class ParcelableGenerator {
     private final ASTClassFactory astClassFactory;
     private final ClassGenerationUtil generationUtil;
     private final ExternalParcelRepository externalParcelRepository;
-    private final Map<ASTType, ReadWritePair> arrayParceableModfier = new HashMap<ASTType, ReadWritePair>();
+    private final ReadReferenceVisitor readFromParcelVisitor;
+    private final WriteReferenceVisitor writeToParcelVisitor;
+    private final InvocationBuilder invocationBuilder;
     private final Map<ASTType, ReadWritePair> parceableModifier = new HashMap<ASTType, ReadWritePair>();
     private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
 
     @Inject
-    public ParcelableGenerator(JCodeModel codeModel, UniqueVariableNamer variableNamer, ClassNamer classNamer, ASTClassFactory astClassFactory, ClassGenerationUtil generationUtil, ExternalParcelRepository externalParcelRepository) {
+    public ParcelableGenerator(JCodeModel codeModel,
+                               UniqueVariableNamer variableNamer,
+                               ClassNamer classNamer,
+                               ASTClassFactory astClassFactory,
+                               ClassGenerationUtil generationUtil,
+                               ExternalParcelRepository externalParcelRepository,
+                               ReadReferenceVisitor readFromParcelVisitor,
+                               WriteReferenceVisitor writeToParcelVisitor,
+                               InvocationBuilder invocationBuilder) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
         this.classNamer = classNamer;
         this.astClassFactory = astClassFactory;
         this.generationUtil = generationUtil;
         this.externalParcelRepository = externalParcelRepository;
+        this.readFromParcelVisitor = readFromParcelVisitor;
+        this.writeToParcelVisitor = writeToParcelVisitor;
+        this.invocationBuilder = invocationBuilder;
 
         setup();
     }
@@ -98,15 +112,27 @@ public class ParcelableGenerator {
 
             if (parcelableDescriptor.getParcelConverterType() == null) {
 
-                parcelConstructorBody.assign(wrapped, JExpr._new(inputType));
-
-                //read from parcel
-                for (GetterSetterMethodPair propertyMutator : parcelableDescriptor.getGetterSetterPairs()) {
-                    buildReadFromParcel(parcelableClass, parcelConstructorBody, wrapped, propertyMutator, parcelParam);
+                //constructor
+                if(parcelableDescriptor.getConstructorPair() == null){
+                    JInvocation constructorInvocation = JExpr._new(inputType);
+                    parcelConstructorBody.assign(wrapped, constructorInvocation);
                 }
-
-                for (GetterSetterMethodPair propertyMutator : parcelableDescriptor.getGetterSetterPairs()) {
-                    buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, propertyMutator, wrapped);
+                else {
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, parcelableDescriptor.getConstructorPair(), parcelParam);
+                    for(ASTParameter parameter : parcelableDescriptor.getConstructorPair().getConstructor().getParameters()){
+                        AccessibleReference reference = parcelableDescriptor.getConstructorPair().getWriteReference(parameter);
+                        buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, reference, type, wrapped);
+                    }
+                }
+                //field
+                for (ReferencePair<FieldReference> fieldPair : parcelableDescriptor.getFieldPairs()) {
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, wrapped, fieldPair.getSetter(), parcelParam);
+                    buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, fieldPair.getAccessor(), type, wrapped);
+                }
+                //method
+                for (ReferencePair<MethodReference> methodPair : parcelableDescriptor.getMethodPairs()) {
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, wrapped, methodPair.getSetter(), parcelParam);
+                    buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, methodPair.getAccessor(), type, wrapped);
                 }
             } else {
                 JClass converterType = generationUtil.ref(parcelableDescriptor.getParcelConverterType());
@@ -162,67 +188,69 @@ public class ParcelableGenerator {
         }
     }
 
-    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, GetterSetterMethodPair propertyGetter, JVar parcelParam) {
-        ASTType returnType = propertyGetter.getGetter().getReturnType();
-        JClass returnJClassRef = generationUtil.ref(returnType);
-        if (parceableModifier.containsKey(returnType)) {
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
-                    .arg(parcelParam.invoke(parceableModifier.get(returnType).getReadMethod()));
-        } else if (arrayParceableModfier.containsKey(returnType)) {
-            ReadWritePair readWritePair = arrayParceableModfier.get(returnType);
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName()).arg(JExpr.invoke(parcelParam, readWritePair.getReadMethod()));
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, MethodReference propertyAccessor, JVar parcelParam) {
+        //invocation
+        propertyAccessor.accept(readFromParcelVisitor,
+                new ReadContext(parcelConstructorBody, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelParam, parcelableClass, propertyAccessor.getType())));
+    }
 
-        } else if (classLoaderModifier.containsKey(returnType)) {
-            ReadWritePair readWritePair = classLoaderModifier.get(returnType);
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
-                    .arg(parcelParam.invoke(readWritePair.getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader")));
-        } else if (returnType.implementsFrom(astClassFactory.getType(Parcelable.class))) {
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
-                    .arg(JExpr.cast(returnJClassRef, parcelParam.invoke("readParcelable").arg(returnJClassRef.dotclass().invoke("getClassLoader"))));
-        } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
-                    .arg(JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable")));
-        } else if (returnType.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(returnType)) {
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, FieldReference propertyAccessor, JVar parcelParam) {
+        //invocation
+        propertyAccessor.accept(readFromParcelVisitor,
+                new ReadContext(parcelConstructorBody, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelParam, parcelableClass, propertyAccessor.getType())));
+    }
+    
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody,ASTType wrappedType,  JFieldVar wrapped, ConstructorReference propertyAccessor, JVar parcelParam){
 
-            JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(returnType));
+        ASTConstructor constructor = propertyAccessor.getConstructor();
+        List<ASTType> parameterTypes = new ArrayList<ASTType>();
+        List<JExpression> inputExpression = new ArrayList<JExpression>();
 
-            parcelConstructorBody.invoke(wrapped, propertyGetter.getSetter().getName())
-                    .arg(((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke("readParcelable")
-                            .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL));
+        for (ASTParameter parameter : constructor.getParameters()) {
+            parameterTypes.add(parameter.getASTType());
+            inputExpression.add(buildReadFromParcelExpression(parcelParam, parcelableClass, parameter.getASTType()));
+        }
+
+        parcelConstructorBody.assign(wrapped, invocationBuilder.buildConstructorCall(constructor.getAccessModifier(), parameterTypes, inputExpression, wrappedType));
+    }
+
+    private JExpression buildReadFromParcelExpression(JVar parcelParam, JDefinedClass parcelableClass, ASTType type){
+        JClass returnJClassRef = generationUtil.ref(type);
+        if (parceableModifier.containsKey(type)) {
+            return parcelParam.invoke(parceableModifier.get(type).getReadMethod());
+        } else if (classLoaderModifier.containsKey(type)) {
+            ReadWritePair readWritePair = classLoaderModifier.get(type);
+            return parcelParam.invoke(readWritePair.getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
+        } else if (type.implementsFrom(astClassFactory.getType(Parcelable.class))) {
+            return JExpr.cast(returnJClassRef, parcelParam.invoke("readParcelable").arg(returnJClassRef.dotclass().invoke("getClassLoader")));
+        } else if (type.inheritsFrom(astClassFactory.getType(Serializable.class))) {
+            return JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable"));
+        } else if (type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type)) {
+            JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(type));
+           return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke("readParcelable")
+                    .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL);
         } else {
-            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to read " + returnType.getName());
+            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to read " + type.getName());
         }
     }
 
-    private void buildWriteToParcel(JBlock body, JVar parcel, JVar flags, GetterSetterMethodPair propertyMutator, JFieldVar wrapped) {
-        ASTType returnType = propertyMutator.getGetter().getReturnType();
-        if (parceableModifier.containsKey(returnType)) {
-            body.invoke(parcel,
-                    parceableModifier.get((propertyMutator.getGetter().getReturnType())).getWriteMethod())
-                    .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (arrayParceableModfier.containsKey(returnType)) {
-            body.invoke(parcel,
-                    arrayParceableModfier.get((propertyMutator.getGetter().getReturnType())).getWriteMethod())
-                    .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (classLoaderModifier.containsKey(returnType)) {
-            body.invoke(parcel,
-                    classLoaderModifier.get((propertyMutator.getGetter().getReturnType())).getWriteMethod())
-                    .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (returnType.implementsFrom(astClassFactory.getType(Parcelable.class))) {
-            body.invoke(parcel, "writeParcelable")
-                    .arg(wrapped.invoke(propertyMutator.getGetter().getName())).arg(flags);
-        } else if (returnType.inheritsFrom(astClassFactory.getType(Serializable.class))) {
-            body.invoke(parcel, "writeSerializable")
-                    .arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-        } else if (returnType.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(returnType)) {
+    private void buildWriteToParcel(JBlock body, JVar parcel, JVar flags, AccessibleReference reference, ASTType wrappedType, JFieldVar wrapped) {
+        ASTType type = reference.getType();
+        JExpression getExpression = reference.accept(writeToParcelVisitor, new WriteContext(wrapped, wrappedType));
 
-            JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME)
-                    .staticInvoke(WRAP_METHOD).arg(wrapped.invoke(propertyMutator.getGetter().getName()));
-
-            body.invoke(parcel, "writeParcelable").arg(wrappedParcel)
-                    .arg(flags);
+        if (parceableModifier.containsKey(type)) {
+            body.invoke(parcel, parceableModifier.get(type).getWriteMethod()).arg(getExpression);
+        } else if (classLoaderModifier.containsKey(type)) {
+            body.invoke(parcel, classLoaderModifier.get(type).getWriteMethod()).arg(getExpression);
+        } else if (type.implementsFrom(astClassFactory.getType(Parcelable.class))) {
+            body.invoke(parcel, "writeParcelable").arg(getExpression).arg(flags);
+        } else if (type.inheritsFrom(astClassFactory.getType(Serializable.class))) {
+            body.invoke(parcel, "writeSerializable").arg(getExpression);
+        } else if (type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type)) {
+            JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME).staticInvoke(WRAP_METHOD).arg(getExpression);
+            body.invoke(parcel, "writeParcelable").arg(wrappedParcel).arg(flags);
         } else {
-            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to write " + returnType.getName());
+            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to write " + type.getName());
         }
     }
 
@@ -253,7 +281,7 @@ public class ParcelableGenerator {
         addPrimitiveArrayPair(ASTPrimitiveType.BYTE, "createByteArray", "writeByteArray");
         addPrimitiveArrayPair(ASTPrimitiveType.CHAR, "createCharArray", "writeCharArray");
         addPrimitiveArrayPair(ASTPrimitiveType.BOOLEAN, "createBooleanArray", "writeBooleanArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.INT, "createByteArray", "writeIntArray");
+        addPrimitiveArrayPair(ASTPrimitiveType.INT, "createIntArray", "writeIntArray");
         addPrimitiveArrayPair(ASTPrimitiveType.LONG, "createLongArray", "writeLongArray");
         addPrimitiveArrayPair(ASTPrimitiveType.FLOAT, "createFloatArray", "writeFloatArray");
         addPrimitiveArrayPair(ASTPrimitiveType.DOUBLE, "createDoubleArray", "writeDoubleArray");
@@ -286,7 +314,7 @@ public class ParcelableGenerator {
     }
 
     private void addArrayPair(ASTType astArrayType, String readMethod, String writeMethod) {
-        arrayParceableModfier.put(astArrayType, new ReadWritePair(readMethod, writeMethod));
+        parceableModifier.put(astArrayType, new ReadWritePair(readMethod, writeMethod));
     }
 
     private void addPrimitivePair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {

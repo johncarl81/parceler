@@ -6,7 +6,7 @@
     <version>0.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Transfuse Integration Test</name>
+    <name>Parceler Integration Test</name>
 
     <parent>
         <groupId>org.parceler</groupId>

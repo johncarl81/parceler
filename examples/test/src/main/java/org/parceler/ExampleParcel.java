@@ -20,15 +20,12 @@ package org.parceler;
  */
 @Parcel
 public class ExampleParcel {
-    private String one;
-    private int two;
-    private long three;
-    private SubParcel four;
+    String one;
+    int two;
+    long three;
+    SubParcel four;
 
-    public ExampleParcel(){
-        //empty bean constructor
-    }
-
+    @ParcelConstructor
     public ExampleParcel(String one, int two, long three, SubParcel four) {
         this.one = one;
         this.two = two;
