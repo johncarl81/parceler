@@ -56,7 +56,8 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
     private ASTType getConverterType(ASTType astType) {
         ASTAnnotation astAnnotation = astType.getASTAnnotation(Parcel.class);
         if(astAnnotation != null){
-            ASTType converterType = astAnnotation.getProperty("value", ASTType.class);
+
+            ASTType converterType = astAnnotation.getProperty("converter", ASTType.class);
             ASTType emptyConverterType = astClassFactory.getType(Parcel.EmptyConverter.class);
             if(!emptyConverterType.equals(converterType)){
                 return converterType;
