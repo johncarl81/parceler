@@ -29,14 +29,17 @@ import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.InvocationBuilder;
 import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.androidtransfuse.util.matcher.Matcher;
+import org.androidtransfuse.util.matcher.Matchers;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
+import org.parceler.ParcelerRuntimeException;
 import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,8 +65,8 @@ public class ParcelableGenerator {
     private final ReadReferenceVisitor readFromParcelVisitor;
     private final WriteReferenceVisitor writeToParcelVisitor;
     private final InvocationBuilder invocationBuilder;
-    private final Map<ASTType, ReadWritePair> parceableModifier = new HashMap<ASTType, ReadWritePair>();
-    private final Map<ASTType, ReadWritePair> classLoaderModifier = new HashMap<ASTType, ReadWritePair>();
+
+    private final Map<Matcher<ASTType>, ReadWriteGenerator> generators = new LinkedHashMap<Matcher<ASTType>, ReadWriteGenerator>();
 
     @Inject
     public ParcelableGenerator(JCodeModel codeModel,
@@ -216,59 +219,180 @@ public class ParcelableGenerator {
 
     private JExpression buildReadFromParcelExpression(JVar parcelParam, JDefinedClass parcelableClass, ASTType type){
         JClass returnJClassRef = generationUtil.ref(type);
-        if (parceableModifier.containsKey(type)) {
-            return parcelParam.invoke(parceableModifier.get(type).getReadMethod());
-        } else if (classLoaderModifier.containsKey(type)) {
-            ReadWritePair readWritePair = classLoaderModifier.get(type);
-            return parcelParam.invoke(readWritePair.getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
-        } else if (type.implementsFrom(astClassFactory.getType(Parcelable.class))) {
-            return JExpr.cast(returnJClassRef, parcelParam.invoke("readParcelable").arg(returnJClassRef.dotclass().invoke("getClassLoader")));
-        } else if (type.inheritsFrom(astClassFactory.getType(Serializable.class))) {
-            return JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable"));
-        } else if (type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type)) {
-            JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(type));
-           return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke("readParcelable")
-                    .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL);
-        } else {
-            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to read " + type.getName());
-        }
+
+        ReadWriteGenerator generator = getGenerator(type);
+
+        return generator.generateReader(parcelParam, type, returnJClassRef, parcelableClass);
     }
 
     private void buildWriteToParcel(JBlock body, JVar parcel, JVar flags, AccessibleReference reference, ASTType wrappedType, JFieldVar wrapped) {
         ASTType type = reference.getType();
         JExpression getExpression = reference.accept(writeToParcelVisitor, new WriteContext(wrapped, wrappedType));
 
-        if (parceableModifier.containsKey(type)) {
-            body.invoke(parcel, parceableModifier.get(type).getWriteMethod()).arg(getExpression);
-        } else if (classLoaderModifier.containsKey(type)) {
-            body.invoke(parcel, classLoaderModifier.get(type).getWriteMethod()).arg(getExpression);
-        } else if (type.implementsFrom(astClassFactory.getType(Parcelable.class))) {
-            body.invoke(parcel, "writeParcelable").arg(getExpression).arg(flags);
-        } else if (type.inheritsFrom(astClassFactory.getType(Serializable.class))) {
-            body.invoke(parcel, "writeSerializable").arg(getExpression);
-        } else if (type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type)) {
-            JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME).staticInvoke(WRAP_METHOD).arg(getExpression);
-            body.invoke(parcel, "writeParcelable").arg(wrappedParcel).arg(flags);
-        } else {
-            throw new TransfuseAnalysisException("Unable to find appropriate Parcel method to write " + type.getName());
-        }
+        ReadWriteGenerator generator = getGenerator(type);
+
+        generator.generateWriter(body, parcel, flags, type, getExpression);
     }
 
-    public static final class ReadWritePair {
-        private String readMethod;
-        private String writeMethod;
+    private ReadWriteGenerator getGenerator(ASTType type) {
+        ReadWriteGenerator generator = null;
+        for (Map.Entry<Matcher<ASTType>, ReadWriteGenerator> generatorEntry : generators.entrySet()) {
+            if(generatorEntry.getKey().matches(type)){
+                return generatorEntry.getValue();
+            }
+        }
+        if(generator == null){
+            throw new ParcelerRuntimeException("Unable to find appropriate Parcel method to write " + type.getName());
+        }
+        return generator;
+    }
 
-        public ReadWritePair(String readMethod, String writeMethod) {
+    public interface ReadWriteGenerator{
+
+        JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass);
+
+        void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression);
+    }
+
+    public static class SimpleReadWriteGenerator implements ReadWriteGenerator{
+
+        private final String readMethod;
+        private final String writeMethod;
+
+        public SimpleReadWriteGenerator(String readMethod, String writeMethod) {
             this.readMethod = readMethod;
             this.writeMethod = writeMethod;
         }
 
-        public String getReadMethod() {
-            return readMethod;
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            return parcelParam.invoke(readMethod);
         }
 
-        public String getWriteMethod() {
-            return writeMethod;
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            body.invoke(parcel, writeMethod).arg(getExpression);
+        }
+    }
+
+    public static class ClassloaderReadWriteGenerator implements ReadWriteGenerator{
+
+        private final String readMethod;
+        private final String writeMethod;
+
+        public ClassloaderReadWriteGenerator(String readMethod, String writeMethod) {
+            this.readMethod = readMethod;
+            this.writeMethod = writeMethod;
+        }
+
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            return parcelParam.invoke(writeMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
+        }
+
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            body.invoke(parcel, writeMethod).arg(getExpression);
+        }
+    }
+
+    public static class ParcelableReadWriteGenerator implements ReadWriteGenerator {
+
+        private final String readMethod;
+        private final String writeMethod;
+
+        public ParcelableReadWriteGenerator(String readMethod, String writeMethod) {
+            this.readMethod = readMethod;
+            this.writeMethod = writeMethod;
+        }
+
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            return JExpr.cast(returnJClassRef, parcelParam.invoke(readMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader")));
+        }
+
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            body.invoke(parcel, writeMethod).arg(getExpression).arg(flags);
+        }
+    }
+
+    public static class SerializableReadWriteGenerator implements ReadWriteGenerator {
+
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            return JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable"));
+        }
+
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            body.invoke(parcel, "writeSerializable").arg(getExpression);
+        }
+    }
+
+    public static class ParcelReadWriteGenerator implements ReadWriteGenerator {
+
+        private final ClassGenerationUtil generationUtil;
+        private final JCodeModel codeModel;
+
+        public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel) {
+            this.generationUtil = generationUtil;
+            this.codeModel = codeModel;
+        }
+
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(type));
+            return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke("readParcelable")
+                    .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL);
+        }
+
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME).staticInvoke(WRAP_METHOD).arg(getExpression);
+            body.invoke(parcel, "writeParcelable").arg(wrappedParcel).arg(flags);
+        }
+    }
+
+    public static class ImplementsMatcher implements Matcher<ASTType>{
+
+        private final ASTType superType;
+
+        public ImplementsMatcher(ASTType superType) {
+            this.superType = superType;
+        }
+
+        @Override
+        public boolean matches(ASTType astType) {
+            return astType.implementsFrom(superType);
+        }
+    }
+
+    public static class InheritsMatcher implements Matcher<ASTType>{
+
+        private final ASTType superType;
+
+        public InheritsMatcher(ASTType superType) {
+            this.superType = superType;
+        }
+
+        @Override
+        public boolean matches(ASTType astType) {
+            return astType.inheritsFrom(superType);
+        }
+    }
+
+    public static class ParcelMatcher implements Matcher<ASTType>{
+
+        private final ExternalParcelRepository externalParcelRepository;
+
+        public ParcelMatcher(ExternalParcelRepository externalParcelRepository) {
+            this.externalParcelRepository = externalParcelRepository;
+        }
+
+        @Override
+        public boolean matches(ASTType type) {
+            return type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type);
         }
     }
 
@@ -285,19 +409,23 @@ public class ParcelableGenerator {
         addPrimitiveArrayPair(ASTPrimitiveType.LONG, "createLongArray", "writeLongArray");
         addPrimitiveArrayPair(ASTPrimitiveType.FLOAT, "createFloatArray", "writeFloatArray");
         addPrimitiveArrayPair(ASTPrimitiveType.DOUBLE, "createDoubleArray", "writeDoubleArray");
-        addArrayPair(String[].class, "createStringArray", "writeStringArray");
+        addPair(String[].class, "createStringArray", "writeStringArray");
         addPair(String.class, "readString", "writeString");
         addPair(IBinder.class, "readStrongBinder", "writeStrongBinder");
         addPair(Bundle.class, "readBundle", "writeBundle");
-        addArrayPair(Object[].class, "readArray", "writeArray");
+        addPair(Object[].class, "readArray", "writeArray");
         addClassloaderPair(SparseArray.class, "readSparseArray", "writeSparseArray");
         addPair(SparseBooleanArray.class, "readSparseBooleanArray", "writeSparseBooleanArray");
         addPair(Exception.class, "readException", "writeException");
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable"));
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray"));
+        generators.put(new InheritsMatcher(astClassFactory.getType(Serializable.class)), new SerializableReadWriteGenerator());
+        generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
     }
 
-    private void addClassloaderPair(Class clazz, String readSparseArray, String writeSparseArray) {
+    private void addClassloaderPair(Class clazz, String readMethod, String writeMethod) {
         ASTType astType = astClassFactory.getType(clazz);
-        classLoaderModifier.put(astType, new ReadWritePair(readSparseArray, writeSparseArray));
+        generators.put(Matchers.type(astType).build(), new ClassloaderReadWriteGenerator(readMethod, writeMethod));
     }
 
     private void addPair(Class clazz, String readMethod, String writeMethod) {
@@ -305,16 +433,8 @@ public class ParcelableGenerator {
     }
 
     private void addPrimitiveArrayPair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {
-        addArrayPair(new ASTArrayType(primitiveType), readMethod, writeMethod);
-        addArrayPair(new ASTArrayType(astClassFactory.getType(primitiveType.getObjectClass())), readMethod, writeMethod);
-    }
-
-    private void addArrayPair(Class clazz, String readMethod, String writeMethod) {
-        addArrayPair(astClassFactory.getType(clazz), readMethod, writeMethod);
-    }
-
-    private void addArrayPair(ASTType astArrayType, String readMethod, String writeMethod) {
-        parceableModifier.put(astArrayType, new ReadWritePair(readMethod, writeMethod));
+        addPair(new ASTArrayType(primitiveType), readMethod, writeMethod);
+        addPair(new ASTArrayType(astClassFactory.getType(primitiveType.getObjectClass())), readMethod, writeMethod);
     }
 
     private void addPrimitivePair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {
@@ -323,6 +443,6 @@ public class ParcelableGenerator {
     }
 
     private void addPair(ASTType astType, String readMethod, String writeMethod) {
-        parceableModifier.put(astType, new ReadWritePair(readMethod, writeMethod));
+        generators.put(Matchers.type(astType).build(), new SimpleReadWriteGenerator(readMethod, writeMethod));
     }
 }
