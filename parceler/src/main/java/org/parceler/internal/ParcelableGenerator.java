@@ -38,10 +38,7 @@ import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -287,7 +284,7 @@ public class ParcelableGenerator {
 
         @Override
         public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            return parcelParam.invoke(writeMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
+            return parcelParam.invoke(readMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
         }
 
         @Override
@@ -419,8 +416,12 @@ public class ParcelableGenerator {
         addPair(Exception.class, "readException", "writeException");
         generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable"));
         generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray"));
-        generators.put(new InheritsMatcher(astClassFactory.getType(Serializable.class)), new SerializableReadWriteGenerator());
         generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
+        generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList"));
+        generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList"));
+        generators.put(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap"));
+        generators.put(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap"));
+        generators.put(new InheritsMatcher(astClassFactory.getType(Serializable.class)), new SerializableReadWriteGenerator());
     }
 
     private void addClassloaderPair(Class clazz, String readMethod, String writeMethod) {

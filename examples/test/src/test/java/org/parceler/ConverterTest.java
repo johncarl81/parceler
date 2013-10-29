@@ -3,6 +3,11 @@ package org.parceler;
 import android.os.Parcelable;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static junit.framework.Assert.assertEquals;
 
 /**
@@ -42,8 +47,14 @@ public class ConverterTest {
         //sparseBooleanArray.put(7, true);
         //sparseBooleanArray.put(5, false);
         //Exception exception = new Exception("test");
-        
-        ConverterTarget target = new ConverterTarget(b, bobj, d, dobj, f, fobj, i, iobj, l, lobj, bya, ca, ba, ia, la, fa, da, sa, s);
+        List<String> list = new ArrayList<String>();
+        list.add("one");
+        list.add("two");
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("one", "two");
+        map.put("three", "four");
+
+        ConverterTarget target = new ConverterTarget(b, bobj, d, dobj, f, fobj, i, iobj, l, lobj, bya, ca, ba, ia, la, fa, da, sa, s, list, map);
 
         Parcelable converted = Parcels.wrap(target);
         ConverterTarget unwrapped = Parcels.unwrap(converted);
@@ -67,5 +78,7 @@ public class ConverterTest {
         assertEquals(da, unwrapped.getDa());
         assertEquals(sa, unwrapped.getSa());
         assertEquals(s, unwrapped.getS());
+        assertEquals(list, unwrapped.getList());
+        assertEquals(map, unwrapped.getMap());
     }
 }
