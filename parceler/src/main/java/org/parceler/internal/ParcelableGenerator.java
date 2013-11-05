@@ -23,7 +23,9 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import com.sun.codemodel.*;
 import org.androidtransfuse.TransfuseAnalysisException;
-import org.androidtransfuse.adapter.*;
+import org.androidtransfuse.adapter.ASTConstructor;
+import org.androidtransfuse.adapter.ASTParameter;
+import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
@@ -232,16 +234,12 @@ public class ParcelableGenerator {
     }
 
     private ReadWriteGenerator getGenerator(ASTType type) {
-        ReadWriteGenerator generator = null;
         for (Map.Entry<Matcher<ASTType>, ReadWriteGenerator> generatorEntry : generators.entrySet()) {
             if(generatorEntry.getKey().matches(type)){
                 return generatorEntry.getValue();
             }
         }
-        if(generator == null){
-            throw new ParcelerRuntimeException("Unable to find appropriate Parcel method to write " + type.getName());
-        }
-        return generator;
+        throw new ParcelerRuntimeException("Unable to find appropriate Parcel method to write " + type.getName());
     }
 
     public interface ReadWriteGenerator{
@@ -251,88 +249,119 @@ public class ParcelableGenerator {
         void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression);
     }
 
-    public static class SimpleReadWriteGenerator implements ReadWriteGenerator{
-
-        private final String readMethod;
-        private final String writeMethod;
+    public static class SimpleReadWriteGenerator extends ReadWriteGeneratorBase{
 
         public SimpleReadWriteGenerator(String readMethod, String writeMethod) {
-            this.readMethod = readMethod;
-            this.writeMethod = writeMethod;
+            super(readMethod, writeMethod);
+        }
+
+        public SimpleReadWriteGenerator(String readMethod, Class[] readMethodParams, String writeMethod, Class[] writeMethodParams) {
+            super(readMethod, readMethodParams, writeMethod, writeMethodParams);
         }
 
         @Override
         public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            return parcelParam.invoke(readMethod);
+            return parcelParam.invoke(getReadMethod());
         }
 
         @Override
         public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-            body.invoke(parcel, writeMethod).arg(getExpression);
+            body.invoke(parcel, getWriteMethod()).arg(getExpression);
         }
     }
 
-    public static class ClassloaderReadWriteGenerator implements ReadWriteGenerator{
+    public static class ClassloaderReadWriteGenerator extends ReadWriteGeneratorBase {
 
+        public ClassloaderReadWriteGenerator(String readMethod, String writeMethod, Class writeMethodType) {
+            super(readMethod, new Class[]{ClassLoader.class}, writeMethod, new Class[]{writeMethodType});
+        }
+
+        @Override
+        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+            return parcelParam.invoke(getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
+        }
+
+        @Override
+        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+            body.invoke(parcel, getWriteMethod()).arg(getExpression);
+        }
+    }
+
+    public static abstract class ReadWriteGeneratorBase implements ReadWriteGenerator{
         private final String readMethod;
+        private final Class[] readMethodParams;
         private final String writeMethod;
+        private final Class[] writeMethodParams;
 
-        public ClassloaderReadWriteGenerator(String readMethod, String writeMethod) {
+        public ReadWriteGeneratorBase(String readMethod, Class[] readMethodParams, String writeMethod, Class[] writeMethodParams) {
             this.readMethod = readMethod;
+            this.readMethodParams = readMethodParams;
             this.writeMethod = writeMethod;
+            this.writeMethodParams = writeMethodParams;
+        }
+
+        public ReadWriteGeneratorBase(String readMethod, String writeMethod) {
+            this(readMethod, new Class[0], writeMethod, new Class[0]);
+        }
+
+        public String getReadMethod() {
+            return readMethod;
+        }
+
+        public Class[] getReadMethodParams() {
+            return readMethodParams;
+        }
+
+        public String getWriteMethod() {
+            return writeMethod;
+        }
+
+        public Class[] getWriteMethodParams() {
+            return writeMethodParams;
+        }
+    }
+
+    public static class ParcelableReadWriteGenerator extends ReadWriteGeneratorBase {
+
+        public ParcelableReadWriteGenerator(String readMethod, String writeMethod, Class parcelableType) {
+            super(readMethod, new Class[]{ClassLoader.class}, writeMethod, new Class[]{parcelableType, int.class});
         }
 
         @Override
         public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            return parcelParam.invoke(readMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader"));
+            return JExpr.cast(returnJClassRef, parcelParam.invoke(getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader")));
         }
 
         @Override
         public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-            body.invoke(parcel, writeMethod).arg(getExpression);
+            body.invoke(parcel, getWriteMethod()).arg(getExpression).arg(flags);
         }
     }
 
-    public static class ParcelableReadWriteGenerator implements ReadWriteGenerator {
+    public static class SerializableReadWriteGenerator extends ReadWriteGeneratorBase {
 
-        private final String readMethod;
-        private final String writeMethod;
-
-        public ParcelableReadWriteGenerator(String readMethod, String writeMethod) {
-            this.readMethod = readMethod;
-            this.writeMethod = writeMethod;
+        public SerializableReadWriteGenerator() {
+            super("readSerializable", new Class[0], "writeSerializable", new Class[]{Serializable.class});
         }
 
         @Override
         public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            return JExpr.cast(returnJClassRef, parcelParam.invoke(readMethod).arg(returnJClassRef.dotclass().invoke("getClassLoader")));
+            return JExpr.cast(returnJClassRef, parcelParam.invoke(getReadMethod()));
         }
 
         @Override
         public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-            body.invoke(parcel, writeMethod).arg(getExpression).arg(flags);
+            body.invoke(parcel, getWriteMethod()).arg(getExpression);
         }
     }
 
-    public static class SerializableReadWriteGenerator implements ReadWriteGenerator {
-
-        @Override
-        public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            return JExpr.cast(returnJClassRef, parcelParam.invoke("readSerializable"));
-        }
-
-        @Override
-        public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-            body.invoke(parcel, "writeSerializable").arg(getExpression);
-        }
-    }
-
-    public static class ParcelReadWriteGenerator implements ReadWriteGenerator {
+    public static class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
 
         private final ClassGenerationUtil generationUtil;
         private final JCodeModel codeModel;
 
         public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel) {
+            super("readParcelable", new Class[]{ClassLoader.class}, "writeParcelable", new Class[]{Parcelable.class, int.class});
             this.generationUtil = generationUtil;
             this.codeModel = codeModel;
         }
@@ -340,14 +369,14 @@ public class ParcelableGenerator {
         @Override
         public JExpression generateReader(JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
             JClass wrapperRef = codeModel.ref(ParcelWrapper.class).narrow(generationUtil.ref(type));
-            return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke("readParcelable")
+            return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke(getReadMethod())
                     .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL);
         }
 
         @Override
         public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
             JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME).staticInvoke(WRAP_METHOD).arg(getExpression);
-            body.invoke(parcel, "writeParcelable").arg(wrappedParcel).arg(flags);
+            body.invoke(parcel, getWriteMethod()).arg(wrappedParcel).arg(flags);
         }
     }
 
@@ -394,56 +423,54 @@ public class ParcelableGenerator {
     }
 
     private void setup() {
-        addPrimitivePair(ASTPrimitiveType.BYTE, "readByte", "writeByte");
-        addPrimitivePair(ASTPrimitiveType.DOUBLE, "readDouble", "writeDouble");
-        addPrimitivePair(ASTPrimitiveType.FLOAT, "readFloat", "writeFloat");
-        addPrimitivePair(ASTPrimitiveType.INT, "readInt", "writeInt");
-        addPrimitivePair(ASTPrimitiveType.LONG, "readLong", "writeLong");
-        addPrimitiveArrayPair(ASTPrimitiveType.BYTE, "createByteArray", "writeByteArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.CHAR, "createCharArray", "writeCharArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.BOOLEAN, "createBooleanArray", "writeBooleanArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.INT, "createIntArray", "writeIntArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.LONG, "createLongArray", "writeLongArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.FLOAT, "createFloatArray", "writeFloatArray");
-        addPrimitiveArrayPair(ASTPrimitiveType.DOUBLE, "createDoubleArray", "writeDoubleArray");
+        addPair(byte.class, "readByte", "writeByte");
+        addPair(Byte.class, "readByte", "writeByte", byte.class);
+        addPair(double.class, "readDouble", "writeDouble");
+        addPair(Double.class, "readDouble", "writeDouble", double.class);
+        addPair(float.class, "readFloat", "writeFloat");
+        addPair(Float.class, "readFloat", "writeFloat", float.class);
+        addPair(int.class, "readInt", "writeInt");
+        addPair(Integer.class, "readInt", "writeInt", int.class);
+        addPair(long.class, "readLong", "writeLong");
+        addPair(Long.class, "readLong", "writeLong", long.class);
+        addPair(byte[].class, "createByteArray", "writeByteArray");
+        addPair(char[].class, "createCharArray", "writeCharArray");
+        addPair(boolean[].class, "createBooleanArray", "writeBooleanArray");
+        addPair(int[].class, "createIntArray", "writeIntArray");
+        addPair(long[].class, "createLongArray", "writeLongArray");
+        addPair(float[].class, "createFloatArray", "writeFloatArray");
+        addPair(double[].class, "createDoubleArray", "writeDoubleArray");
         addPair(String[].class, "createStringArray", "writeStringArray");
         addPair(String.class, "readString", "writeString");
         addPair(IBinder.class, "readStrongBinder", "writeStrongBinder");
         addPair(Bundle.class, "readBundle", "writeBundle");
-        addPair(Object[].class, "readArray", "writeArray");
-        addClassloaderPair(SparseArray.class, "readSparseArray", "writeSparseArray");
-        addPair(SparseBooleanArray.class, "readSparseBooleanArray", "writeSparseBooleanArray");
+        generators.put(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
         addPair(Exception.class, "readException", "writeException");
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable"));
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray"));
+        addPair(SparseBooleanArray.class, "readSparseBooleanArray", "writeSparseBooleanArray");
+        generators.put(Matchers.type(astClassFactory.getType(SparseArray.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", SparseArray.class));
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", Parcelable.class));
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", Parcelable[].class));
         generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
-        generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList"));
-        generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList"));
-        generators.put(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap"));
-        generators.put(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap"));
+        generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
+        generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
+        generators.put(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap", Map.class));
+        generators.put(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap", Map.class));
         generators.put(new InheritsMatcher(astClassFactory.getType(Serializable.class)), new SerializableReadWriteGenerator());
     }
 
-    private void addClassloaderPair(Class clazz, String readMethod, String writeMethod) {
-        ASTType astType = astClassFactory.getType(clazz);
-        generators.put(Matchers.type(astType).build(), new ClassloaderReadWriteGenerator(readMethod, writeMethod));
-    }
-
     private void addPair(Class clazz, String readMethod, String writeMethod) {
-        addPair(astClassFactory.getType(clazz), readMethod, writeMethod);
+        addPair(clazz, readMethod, writeMethod, clazz);
     }
 
-    private void addPrimitiveArrayPair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {
-        addPair(new ASTArrayType(primitiveType), readMethod, writeMethod);
-        addPair(new ASTArrayType(astClassFactory.getType(primitiveType.getObjectClass())), readMethod, writeMethod);
+    private void addPair(Class clazz, String readMethod, String writeMethod, Class writeParam) {
+        generators.put(Matchers.type(astClassFactory.getType(clazz)).build(), new SimpleReadWriteGenerator(readMethod, new Class[0], writeMethod, new Class[]{writeParam}));
     }
 
-    private void addPrimitivePair(ASTPrimitiveType primitiveType, String readMethod, String writeMethod) {
-        addPair(primitiveType, readMethod, writeMethod);
-        addPair(astClassFactory.getType(primitiveType.getObjectClass()), readMethod, writeMethod);
+    protected Map<Matcher<ASTType>, ReadWriteGenerator> getGenerators() {
+        return generators;
     }
 
-    private void addPair(ASTType astType, String readMethod, String writeMethod) {
-        generators.put(Matchers.type(astType).build(), new SimpleReadWriteGenerator(readMethod, writeMethod));
+    public static void main(String[] args){
+        System.out.println(double[].class.getName());
     }
 }

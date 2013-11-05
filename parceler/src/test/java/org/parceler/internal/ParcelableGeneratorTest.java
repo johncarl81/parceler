@@ -11,6 +11,8 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
+import org.androidtransfuse.util.matcher.Matcher;
+import org.androidtransfuse.util.matcher.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.parceler.Parcels;
@@ -18,9 +20,11 @@ import org.parceler.Parcels;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -118,6 +122,28 @@ public class ParcelableGeneratorTest {
         testSerialization(descriptor);
     }
 
+    @Test
+    public void testParcelMethodUsage() throws NoSuchMethodException {
+        for (Map.Entry<Matcher<ASTType>, ParcelableGenerator.ReadWriteGenerator> entry : generator.getGenerators().entrySet()) {
+
+            if(entry.getValue() instanceof ParcelableGenerator.ReadWriteGeneratorBase){
+                ParcelableGenerator.ReadWriteGeneratorBase readWriteGeneratorBase = (ParcelableGenerator.ReadWriteGeneratorBase)entry.getValue();
+                Method readMethod = Parcel.class.getMethod(readWriteGeneratorBase.getReadMethod(), readWriteGeneratorBase.getReadMethodParams());
+                assertNotNull(readMethod);
+                Method writeMethod = Parcel.class.getMethod(readWriteGeneratorBase.getWriteMethod(), readWriteGeneratorBase.getWriteMethodParams());
+                assertNotNull(writeMethod);
+            }
+            else{
+                assertTrue("Found ReadWriteGenerator that wasn't covered by test: "+ entry.getValue().getClass(), false);
+            }
+        }
+    }
+
+    @Test
+    public void tester(){
+        assertTrue(Matchers.type(astClassFactory.getType(double[].class)).build().matches(astClassFactory.getType(double[].class)));
+    }
+
     private ASTConstructor getConstructor(ImmutableSet<ASTConstructor> constructors, ASTType... parameters) {
         for (ASTConstructor constructor : constructors) {
             if(matchParameters(constructor.getParameters(), parameters)){
@@ -171,6 +197,4 @@ public class ParcelableGeneratorTest {
 
         verify(mockParcel).writeString(TEST_VALUE);
     }
-
-
 }
