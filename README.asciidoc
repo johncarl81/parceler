@@ -92,6 +92,13 @@ types:
  * +SparseArray+
  * +SparseBooleanArray+
  * +Exception+
+ * +List+
+ * +ArrayList+
+ * +Map+
+ * +HashMap+
+ * +Parcel+
+ * +Parcel[]+
+ * +Serializable+
  * Other classes annotated with +@Parcel+
 
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
