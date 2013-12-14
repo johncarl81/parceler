@@ -1,7 +1,5 @@
 language: java
-jdk:
-  - oraclejdk7
-  - openjdk6
+jdk: openjdk6
 env:
   matrix:
     # android-16 is always included
