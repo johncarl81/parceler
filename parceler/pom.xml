@@ -85,7 +85,7 @@
                 <version>2.14.1</version>
                 <configuration>
                     <argLine>
-                        -javaagent:${settings.localRepository}/org/powermock/powermock-module-javaagent/1.5/powermock-module-javaagent-1.5.jar
+                        -javaagent:${settings.localRepository}/org/powermock/powermock-module-javaagent/1.5.2/powermock-module-javaagent-1.5.2.jar
                     </argLine>
                 </configuration>
             </plugin>
