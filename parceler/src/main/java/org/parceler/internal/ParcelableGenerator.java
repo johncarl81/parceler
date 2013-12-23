@@ -448,8 +448,8 @@ public class ParcelableGenerator {
         addPair(Exception.class, "readException", "writeException");
         addPair(SparseBooleanArray.class, "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.put(Matchers.type(astClassFactory.getType(SparseArray.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", SparseArray.class));
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", Parcelable.class));
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcel[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", Parcelable[].class));
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcelable.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", Parcelable.class));
+        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcelable[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", Parcelable[].class));
         generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
         generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
         generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
