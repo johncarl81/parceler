@@ -15,17 +15,9 @@
  */
 package org.parceler.internal;
 
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import com.sun.codemodel.*;
 import org.androidtransfuse.TransfuseAnalysisException;
-import org.androidtransfuse.adapter.ASTConstructor;
-import org.androidtransfuse.adapter.ASTParameter;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
@@ -95,7 +87,7 @@ public class ParcelableGenerator {
             JType inputType = generationUtil.ref(type);
 
             JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(Parcels.IMPL_EXT).build());
-            parcelableClass._implements(Parcelable.class)
+            parcelableClass._implements(codeModel.ref("android.os.Parcelable"))
                     ._implements(codeModel.ref(ParcelWrapper.class).narrow(inputType));
 
             //wrapped @Parcel
@@ -103,13 +95,13 @@ public class ParcelableGenerator {
 
             //Parcel constructor
             JMethod parcelConstructor = parcelableClass.constructor(JMod.PUBLIC);
-            JVar parcelParam = parcelConstructor.param(codeModel.ref(Parcel.class), variableNamer.generateName(Parcel.class));
+            JVar parcelParam = parcelConstructor.param(codeModel.ref("android.os.Parcel"), variableNamer.generateName("android.os.Parcel"));
             JBlock parcelConstructorBody = parcelConstructor.body();
 
             //writeToParcel(android.os.Parcel,int)
             JMethod writeToParcelMethod = parcelableClass.method(JMod.PUBLIC, codeModel.VOID, WRITE_TO_PARCEL);
             writeToParcelMethod.annotate(Override.class);
-            JVar wtParcelParam = writeToParcelMethod.param(Parcel.class, variableNamer.generateName(Parcel.class));
+            JVar wtParcelParam = writeToParcelMethod.param(codeModel.ref("android.os.Parcel"), variableNamer.generateName("android.os.Parcel"));
             JVar flags = writeToParcelMethod.param(codeModel.INT, "flags");
 
             if (parcelableDescriptor.getParcelConverterType() == null) {
@@ -162,14 +154,14 @@ public class ParcelableGenerator {
             getWrappedMethod.body()._return(wrapped);
 
             //public static final CREATOR = ...
-            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(Parcelable.Creator.class).build().getClassName());
+            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(new ASTStringType("android.os.Parcelable.Creator")).build().getClassName());
 
-            creatorClass._implements(codeModel.ref(Parcelable.Creator.class).narrow(parcelableClass));
+            creatorClass._implements(codeModel.ref("android.os.Parcelable.Creator").narrow(parcelableClass));
 
             //createFromParcel method
             JMethod createFromParcelMethod = creatorClass.method(JMod.PUBLIC, parcelableClass, CREATE_FROM_PARCEL);
             createFromParcelMethod.annotate(Override.class);
-            JVar cfpParcelParam = createFromParcelMethod.param(Parcel.class, variableNamer.generateName(Parcel.class));
+            JVar cfpParcelParam = createFromParcelMethod.param(codeModel.ref("android.os.Parcel"), variableNamer.generateName(codeModel.ref("android.os.Parcel")));
 
             createFromParcelMethod.body()._return(JExpr._new(parcelableClass).arg(cfpParcelParam));
 
@@ -251,11 +243,7 @@ public class ParcelableGenerator {
 
     public static class SimpleReadWriteGenerator extends ReadWriteGeneratorBase{
 
-        public SimpleReadWriteGenerator(String readMethod, String writeMethod) {
-            super(readMethod, writeMethod);
-        }
-
-        public SimpleReadWriteGenerator(String readMethod, Class[] readMethodParams, String writeMethod, Class[] writeMethodParams) {
+        public SimpleReadWriteGenerator(String readMethod, String[] readMethodParams, String writeMethod, String[] writeMethodParams) {
             super(readMethod, readMethodParams, writeMethod, writeMethodParams);
         }
 
@@ -273,7 +261,11 @@ public class ParcelableGenerator {
     public static class ClassloaderReadWriteGenerator extends ReadWriteGeneratorBase {
 
         public ClassloaderReadWriteGenerator(String readMethod, String writeMethod, Class writeMethodType) {
-            super(readMethod, new Class[]{ClassLoader.class}, writeMethod, new Class[]{writeMethodType});
+            super(readMethod, new String[]{ClassLoader.class.getName()}, writeMethod, new String[]{writeMethodType.getName()});
+        }
+
+        public ClassloaderReadWriteGenerator(String readMethod, String writeMethod, String writeMethodType) {
+            super(readMethod, new String[]{ClassLoader.class.getName()}, writeMethod, new String[]{writeMethodType});
         }
 
         @Override
@@ -289,19 +281,60 @@ public class ParcelableGenerator {
 
     public static abstract class ReadWriteGeneratorBase implements ReadWriteGenerator{
         private final String readMethod;
-        private final Class[] readMethodParams;
+        private final String[] readMethodParams;
         private final String writeMethod;
-        private final Class[] writeMethodParams;
+        private final String[] writeMethodParams;
+
+        private static final Map<String,Class> PRIMITIVE_CLASSES = new HashMap<String,Class>(){{
+            put("int", Integer.TYPE );
+            put("long", Long.TYPE );
+            put("double", Double.TYPE );
+            put("float", Float.TYPE );
+            put("bool", Boolean.TYPE );
+            put("char", Character.TYPE );
+            put("byte", Byte.TYPE );
+            put("void", Void.TYPE );
+            put("short", Short.TYPE );
+        }};
 
         public ReadWriteGeneratorBase(String readMethod, Class[] readMethodParams, String writeMethod, Class[] writeMethodParams) {
+            this(readMethod, classArrayToStringArray(readMethodParams), writeMethod, classArrayToStringArray(writeMethodParams));
+        }
+
+        public ReadWriteGeneratorBase(String readMethod, String[] readMethodParams, String writeMethod, String[] writeMethodParams) {
             this.readMethod = readMethod;
             this.readMethodParams = readMethodParams;
             this.writeMethod = writeMethod;
             this.writeMethodParams = writeMethodParams;
         }
 
-        public ReadWriteGeneratorBase(String readMethod, String writeMethod) {
-            this(readMethod, new Class[0], writeMethod, new Class[0]);
+        private static String[] classArrayToStringArray(Class[] input){
+            String[] output = new String[input.length];
+
+            for(int i = 0; i < input.length; i++){
+                output[i] = input[i].getName();
+            }
+
+            return output;
+        }
+
+        private static Class[] stringArrayToClassArray(String[] input) {
+            Class[] output = new Class[input.length];
+
+            for(int i = 0; i < input.length; i++){
+                if(PRIMITIVE_CLASSES.containsKey(input[i])){
+                    output[i] = PRIMITIVE_CLASSES.get(input[i]);
+                }
+                else{
+                    try{
+                        output[i] = Class.forName(input[i]);
+                    } catch (ClassNotFoundException e) {
+                        throw new ParcelerRuntimeException("Unable to find class " + input[i], e);
+                    }
+                }
+            }
+
+            return output;
         }
 
         public String getReadMethod() {
@@ -309,7 +342,7 @@ public class ParcelableGenerator {
         }
 
         public Class[] getReadMethodParams() {
-            return readMethodParams;
+            return stringArrayToClassArray(readMethodParams);
         }
 
         public String getWriteMethod() {
@@ -317,14 +350,14 @@ public class ParcelableGenerator {
         }
 
         public Class[] getWriteMethodParams() {
-            return writeMethodParams;
+            return stringArrayToClassArray(writeMethodParams);
         }
     }
 
     public static class ParcelableReadWriteGenerator extends ReadWriteGeneratorBase {
 
-        public ParcelableReadWriteGenerator(String readMethod, String writeMethod, Class parcelableType) {
-            super(readMethod, new Class[]{ClassLoader.class}, writeMethod, new Class[]{parcelableType, int.class});
+        public ParcelableReadWriteGenerator(String readMethod, String writeMethod, String parcelableType) {
+            super(readMethod, new String[]{ClassLoader.class.getName()}, writeMethod, new String[]{parcelableType, int.class.getName()});
         }
 
         @Override
@@ -361,7 +394,7 @@ public class ParcelableGenerator {
         private final JCodeModel codeModel;
 
         public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel) {
-            super("readParcelable", new Class[]{ClassLoader.class}, "writeParcelable", new Class[]{Parcelable.class, int.class});
+            super("readParcelable", new String[]{ClassLoader.class.getName()}, "writeParcelable", new String[]{"android.os.Parcelable", int.class.getName()});
             this.generationUtil = generationUtil;
             this.codeModel = codeModel;
         }
@@ -442,14 +475,14 @@ public class ParcelableGenerator {
         addPair(double[].class, "createDoubleArray", "writeDoubleArray");
         addPair(String[].class, "createStringArray", "writeStringArray");
         addPair(String.class, "readString", "writeString");
-        addPair(IBinder.class, "readStrongBinder", "writeStrongBinder");
-        addPair(Bundle.class, "readBundle", "writeBundle");
+        addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
+        addPair("android.os.Bundle", "readBundle", "writeBundle");
         generators.put(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
         addPair(Exception.class, "readException", "writeException");
-        addPair(SparseBooleanArray.class, "readSparseBooleanArray", "writeSparseBooleanArray");
-        generators.put(Matchers.type(astClassFactory.getType(SparseArray.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", SparseArray.class));
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcelable.class)), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", Parcelable.class));
-        generators.put(new ImplementsMatcher(astClassFactory.getType(Parcelable[].class)), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", Parcelable[].class));
+        addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
+        generators.put(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", "android.util.SparseArray"));
+        generators.put(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
+        generators.put(new ImplementsMatcher(new ASTArrayType(new ASTStringType("android.os.Parcelable"))), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", "[Landroid.os.Parcelable;"));
         generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
         generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
         generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
@@ -463,7 +496,19 @@ public class ParcelableGenerator {
     }
 
     private void addPair(Class clazz, String readMethod, String writeMethod, Class writeParam) {
-        generators.put(Matchers.type(astClassFactory.getType(clazz)).build(), new SimpleReadWriteGenerator(readMethod, new Class[0], writeMethod, new Class[]{writeParam}));
+        addPair(astClassFactory.getType(clazz), readMethod, writeMethod, writeParam.getName());
+    }
+
+    private void addPair(String clazzName, String readMethod, String writeMethod) {
+        addPair(clazzName, readMethod, writeMethod, clazzName);
+    }
+
+    private void addPair(String clazzName, String readMethod, String writeMethod, String writeParam) {
+        addPair(new ASTStringType(clazzName), readMethod, writeMethod, writeParam);
+    }
+
+    private void addPair(ASTType type, String readMethod, String writeMethod, String writeParam){
+        generators.put(Matchers.type(type).build(), new SimpleReadWriteGenerator(readMethod, new String[0], writeMethod, new String[]{writeParam}));
     }
 
     protected Map<Matcher<ASTType>, ReadWriteGenerator> getGenerators() {
