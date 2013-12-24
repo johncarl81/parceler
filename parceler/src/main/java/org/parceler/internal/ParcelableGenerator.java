@@ -514,8 +514,4 @@ public class ParcelableGenerator {
     protected Map<Matcher<ASTType>, ReadWriteGenerator> getGenerators() {
         return generators;
     }
-
-    public static void main(String[] args){
-        System.out.println(double[].class.getName());
-    }
 }
