@@ -3,7 +3,6 @@ package org.parceler.internal;
 import org.androidtransfuse.adapter.ASTAccessModifier;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.ModifierInjectionBuilder;
-import org.androidtransfuse.gen.invocationBuilder.PrivateInjectionBuilder;
 import org.androidtransfuse.gen.invocationBuilder.PublicInjectionBuilder;
 
 import javax.inject.Inject;
@@ -15,11 +14,11 @@ import javax.inject.Provider;
 public class ParcelerInvocationBuilderStrategy implements InvocationBuilderStrategy {
 
     private final Provider<PublicInjectionBuilder> publicProvider;
-    private final Provider<PrivateInjectionBuilder> privateProvider;
+    private final Provider<ParcelerPrivateInjectionBuilder> privateProvider;
 
     @Inject
     public ParcelerInvocationBuilderStrategy(Provider<PublicInjectionBuilder> publicProvider,
-                                            Provider<PrivateInjectionBuilder> privateProvider) {
+                                            Provider<ParcelerPrivateInjectionBuilder> privateProvider) {
         this.publicProvider = publicProvider;
         this.privateProvider = privateProvider;
     }

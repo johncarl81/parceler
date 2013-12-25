@@ -22,6 +22,7 @@ import org.androidtransfuse.annotations.Bindings;
 import org.androidtransfuse.annotations.Install;
 import org.androidtransfuse.annotations.Provides;
 import org.androidtransfuse.bootstrap.BootstrapModule;
+import org.androidtransfuse.gen.ClassGenerationStrategy;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
 import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
@@ -35,6 +36,7 @@ import javax.lang.model.util.Elements;
 @BootstrapModule
 @Bindings({
         @Bind(type = InvocationBuilderStrategy.class, to = DefaultInvocationBuilderStrategy.class),
+        @Bind(type = ClassGenerationStrategy.class, to = ParcelerClassGenerationStrategy.class),
         @Bind(type = Elements.class, to = NoOpElements.class),
         @Bind(type = Filer.class, to = NoOpFiler.class)
 })
