@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.annotations.ScopeReference;
 import org.androidtransfuse.config.EnterableScope;
 import org.androidtransfuse.transaction.ScopedTransactionWorker;

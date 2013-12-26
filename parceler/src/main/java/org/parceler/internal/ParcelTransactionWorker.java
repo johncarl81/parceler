@@ -18,12 +18,13 @@ package org.parceler.internal;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.adapter.classes.ASTClassFactory;
+import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.parceler.Parcel;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.lang.model.util.Elements;
 
 /**
  * Executes the analysis and generation of an annotated @Parcel class.
@@ -34,13 +35,15 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
-    private final ASTClassFactory astClassFactory;
+    private final ASTElementFactory astElementFactory;
+    private final Elements elements;
 
     @Inject
-    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTClassFactory astClassFactory) {
+    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTElementFactory astElementFactory, Elements elements) {
         this.parcelableAnalysis = parcelableAnalysis;
         this.parcelableGenerator = parcelableGenerator;
-        this.astClassFactory = astClassFactory;
+        this.astElementFactory = astElementFactory;
+        this.elements = elements;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         if(astAnnotation != null){
 
             ASTType converterType = astAnnotation.getProperty("converter", ASTType.class);
-            ASTType emptyConverterType = astClassFactory.getType(Parcel.EmptyConverter.class);
+            ASTType emptyConverterType = astElementFactory.getType(elements.getTypeElement(Parcel.EmptyConverter.class.getCanonicalName()));
             if(!emptyConverterType.equals(converterType)){
                 return converterType;
             }

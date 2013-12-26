@@ -17,6 +17,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.annotations.*;
