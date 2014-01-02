@@ -30,10 +30,11 @@ public class ConverterTarget {
     String s;
     List<String> list;
     Map<String, String> map;
+    List<SubParcel> parcelList;
 
     public ConverterTarget(){}
 
-    public ConverterTarget(byte b, Byte bobj, double d, Double dobj, float f, Float fobj, int i, Integer iobj, long l, Long lobj, byte[] bya, char[] ca, boolean[] ba, int[] ia, long[] la, float[] fa, double[] da, String[] sa, String s, List list, Map<String, String> map) {
+    public ConverterTarget(byte b, Byte bobj, double d, Double dobj, float f, Float fobj, int i, Integer iobj, long l, Long lobj, byte[] bya, char[] ca, boolean[] ba, int[] ia, long[] la, float[] fa, double[] da, String[] sa, String s, List<String> list, Map<String, String> map, List<SubParcel> parcelList) {
         this.b = b;
         this.bobj = bobj;
         this.d = d;
@@ -55,6 +56,7 @@ public class ConverterTarget {
         this.s = s;
         this.list = list;
         this.map = map;
+        this.parcelList = parcelList;
     }
 
     public byte getB() {
@@ -143,5 +145,9 @@ public class ConverterTarget {
 
     public Map getMap() {
         return map;
+    }
+
+    public List<SubParcel> getParcelList(){
+        return parcelList;
     }
 }

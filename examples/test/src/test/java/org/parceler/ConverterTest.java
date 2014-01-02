@@ -54,7 +54,11 @@ public class ConverterTest {
         map.put("one", "two");
         map.put("three", "four");
 
-        ConverterTarget target = new ConverterTarget(b, bobj, d, dobj, f, fobj, i, iobj, l, lobj, bya, ca, ba, ia, la, fa, da, sa, s, list, map);
+        List<SubParcel> parcelList = new ArrayList<SubParcel>();
+
+        parcelList.add(new SubParcel("test"));
+
+        ConverterTarget target = new ConverterTarget(b, bobj, d, dobj, f, fobj, i, iobj, l, lobj, bya, ca, ba, ia, la, fa, da, sa, s, list, map, parcelList);
 
         Parcelable converted = Parcels.wrap(target);
         ConverterTarget unwrapped = Parcels.unwrap(converted);
@@ -80,5 +84,7 @@ public class ConverterTest {
         assertEquals(s, unwrapped.getS());
         assertEquals(list, unwrapped.getList());
         assertEquals(map, unwrapped.getMap());
+        assertEquals(parcelList.size(), unwrapped.getParcelList().size());
+        assertEquals(parcelList.get(0).getName(), unwrapped.getParcelList().get(0).getName());
     }
 }
