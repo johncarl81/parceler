@@ -25,7 +25,10 @@ import org.androidtransfuse.gen.InvocationBuilder;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.util.matcher.Matcher;
 import org.androidtransfuse.util.matcher.Matchers;
-import org.parceler.*;
+import org.parceler.ParcelConverter;
+import org.parceler.ParcelWrapper;
+import org.parceler.ParcelerRuntimeException;
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -42,7 +45,6 @@ public class ParcelableGenerator {
     private static final String NEW_ARRAY = "newArray";
     private static final String WRITE_TO_PARCEL = "writeToParcel";
     private static final String DESCRIBE_CONTENTS = "describeContents";
-    public static final String UNWRAP_METHOD = "unwrap";
     public static final String WRAP_METHOD = "wrap";
 
     private final JCodeModel codeModel;
@@ -411,54 +413,85 @@ public class ParcelableGenerator {
         }
     }
 
-    public static class ListOfParcelsReadWriteGenerator extends ReadWriteGeneratorBase {
+    public static class ListReadWriteGenerator extends ReadWriteGeneratorBase {
 
         private final ClassGenerationUtil generationUtil;
-        private final JCodeModel codeModel;
         private final UniqueVariableNamer namer;
+        private final Map<Matcher<ASTType>, ReadWriteGenerator> generators;
+        private final ASTClassFactory astClassFactory;
+        private final JCodeModel codeModel;
 
-        public ListOfParcelsReadWriteGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel, UniqueVariableNamer namer) {
+        public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Map<Matcher<ASTType>, ReadWriteGenerator> generators, ASTClassFactory astClassFactory, JCodeModel codeModel) {
             super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
             this.generationUtil = generationUtil;
-            this.codeModel = codeModel;
+            this.generators = generators;
             this.namer = namer;
+            this.astClassFactory = astClassFactory;
+            this.codeModel = codeModel;
         }
 
         @Override
         public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-            //Builds a collection version of Parcels.unwrap()
-            JClass parcelableType = generationUtil.ref("android.os.Parcelable");
-            JClass listType = generationUtil.ref(List.class);
+
+            JClass outputType = generationUtil.ref(List.class);
             JClass arrayListType = generationUtil.ref(ArrayList.class);
-            JClass parcelableListType = generationUtil.ref(List.class).narrow(parcelableType);
 
+            ASTType componentType = astClassFactory.getType(Object.class);
 
-            JVar listVar = body.decl(listType, namer.generateName(List.class), JExpr._new(arrayListType));
-            JForEach forEach = body.forEach(parcelableType, namer.generateName(parcelableType), JExpr.cast(parcelableListType, parcelParam.invoke(getReadMethod())
-                    .arg(parcelableClass.dotclass().invoke("getClassLoader"))));
-            JBlock forEachBody = forEach.body();
+            if(type.getGenericParameters().size() > 0){
+                componentType = type.getGenericParameters().iterator().next();
+                outputType = outputType.narrow(generationUtil.narrowRef(componentType));
+                arrayListType = arrayListType.narrow(generationUtil.narrowRef(componentType));
+            }
 
-            forEachBody.invoke(listVar, "add").arg(generationUtil.ref(Parcels.class).staticInvoke("unwrap").arg(forEach.var()));
+            JVar outputVar = body.decl(outputType, namer.generateName(List.class), JExpr._new(arrayListType));
 
-            return listVar;
+            JForLoop forLoop = body._for();
+            JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
+            forLoop.test(nVar.gt(parcelParam.invoke("readInt")));
+            forLoop.update(nVar.incr());
+            JBlock readLoopBody = forLoop.body();
+
+            ReadWriteGenerator generator = getGenerator(componentType);
+
+            JExpression readExpression = generator.generateReader(readLoopBody, parcelParam, componentType, generationUtil.ref(componentType), parcelableClass);
+
+            readLoopBody.invoke(outputVar, "add").arg(readExpression);
+            readLoopBody.assign(nVar, nVar.minus(JExpr.lit(1)));
+
+            return outputVar;
         }
 
         @Override
         public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-            //Builds a loop version of Parcels.wrap()
-            JClass parcelableType = generationUtil.ref("android.os.Parcelable");
-            JClass listType = generationUtil.ref(List.class).narrow(parcelableType);
-            JClass arrayListType = generationUtil.ref(ArrayList.class).narrow(parcelableType);
-            JClass inputType = generationUtil.ref(Object.class);
+
+            ASTType componentType = astClassFactory.getType(Object.class);
+
+            if(type.getGenericParameters().size() > 0){
+                componentType = type.getGenericParameters().iterator().next();
+            }
+            JClass inputType = generationUtil.narrowRef(componentType);
 
 
-            JVar listVar = body.decl(listType, namer.generateName(List.class), JExpr._new(arrayListType));
-            JForEach forEach = body.forEach(inputType, namer.generateName(parcelableType), getExpression);
-            JBlock forEachBody = forEach.body();
+            JConditional nullConditional = body._if(getExpression.eq(JExpr._null()));
+            nullConditional._then().invoke(parcel, "writeInt").arg(JExpr.lit(-1));
 
-            forEachBody.invoke(listVar, "add").arg(generationUtil.ref(Parcels.class).staticInvoke("wrap").arg(forEach.var()));
+            JBlock writeBody = nullConditional._else();
 
-            body.invoke(parcel, getWriteMethod()).arg(listVar);
+            JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression);
+
+            ReadWriteGenerator generator = getGenerator(componentType);
+
+            generator.generateWriter(forEach.body(), parcel, flags, componentType, forEach.var());
+        }
+
+        private ReadWriteGenerator getGenerator(ASTType type) {
+            for (Map.Entry<Matcher<ASTType>, ReadWriteGenerator> generatorEntry : generators.entrySet()) {
+                if(generatorEntry.getKey().matches(type)){
+                    return generatorEntry.getValue();
+                }
+            }
+            throw new ParcelerRuntimeException("Unable to find appropriate Parcel method to write " + type.getName());
         }
     }
 
@@ -504,28 +537,6 @@ public class ParcelableGenerator {
         }
     }
 
-    public static class ListOfParcelsMatcher implements Matcher<ASTType>{
-
-        private final ASTClassFactory astClassFactory;
-        private final ExternalParcelRepository externalParcelRepository;
-
-        public ListOfParcelsMatcher(ExternalParcelRepository externalParcelRepository, ASTClassFactory astClassFactory) {
-            this.externalParcelRepository = externalParcelRepository;
-            this.astClassFactory = astClassFactory;
-        }
-
-        @Override
-        public boolean matches(ASTType type) {
-            Matcher<ASTType> listMatcher = Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build();
-            Matcher<ASTType> arrayListMatcher = Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build();
-            if(listMatcher.matches(type) || arrayListMatcher.matches(type) && type.getGenericParameters().size() > 0){
-                ASTType genericType = type.getGenericParameters().iterator().next();
-                return genericType.isAnnotated(Parcel.class) || externalParcelRepository.contains(genericType);
-            }
-            return false;
-        }
-    }
-
     private void setup() {
         addPair(byte.class, "readByte", "writeByte");
         addPair(Byte.class, "readByte", "writeByte", byte.class);
@@ -548,19 +559,18 @@ public class ParcelableGenerator {
         addPair(String.class, "readString", "writeString");
         addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
         addPair("android.os.Bundle", "readBundle", "writeBundle");
-        generators.put(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
         addPair(Exception.class, "readException", "writeException");
         addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.put(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", "android.util.SparseArray"));
         generators.put(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.put(new ImplementsMatcher(new ASTArrayType(new ASTStringType("android.os.Parcelable"))), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", "[Landroid.os.Parcelable;"));
         generators.put(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, codeModel));
-        generators.put(new ListOfParcelsMatcher(externalParcelRepository, astClassFactory), new ListOfParcelsReadWriteGenerator(generationUtil, codeModel, variableNamer));
-        generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
+        generators.put(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, variableNamer, generators, astClassFactory, codeModel));
         generators.put(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readArrayList", "writeList", List.class));
         generators.put(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap", Map.class));
         generators.put(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readHashMap", "writeMap", Map.class));
         generators.put(new InheritsMatcher(astClassFactory.getType(Serializable.class)), new SerializableReadWriteGenerator());
+        generators.put(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
     }
 
     private void addPair(Class clazz, String readMethod, String writeMethod) {

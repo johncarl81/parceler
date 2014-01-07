@@ -30,7 +30,9 @@ public class ConverterTarget {
     String s;
     List<String> list;
     Map<String, String> map;
+    SubParcel parcel;
     List<SubParcel> parcelList;
+    List<List<SubParcel>> multiList;
 
     public ConverterTarget(){}
 

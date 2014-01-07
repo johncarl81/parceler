@@ -57,8 +57,8 @@ public class ParcelsGenerator {
             JClass parcelableFactoryWildcard = generationUtil.ref(Parcels.ParcelableFactory.class).narrow(codeModel.wildcard());
             parcelsDefinedClass._implements(generationUtil.ref(Repository.class).narrow(parcelableFactoryWildcard));
 
-            JClass mapRef = codeModel.ref(Map.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
-            JClass hashMapRef = codeModel.ref(HashMap.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
+            JClass mapRef = generationUtil.ref(Map.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
+            JClass hashMapRef = generationUtil.ref(HashMap.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
 
             JFieldVar parcelWrappers = parcelsDefinedClass.field(JMod.PRIVATE | JMod.FINAL, mapRef, MAP_NAME, JExpr._new(hashMapRef));
 
@@ -72,7 +72,7 @@ public class ParcelsGenerator {
 
                 JDefinedClass factoryDefinedClass = parcelsDefinedClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, innerClassName);
 
-                factoryDefinedClass._implements(codeModel.ref(Parcels.ParcelableFactory.class).narrow(type));
+                factoryDefinedClass._implements(generationUtil.ref(Parcels.ParcelableFactory.class).narrow(type));
 
                 JMethod method = factoryDefinedClass.method(JMod.PUBLIC, astTypeJDefinedClassEntry.getValue(), Parcels.ParcelableFactory.BUILD_PARCELABLE);
                 method.annotate(Override.class);
