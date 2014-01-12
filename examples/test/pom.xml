@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parceler-test</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4</version>
     <packaging>jar</packaging>
 
     <name>Parceler Integration Test</name>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.parceler</groupId>
         <artifactId>parceler-examples</artifactId>
-        <version>0.2.4-SNAPSHOT</version>
+        <version>0.2.4</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,13 +19,13 @@
         <dependency>
             <groupId>org.parceler</groupId>
             <artifactId>parceler</artifactId>
-            <version>0.2.4-SNAPSHOT</version>
+            <version>0.2.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.parceler</groupId>
             <artifactId>parceler-api</artifactId>
-            <version>0.2.4-SNAPSHOT</version>
+            <version>0.2.4</version>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
