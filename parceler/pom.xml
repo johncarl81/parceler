@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.androidtransfuse</groupId>
             <artifactId>transfuse-bootstrap</artifactId>
-            <version>0.2.7-SNAPSHOT</version>
+            <version>0.2.7</version>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
