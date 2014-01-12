@@ -531,13 +531,15 @@ public class ParcelableGenerator {
 
             ASTType keyComponentType = astClassFactory.getType(Object.class);
             ASTType valueComponentType = astClassFactory.getType(Object.class);
+            JClass keyType = generationUtil.ref(Object.class);
+            JClass valueType = generationUtil.ref(Object.class);
 
             if(type.getGenericParameters().size() == 2){
                 UnmodifiableIterator<ASTType> iterator = type.getGenericParameters().iterator();
                 keyComponentType = iterator.next();
                 valueComponentType = iterator.next();
-                JClass keyType = generationUtil.narrowRef(keyComponentType);
-                JClass valueType = generationUtil.narrowRef(valueComponentType);
+                keyType = generationUtil.narrowRef(keyComponentType);
+                valueType = generationUtil.narrowRef(valueComponentType);
                 outputType = outputType.narrow(keyType, valueType);
                 hashMapType = hashMapType.narrow(keyType, valueType);
             }
@@ -566,9 +568,12 @@ public class ParcelableGenerator {
             ReadWriteGenerator valueGenerator = getGenerator(valueComponentType);
 
             JExpression readKeyExpression = keyGenerator.generateReader(readLoopBody, parcelParam, keyComponentType, generationUtil.ref(keyComponentType), parcelableClass);
-            JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass);
+            JVar keyVar = readLoopBody.decl(keyType, namer.generateName(keyComponentType), readKeyExpression);
 
-            readLoopBody.invoke(outputVar, "put").arg(readKeyExpression).arg(readValueExpression);
+            JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass);
+            JVar valueVar = readLoopBody.decl(valueType, namer.generateName(valueComponentType), readValueExpression);
+
+            readLoopBody.invoke(outputVar, "put").arg(keyVar).arg(valueVar);
 
             return outputVar;
         }
