@@ -443,11 +443,23 @@ public class ParcelableGenerator {
                 arrayListType = arrayListType.narrow(generationUtil.narrowRef(componentType));
             }
 
-            JVar outputVar = body.decl(outputType, namer.generateName(List.class), JExpr._new(arrayListType));
+            JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-            JForLoop forLoop = body._for();
+            JVar outputVar = body.decl(outputType, namer.generateName(List.class));
+
+            JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
+
+            JBlock nullBody = nullInputConditional._then();
+
+            nullBody.assign(outputVar, JExpr._null());
+
+            JBlock nonNullBody = nullInputConditional._else();
+
+            nonNullBody.assign(outputVar, JExpr._new(arrayListType));
+
+            JForLoop forLoop = nonNullBody._for();
             JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
-            forLoop.test(nVar.gt(parcelParam.invoke("readInt")));
+            forLoop.test(nVar.lt(sizeVar));
             forLoop.update(nVar.incr());
             JBlock readLoopBody = forLoop.body();
 
@@ -476,6 +488,7 @@ public class ParcelableGenerator {
 
             JBlock writeBody = nullConditional._else();
 
+            writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
             JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression);
 
             ReadWriteGenerator generator = getGenerator(componentType);
@@ -529,11 +542,23 @@ public class ParcelableGenerator {
                 hashMapType = hashMapType.narrow(keyType, valueType);
             }
 
-            JVar outputVar = body.decl(outputType, namer.generateName(Map.class), JExpr._new(hashMapType));
+            JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-            JForLoop forLoop = body._for();
+            JVar outputVar = body.decl(outputType, namer.generateName(Map.class));
+
+            JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
+
+            JBlock nullBody = nullInputConditional._then();
+
+            nullBody.assign(outputVar, JExpr._null());
+
+            JBlock nonNullBody = nullInputConditional._else();
+
+            nonNullBody.assign(outputVar, JExpr._new(hashMapType));
+
+            JForLoop forLoop = nonNullBody._for();
             JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
-            forLoop.test(nVar.gt(parcelParam.invoke("readInt")));
+            forLoop.test(nVar.lt(sizeVar));
             forLoop.update(nVar.incr());
             JBlock readLoopBody = forLoop.body();
 
@@ -569,6 +594,8 @@ public class ParcelableGenerator {
             nullConditional._then().invoke(parcel, "writeInt").arg(JExpr.lit(-1));
 
             JBlock writeBody = nullConditional._else();
+
+            writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
 
             JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression.invoke("entrySet"));
 
