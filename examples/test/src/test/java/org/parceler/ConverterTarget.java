@@ -33,6 +33,8 @@ public class ConverterTarget {
     SubParcel parcel;
     List<SubParcel> parcelList;
     List<List<SubParcel>> multiList;
+    Map<SubParcel, SubParcel> parcelMap;
+    Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> ridiculousMap;
 
     public ConverterTarget(){}
 
