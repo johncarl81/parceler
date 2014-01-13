@@ -16,6 +16,8 @@ import org.androidtransfuse.util.matcher.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.parceler.Parcels;
+import org.parceler.internal.generator.ReadWriteGenerator;
+import org.parceler.internal.generator.ReadWriteGeneratorBase;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -120,23 +122,6 @@ public class ParcelableGeneratorTest {
         descriptor.setConstructorPair(constructorReference);
 
         testSerialization(descriptor);
-    }
-
-    @Test
-    public void testParcelMethodUsage() throws NoSuchMethodException {
-        for (Map.Entry<Matcher<ASTType>, ParcelableGenerator.ReadWriteGenerator> entry : generator.getGenerators().entrySet()) {
-
-            if(entry.getValue() instanceof ParcelableGenerator.ReadWriteGeneratorBase){
-                ParcelableGenerator.ReadWriteGeneratorBase readWriteGeneratorBase = (ParcelableGenerator.ReadWriteGeneratorBase)entry.getValue();
-                Method readMethod = Parcel.class.getMethod(readWriteGeneratorBase.getReadMethod(), readWriteGeneratorBase.getReadMethodParams());
-                assertNotNull(readMethod);
-                Method writeMethod = Parcel.class.getMethod(readWriteGeneratorBase.getWriteMethod(), readWriteGeneratorBase.getWriteMethodParams());
-                assertNotNull(writeMethod);
-            }
-            else{
-                assertTrue("Found ReadWriteGenerator that wasn't covered by test: "+ entry.getValue().getClass(), false);
-            }
-        }
     }
 
     @Test

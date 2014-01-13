@@ -18,20 +18,25 @@ package org.parceler.internal;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
+import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTFactory;
+import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.annotations.*;
 import org.androidtransfuse.bootstrap.BootstrapModule;
 import org.androidtransfuse.bootstrap.Namespace;
-import org.androidtransfuse.gen.ClassGenerationStrategy;
-import org.androidtransfuse.gen.FilerResourceWriter;
-import org.androidtransfuse.gen.FilerSourceCodeWriter;
-import org.androidtransfuse.gen.InjectionBuilderContextFactory;
+import org.androidtransfuse.gen.*;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
+import org.androidtransfuse.util.matcher.Matchers;
+import org.parceler.internal.generator.*;
+import org.parceler.internal.matcher.ImplementsMatcher;
+import org.parceler.internal.matcher.InheritsMatcher;
+import org.parceler.internal.matcher.ParcelMatcher;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -40,6 +45,10 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @BootstrapModule
@@ -154,5 +163,61 @@ public class ParcelerModule {
         TransactionProcessor processorChain = new TransactionProcessorChain(externalParcelProcessor, processor);
 
         return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionFactory, externalParcelTransactionFactory, parcelTransactionFactory);
+    }
+
+    @Provides
+    public Generators getGenerators(ASTClassFactory astClassFactory,
+                                    ClassGenerationUtil generationUtil,
+                                    ExternalParcelRepository externalParcelRepository,
+                                    UniqueVariableNamer namer,
+                                    JCodeModel codeModel,
+                                    SerializableReadWriteGenerator serializableReadWriteGenerator){
+
+        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator);
+    }
+    
+    public static Generators addGenerators(Generators generators,
+                                           ASTClassFactory astClassFactory,
+                                           ClassGenerationUtil generationUtil,
+                                           ExternalParcelRepository externalParcelRepository,
+                                           UniqueVariableNamer namer,
+                                           JCodeModel codeModel,
+                                           SerializableReadWriteGenerator serializableReadWriteGenerator){
+
+        generators.addPair(byte.class, "readByte", "writeByte");
+        generators.addPair(Byte.class, "readByte", "writeByte", byte.class);
+        generators.addPair(double.class, "readDouble", "writeDouble");
+        generators.addPair(Double.class, "readDouble", "writeDouble", double.class);
+        generators.addPair(float.class, "readFloat", "writeFloat");
+        generators.addPair(Float.class, "readFloat", "writeFloat", float.class);
+        generators.addPair(int.class, "readInt", "writeInt");
+        generators.addPair(Integer.class, "readInt", "writeInt", int.class);
+        generators.addPair(long.class, "readLong", "writeLong");
+        generators.addPair(Long.class, "readLong", "writeLong", long.class);
+        generators.addPair(byte[].class, "createByteArray", "writeByteArray");
+        generators.addPair(char[].class, "createCharArray", "writeCharArray");
+        generators.addPair(boolean[].class, "createBooleanArray", "writeBooleanArray");
+        generators.addPair(int[].class, "createIntArray", "writeIntArray");
+        generators.addPair(long[].class, "createLongArray", "writeLongArray");
+        generators.addPair(float[].class, "createFloatArray", "writeFloatArray");
+        generators.addPair(double[].class, "createDoubleArray", "writeDoubleArray");
+        generators.addPair(String[].class, "createStringArray", "writeStringArray");
+        generators.addPair(String.class, "readString", "writeString");
+        generators.addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
+        generators.addPair("android.os.Bundle", "readBundle", "writeBundle");
+        generators.addPair(Exception.class, "readException", "writeException");
+        generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
+        generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new ClassloaderReadWriteGenerator("readSparseArray", "writeSparseArray", "android.util.SparseArray"));
+        generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
+        generators.add(new ImplementsMatcher(new ASTArrayType(new ASTStringType("android.os.Parcelable"))), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", "[Landroid.os.Parcelable;"));
+        generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil));
+        generators.add(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new InheritsMatcher(astClassFactory.getType(Serializable.class)), serializableReadWriteGenerator);
+        generators.add(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
+
+        return generators;
     }
 }
