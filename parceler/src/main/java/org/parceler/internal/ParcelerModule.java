@@ -46,10 +46,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @BootstrapModule
 @DefineScope(annotation = CodeGenerationScope.class, scope = ThreadLocalScope.class)
@@ -215,6 +212,8 @@ public class ParcelerModule {
         generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(Matchers.type(astClassFactory.getType(Set.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(Matchers.type(astClassFactory.getType(HashSet.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new InheritsMatcher(astClassFactory.getType(Serializable.class)), serializableReadWriteGenerator);
         generators.add(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
 

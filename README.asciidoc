@@ -96,6 +96,8 @@ types:
  * +ArrayList+
  * +Map+
  * +HashMap+
+ * +Set+
+ * +HashSet+
  * +Parcel+
  * +Parcel[]+
  * +Serializable+

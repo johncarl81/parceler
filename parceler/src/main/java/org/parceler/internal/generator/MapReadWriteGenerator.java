@@ -36,7 +36,6 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass outputType = generationUtil.ref(Map.class);
         JClass hashMapType = generationUtil.ref(HashMap.class);
 
         ASTType keyComponentType = astClassFactory.getType(Object.class);
@@ -50,13 +49,12 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
             valueComponentType = iterator.next();
             keyType = generationUtil.narrowRef(keyComponentType);
             valueType = generationUtil.narrowRef(valueComponentType);
-            outputType = outputType.narrow(keyType, valueType);
             hashMapType = hashMapType.narrow(keyType, valueType);
         }
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-        JVar outputVar = body.decl(outputType, namer.generateName(Map.class));
+        JVar outputVar = body.decl(hashMapType, namer.generateName(Map.class));
 
         JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
 

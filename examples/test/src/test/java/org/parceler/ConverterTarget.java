@@ -1,7 +1,9 @@
 package org.parceler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author John Ericksen
@@ -32,9 +34,10 @@ public class ConverterTarget {
     Map<String, String> map;
     SubParcel parcel;
     List<SubParcel> parcelList;
-    List<List<SubParcel>> multiList;
+    ArrayList<List<SubParcel>> multiList;
     Map<SubParcel, SubParcel> parcelMap;
     Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> ridiculousMap;
+    Set<String> stringSet;
 
     public ConverterTarget(){}
 
