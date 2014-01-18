@@ -1,5 +1,7 @@
 package org.parceler;
 
+import android.util.SparseArray;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,7 @@ public class ConverterTarget {
     Map<SubParcel, SubParcel> parcelMap;
     Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> ridiculousMap;
     Set<String> stringSet;
+    SparseArray<List<SubParcel>> stringSparseArray;
 
     public ConverterTarget(){}
 
