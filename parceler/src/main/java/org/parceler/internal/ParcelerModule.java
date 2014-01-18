@@ -18,7 +18,6 @@ package org.parceler.internal;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
-import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
@@ -34,6 +33,7 @@ import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
 import org.androidtransfuse.util.matcher.Matchers;
 import org.parceler.internal.generator.*;
+import org.parceler.internal.matcher.ArrayMatcher;
 import org.parceler.internal.matcher.ImplementsMatcher;
 import org.parceler.internal.matcher.InheritsMatcher;
 import org.parceler.internal.matcher.ParcelMatcher;
@@ -191,22 +191,14 @@ public class ParcelerModule {
         generators.addPair(Integer.class, "readInt", "writeInt", int.class);
         generators.addPair(long.class, "readLong", "writeLong");
         generators.addPair(Long.class, "readLong", "writeLong", long.class);
-        generators.addPair(byte[].class, "createByteArray", "writeByteArray");
-        generators.addPair(char[].class, "createCharArray", "writeCharArray");
-        generators.addPair(boolean[].class, "createBooleanArray", "writeBooleanArray");
-        generators.addPair(int[].class, "createIntArray", "writeIntArray");
-        generators.addPair(long[].class, "createLongArray", "writeLongArray");
-        generators.addPair(float[].class, "createFloatArray", "writeFloatArray");
-        generators.addPair(double[].class, "createDoubleArray", "writeDoubleArray");
-        generators.addPair(String[].class, "createStringArray", "writeStringArray");
         generators.addPair(String.class, "readString", "writeString");
         generators.addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
         generators.addPair("android.os.Bundle", "readBundle", "writeBundle");
         generators.addPair(Exception.class, "readException", "writeException");
+        generators.add(new ArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
-        generators.add(new ImplementsMatcher(new ASTArrayType(new ASTStringType("android.os.Parcelable"))), new ParcelableReadWriteGenerator("readParcelableArray", "writeParcelableArray", "[Landroid.os.Parcelable;"));
         generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil));
         generators.add(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
@@ -215,7 +207,6 @@ public class ParcelerModule {
         generators.add(Matchers.type(astClassFactory.getType(Set.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(HashSet.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new InheritsMatcher(astClassFactory.getType(Serializable.class)), serializableReadWriteGenerator);
-        generators.add(Matchers.type(astClassFactory.getType(Object[].class)).build(), new ClassloaderReadWriteGenerator("readArray", "writeArray", Object[].class));
 
         return generators;
     }
