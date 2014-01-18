@@ -20,7 +20,7 @@ package org.parceler;
  */
 public class ExternalParcel {
 
-    private String value;
+    String value;
 
     public String getValue() {
         return value;

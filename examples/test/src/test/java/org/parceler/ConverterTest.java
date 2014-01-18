@@ -1,90 +1,41 @@
 package org.parceler;
 
 import android.os.Parcelable;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import uk.co.jemos.podam.api.PodamFactory;
+import uk.co.jemos.podam.api.PodamFactoryImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author John Ericksen
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
 public class ConverterTest {
-    
+
+    private PodamFactory factory;
+
+    @Before
+    public void init() {
+        factory = new PodamFactoryImpl();
+    }
+
     @Test
     public void testTypes(){
 
-        byte b = 1;
-        Byte bobj = 1;
-        double d = 42.24;
-        Double dobj = 42.42;
-        float f = 0.2424f;
-        Float fobj = 20.2424f;
-        int i = 5;
-        Integer iobj = 6;
-        long l = 7;
-        Long lobj = 8L;
-        byte[] bya = {0, 1, 0, 1};
-        char[] ca = {'t', 'e', 's', 't'};
-        boolean[] ba = {true, false};
-        int[] ia = {1, 2, 3, 4};
-        long[] la = {6, 7, 8};
-        float[] fa = {0.1f, 1.2f};
-        double[] da = {1.2, 3.4};
-        String[] sa = {"one", "two"};
-        String s = "test";
-        //IBinder binder = new TestBinder();
-        //Bundle bundle = new Bundle();
-        //Object[] oa = {"obj1", "obj2"};
-        //SparseArray sparseArray = new SparseArray(3);
-        //sparseArray.put(3, "Test");
-        //sparseArray.put(8, "Eight");
-        //SparseBooleanArray sparseBooleanArray = new SparseBooleanArray();
-        //sparseBooleanArray.put(7, true);
-        //sparseBooleanArray.put(5, false);
-        //Exception exception = new Exception("test");
-        List<String> list = new ArrayList<String>();
-        list.add("one");
-        list.add("two");
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("one", "two");
-        map.put("three", "four");
+        ConverterTarget target = factory.manufacturePojo(ConverterTarget.class);
 
-        List<SubParcel> parcelList = new ArrayList<SubParcel>();
+        android.os.Parcel parcel = android.os.Parcel.obtain();
+        Parcelable parcelable = new ConverterTarget$$Parcelable(target);
+        parcelable.writeToParcel(parcel, 0);
 
-        parcelList.add(new SubParcel("test"));
+        ConverterTarget unwrapped = Parcels.unwrap(new ConverterTarget$$Parcelable(parcel));
 
-        ConverterTarget target = new ConverterTarget(b, bobj, d, dobj, f, fobj, i, iobj, l, lobj, bya, ca, ba, ia, la, fa, da, sa, s, list, map, parcelList);
-
-        Parcelable converted = Parcels.wrap(target);
-        ConverterTarget unwrapped = Parcels.unwrap(converted);
-
-        assertEquals(b, unwrapped.getB());
-        assertEquals(bobj, unwrapped.getBobj());
-        assertEquals(d, unwrapped.getD());
-        assertEquals(dobj, unwrapped.getDobj());
-        assertEquals(f, unwrapped.getF());
-        assertEquals(fobj, unwrapped.getFobj());
-        assertEquals(i, unwrapped.getI());
-        assertEquals(iobj, unwrapped.getIobj());
-        assertEquals(l, unwrapped.getL());
-        assertEquals(lobj, unwrapped.getLobj());
-        assertEquals(bya, unwrapped.getBya());
-        assertEquals(ca, unwrapped.getCa());
-        assertEquals(ba, unwrapped.getBa());
-        assertEquals(ia, unwrapped.getIa());
-        assertEquals(la, unwrapped.getLa());
-        assertEquals(fa, unwrapped.getFa());
-        assertEquals(da, unwrapped.getDa());
-        assertEquals(sa, unwrapped.getSa());
-        assertEquals(s, unwrapped.getS());
-        assertEquals(list, unwrapped.getList());
-        assertEquals(map, unwrapped.getMap());
-        assertEquals(parcelList.size(), unwrapped.getParcelList().size());
-        assertEquals(parcelList.get(0).getName(), unwrapped.getParcelList().get(0).getName());
+        assertTrue(target.equals(unwrapped));
     }
 }

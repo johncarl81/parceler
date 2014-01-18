@@ -15,14 +15,20 @@
  */
 package org.parceler;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author John Ericksen
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
 public class ParcelTest {
 
     @Test
@@ -35,14 +41,13 @@ public class ParcelTest {
 
         ExampleParcel example = new ExampleParcel(one, two, three, sub);
 
-        Parcelable parcelable = Parcels.wrap(example);
-        ExampleParcel parcel = Parcels.unwrap(parcelable);
+        ExampleParcel exampleParcel = Parcels.unwrap(new ExampleParcel$$Parcelable(wrap(example)));
 
-        assertEquals(one, parcel.getOne());
-        assertEquals(two, parcel.getTwo());
-        assertEquals(three, parcel.getThree());
-        assertEquals(sub, parcel.getFour());
-        assertEquals(name, parcel.getFour().getName());
+        assertEquals(one, exampleParcel.getOne());
+        assertEquals(two, exampleParcel.getTwo());
+        assertEquals(three, exampleParcel.getThree());
+        assertEquals(sub, exampleParcel.getFour());
+        assertEquals(name, exampleParcel.getFour().getName());
     }
 
     @Test
@@ -53,8 +58,7 @@ public class ParcelTest {
         Manual input = new Manual();
         input.setValue(value);
 
-        Parcelable parcelable = Parcels.wrap(input);
-        Manual output = Parcels.unwrap(parcelable);
+        Manual output = Parcels.unwrap(new Manual$$Parcelable(wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -67,8 +71,7 @@ public class ParcelTest {
         ExternalParcel input = new ExternalParcel();
         input.setValue(value);
 
-        Parcelable parcelable = Parcels.wrap(input);
-        ExternalParcel output = Parcels.unwrap(parcelable);
+        ExternalParcel output = Parcels.unwrap(new ExternalParcel$$Parcelable(wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -81,9 +84,17 @@ public class ParcelTest {
         ManuallyRegistered input = new ManuallyRegistered();
         input.setValue(value);
 
-        Parcelable parcelable = Parcels.wrap(input);
-        ManuallyRegistered output = Parcels.unwrap(parcelable);
+        ManuallyRegistered output = Parcels.unwrap(new ManuallyRegistered$$Parcelable(wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
+    }
+
+    private Parcel wrap(Object input){
+        android.os.Parcel parcel = android.os.Parcel.obtain();
+
+        Parcelable parcelable = Parcels.wrap(input);
+        parcelable.writeToParcel(parcel, 0);
+
+        return parcel;
     }
 }
