@@ -1,7 +1,10 @@
 package org.parceler;
 
+import android.util.SparseArray;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import uk.co.jemos.podam.annotations.PodamCollection;
+import uk.co.jemos.podam.annotations.PodamStrategyValue;
 
 import java.util.*;
 
@@ -11,37 +14,52 @@ import java.util.*;
 @Parcel
 public class ConverterTarget {
 
+    @Transient
+    private static final String[] FIELDS_EXCLUDED = {"stringHashSetArray", "sparseArray"};
+
     byte b;
     Byte bobj;
+    //todo: test byte[] bya;
     double d;
     Double dobj;
+    double[] da;
     float f;
     Float fobj;
+    float[] fa;
     int i;
     Integer iobj;
+    int[] ia;
     long l;
     Long lobj;
-    byte[] bya;
-    char[] ca;
-    boolean[] ba;
-    int[] ia;
     long[] la;
-    float[] fa;
-    double[] da;
-    String[] sa;
-    SubParcel[] subparcela;
+    //todo: test char c;
+    //todo: test Character cobj;
+    //todo: test char[] ca;
+    //todo: test boolean bo;
+    //todo: test Boolean boobj;
+    //todo: test boolean[] ba;
     String s;
+    String[] sa;
+    @PodamCollection(collectionElementStrategy = SubParcelStrategy.class)
+    SubParcel[] subparcela;
     List<String> list;
     Map<String, String> map;
+    @PodamStrategyValue(SubParcelStrategy.class)
     SubParcel parcel;
+    @PodamCollection(collectionElementStrategy = SubParcelStrategy.class)
     List<SubParcel> parcelList;
-    ArrayList<List<SubParcel>> multiList;
+    ArrayList<List<String>> multiList;
+    @PodamCollection(mapKeyStrategy = SubParcelStrategy.class, mapElementStrategy = SubParcelStrategy.class)
     Map<SubParcel, SubParcel> parcelMap;
+    @PodamCollection(mapKeyStrategy = SubParcelStrategy.class, mapElementStrategy = SubParcelStrategy.class)
     HashMap<SubParcel, SubParcel> parcelHashMap;
-    Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> ridiculousMap;
+    Map<List<Map<String, Integer>>, Map<List<String>, Integer>> ridiculousMap;
     Set<String> stringSet;
     HashSet<String> stringHashSet;
-
+    @PodamCollection(collectionElementStrategy = StringArrayStrategy.class)
+    HashSet<String[]> stringHashSetArray;
+    Integer[][] multidimensionalArray;
+    SparseArray<String> sparseArray;
 
     public byte getB() {
         return b;
@@ -75,6 +93,14 @@ public class ConverterTarget {
         this.dobj = dobj;
     }
 
+    public double[] getDa() {
+        return da;
+    }
+
+    public void setDa(double[] da) {
+        this.da = da;
+    }
+
     public float getF() {
         return f;
     }
@@ -89,6 +115,14 @@ public class ConverterTarget {
 
     public void setFobj(Float fobj) {
         this.fobj = fobj;
+    }
+
+    public float[] getFa() {
+        return fa;
+    }
+
+    public void setFa(float[] fa) {
+        this.fa = fa;
     }
 
     public int getI() {
@@ -107,6 +141,14 @@ public class ConverterTarget {
         this.iobj = iobj;
     }
 
+    public int[] getIa() {
+        return ia;
+    }
+
+    public void setIa(int[] ia) {
+        this.ia = ia;
+    }
+
     public long getL() {
         return l;
     }
@@ -123,12 +165,36 @@ public class ConverterTarget {
         this.lobj = lobj;
     }
 
+    public long[] getLa() {
+        return la;
+    }
+
+    public void setLa(long[] la) {
+        this.la = la;
+    }
+
     public String getS() {
         return s;
     }
 
     public void setS(String s) {
         this.s = s;
+    }
+
+    public String[] getSa() {
+        return sa;
+    }
+
+    public void setSa(String[] sa) {
+        this.sa = sa;
+    }
+
+    public SubParcel[] getSubparcela() {
+        return subparcela;
+    }
+
+    public void setSubparcela(SubParcel[] subparcela) {
+        this.subparcela = subparcela;
     }
 
     public List<String> getList() {
@@ -163,11 +229,11 @@ public class ConverterTarget {
         this.parcelList = parcelList;
     }
 
-    public ArrayList<List<SubParcel>> getMultiList() {
+    public ArrayList<List<String>> getMultiList() {
         return multiList;
     }
 
-    public void setMultiList(ArrayList<List<SubParcel>> multiList) {
+    public void setMultiList(ArrayList<List<String>> multiList) {
         this.multiList = multiList;
     }
 
@@ -179,11 +245,19 @@ public class ConverterTarget {
         this.parcelMap = parcelMap;
     }
 
-    public Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> getRidiculousMap() {
+    public HashMap<SubParcel, SubParcel> getParcelHashMap() {
+        return parcelHashMap;
+    }
+
+    public void setParcelHashMap(HashMap<SubParcel, SubParcel> parcelHashMap) {
+        this.parcelHashMap = parcelHashMap;
+    }
+
+    public Map<List<Map<String, Integer>>, Map<List<String>, Integer>> getRidiculousMap() {
         return ridiculousMap;
     }
 
-    public void setRidiculousMap(Map<List<Map<SubParcel, Integer>>, Map<List<String>, Integer>> ridiculousMap) {
+    public void setRidiculousMap(Map<List<Map<String, Integer>>, Map<List<String>, Integer>> ridiculousMap) {
         this.ridiculousMap = ridiculousMap;
     }
 
@@ -195,86 +269,6 @@ public class ConverterTarget {
         this.stringSet = stringSet;
     }
 
-    public byte[] getBya() {
-        return bya;
-    }
-
-    public void setBya(byte[] bya) {
-        this.bya = bya;
-    }
-
-    public char[] getCa() {
-        return ca;
-    }
-
-    public void setCa(char[] ca) {
-        this.ca = ca;
-    }
-
-    public boolean[] getBa() {
-        return ba;
-    }
-
-    public void setBa(boolean[] ba) {
-        this.ba = ba;
-    }
-
-    public int[] getIa() {
-        return ia;
-    }
-
-    public void setIa(int[] ia) {
-        this.ia = ia;
-    }
-
-    public long[] getLa() {
-        return la;
-    }
-
-    public void setLa(long[] la) {
-        this.la = la;
-    }
-
-    public float[] getFa() {
-        return fa;
-    }
-
-    public void setFa(float[] fa) {
-        this.fa = fa;
-    }
-
-    public double[] getDa() {
-        return da;
-    }
-
-    public void setDa(double[] da) {
-        this.da = da;
-    }
-
-    public String[] getSa() {
-        return sa;
-    }
-
-    public void setSa(String[] sa) {
-        this.sa = sa;
-    }
-
-    public SubParcel[] getSubparcela() {
-        return subparcela;
-    }
-
-    public void setSubparcela(SubParcel[] subparcela) {
-        this.subparcela = subparcela;
-    }
-
-    public HashMap<SubParcel, SubParcel> getParcelHashMap() {
-        return parcelHashMap;
-    }
-
-    public void setParcelHashMap(HashMap<SubParcel, SubParcel> parcelHashMap) {
-        this.parcelHashMap = parcelHashMap;
-    }
-
     public HashSet<String> getStringHashSet() {
         return stringHashSet;
     }
@@ -283,13 +277,37 @@ public class ConverterTarget {
         this.stringHashSet = stringHashSet;
     }
 
+    public Integer[][] getMultidimensionalArray() {
+        return multidimensionalArray;
+    }
+
+    public void setMultidimensionalArray(Integer[][] multidimensionalArray) {
+        this.multidimensionalArray = multidimensionalArray;
+    }
+
+    public SparseArray<String> getSparseArray() {
+        return sparseArray;
+    }
+
+    public void setSparseArray(SparseArray<String> sparseArray) {
+        this.sparseArray = sparseArray;
+    }
+
+    public HashSet<String[]> getStringHashSetArray() {
+        return stringHashSetArray;
+    }
+
+    public void setStringHashSetArray(HashSet<String[]> stringHashSetArray) {
+        this.stringHashSetArray = stringHashSetArray;
+    }
+
     @Override
     public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that);
+        return EqualsBuilder.reflectionEquals(this, that, FIELDS_EXCLUDED);
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, FIELDS_EXCLUDED);
     }
 }

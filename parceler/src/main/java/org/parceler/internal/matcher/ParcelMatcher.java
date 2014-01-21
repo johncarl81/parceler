@@ -1,5 +1,6 @@
 package org.parceler.internal.matcher;
 
+import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.util.matcher.Matcher;
 import org.parceler.internal.ExternalParcelRepository;
@@ -17,6 +18,6 @@ public class ParcelMatcher implements Matcher<ASTType> {
 
     @Override
     public boolean matches(ASTType type) {
-        return type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type);
+        return (!(type instanceof ASTArrayType)) && type.isAnnotated(org.parceler.Parcel.class) || externalParcelRepository.contains(type);
     }
 }

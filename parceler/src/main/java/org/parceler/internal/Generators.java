@@ -1,23 +1,16 @@
 package org.parceler.internal;
 
-import com.sun.codemodel.JCodeModel;
-import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
-import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.util.matcher.Matcher;
 import org.androidtransfuse.util.matcher.Matchers;
 import org.parceler.ParcelerRuntimeException;
-import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.ImplementsMatcher;
-import org.parceler.internal.matcher.InheritsMatcher;
-import org.parceler.internal.matcher.ParcelMatcher;
+import org.parceler.internal.generator.ReadWriteGenerator;
+import org.parceler.internal.generator.SimpleReadWriteGenerator;
 
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author John Ericksen
@@ -59,6 +52,14 @@ public class Generators {
 
     public void addPair(ASTType type, String readMethod, String writeMethod, String writeParam){
         add(Matchers.type(type).build(), new SimpleReadWriteGenerator(readMethod, new String[0], writeMethod, new String[]{writeParam}));
+    }
+
+    public void addPair(Class clazz, ReadWriteGenerator generator){
+        addPair(astClassFactory.getType(clazz), generator);
+    }
+
+    public void addPair(ASTType type, ReadWriteGenerator generator){
+        add(Matchers.type(type).build(), generator);
     }
 
     public void add(Matcher<ASTType> matcher, ReadWriteGenerator generator) {
