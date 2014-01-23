@@ -46,21 +46,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.5.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.5.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4-rule-agent</artifactId>
-            <version>1.5.2</version>
+            <groupId>org.robolectric</groupId>
+            <artifactId>robolectric</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -77,16 +65,6 @@
                     <annotationProcessors>
                         <annotationProcessor>org.androidtransfuse.bootstrap.BootstrapProcessor</annotationProcessor>
                     </annotationProcessors>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14.1</version>
-                <configuration>
-                    <argLine>
-                        -javaagent:${settings.localRepository}/org/powermock/powermock-module-javaagent/1.5.2/powermock-module-javaagent-1.5.2.jar
-                    </argLine>
                 </configuration>
             </plugin>
             <plugin>

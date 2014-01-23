@@ -11,29 +11,27 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
-import org.androidtransfuse.util.matcher.Matcher;
 import org.androidtransfuse.util.matcher.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.parceler.Parcels;
-import org.parceler.internal.generator.ReadWriteGenerator;
-import org.parceler.internal.generator.ReadWriteGeneratorBase;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author John Ericksen
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
 @Bootstrap
 public class ParcelableGeneratorTest {
 
@@ -47,7 +45,7 @@ public class ParcelableGeneratorTest {
     private CodeGenerationUtil codeGenerationUtil;
 
     private ASTType targetType;
-    private Parcel mockParcel;
+    private Parcel parcel;
     private Target target;
 
     @Before
@@ -55,7 +53,7 @@ public class ParcelableGeneratorTest {
         Bootstraps.inject(this);
 
         targetType = astClassFactory.getType(Target.class);
-        mockParcel = mock(Parcel.class);
+        parcel = Parcel.obtain();
         target = new Target(TEST_VALUE);
     }
 
@@ -168,18 +166,14 @@ public class ParcelableGeneratorTest {
         ClassLoader classLoader = codeGenerationUtil.build();
         Class<Parcelable> parcelableClass = (Class<Parcelable>) classLoader.loadClass(targetGenerated.fullName());
 
-        when(mockParcel.readString()).thenReturn(TEST_VALUE);
-
         Parcelable outputParcelable = parcelableClass.getConstructor(Target.class).newInstance(target);
 
-        outputParcelable.writeToParcel(mockParcel, 0);
+        outputParcelable.writeToParcel(parcel, 0);
 
-        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(mockParcel);
+        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
 
         Target wrapped = Parcels.unwrap(inputParcelable);
 
         assertEquals(target.getValue(), wrapped.getValue());
-
-        verify(mockParcel).writeString(TEST_VALUE);
     }
 }

@@ -25,8 +25,11 @@ import org.androidtransfuse.bootstrap.Bootstraps;
 import org.androidtransfuse.util.Providers;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.parceler.Parcels;
 import org.parceler.RepositoryUpdater;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -36,15 +39,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author John Ericksen
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
 @Bootstrap
 public class ParcelableIntegrationTest {
 
@@ -61,11 +61,8 @@ public class ParcelableIntegrationTest {
     @Inject
     private ParcelableAnalysis parcelableAnalysis;
 
-    private ParcelTarget parcelTarget;
-    private Parcel mockParcel;
-    private Parcelable mockSecondParcel;
+    private Parcel parcel;
     private Class<Parcelable> parcelableClass;
-    private ParcelSecondTarget parcelSecondTarget;
 
     @Before
     public void setup() throws ClassNotFoundException, IOException, NoSuchFieldException, IllegalAccessException {
@@ -89,10 +86,17 @@ public class ParcelableIntegrationTest {
         ClassLoader classLoader = codeGenerationUtil.build();
 
         parcelableClass = (Class<Parcelable>) classLoader.loadClass(parcelableDefinedClass.fullName());
-        Class parcelableTwoClass = classLoader.loadClass(parcelableTwoDefinedClass.fullName());
 
-        parcelTarget = new ParcelTarget();
-        parcelSecondTarget = new ParcelSecondTarget();
+        parcel = Parcel.obtain();
+
+        RepositoryUpdater.updateParcels(classLoader);
+    }
+
+    @Test
+    public void testGeneratedParcelable() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+
+        ParcelTarget parcelTarget = new ParcelTarget();
+        ParcelSecondTarget parcelSecondTarget = new ParcelSecondTarget();
 
         parcelTarget.setDoubleValue(Math.PI);
         parcelTarget.setStringValue(TEST_VALUE);
@@ -100,31 +104,14 @@ public class ParcelableIntegrationTest {
 
         parcelSecondTarget.setValue(TEST_VALUE);
 
-        mockParcel = mock(Parcel.class);
-        mockSecondParcel = (Parcelable) mock(parcelableTwoClass);
-
-        RepositoryUpdater.updateParcels(classLoader);
-    }
-
-    @Test
-    public void testGeneratedParcelable() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        when(mockParcel.readString()).thenReturn(TEST_VALUE);
-        when(mockParcel.readDouble()).thenReturn(Math.PI);
-        when(mockParcel.readParcelable(any(ClassLoader.class))).thenReturn(mockSecondParcel);
-        when(Parcels.unwrap(mockSecondParcel)).thenReturn(parcelSecondTarget);
-
         Parcelable outputParcelable = parcelableClass.getConstructor(ParcelTarget.class).newInstance(parcelTarget);
 
-        outputParcelable.writeToParcel(mockParcel, 0);
+        outputParcelable.writeToParcel(parcel, 0);
 
-        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(mockParcel);
+        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
 
         ParcelTarget wrapped = Parcels.unwrap(inputParcelable);
 
         assertEquals(parcelTarget, wrapped);
-
-        verify(mockParcel).writeString(TEST_VALUE);
-        verify(mockParcel).writeDouble(Math.PI);
-        verify(mockParcel).writeParcelable(any(Parcelable.class), eq(0));
     }
 }
