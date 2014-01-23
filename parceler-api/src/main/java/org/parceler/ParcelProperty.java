@@ -15,16 +15,19 @@
  */
 package org.parceler;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * @author John Ericksen
  */
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({FIELD, METHOD, PARAMETER})
+@Retention(RUNTIME)
 public @interface ParcelProperty {
     String value();
+
+    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 }

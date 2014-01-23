@@ -21,6 +21,7 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.parceler.Parcel;
+import org.parceler.ParcelConverter;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -61,7 +62,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         if(astAnnotation != null){
 
             ASTType converterType = astAnnotation.getProperty("converter", ASTType.class);
-            ASTType emptyConverterType = astElementFactory.getType(elements.getTypeElement(Parcel.EmptyConverter.class.getCanonicalName()));
+            ASTType emptyConverterType = astElementFactory.getType(elements.getTypeElement(ParcelConverter.EmptyConverter.class.getCanonicalName()));
             if(!emptyConverterType.equals(converterType)){
                 return converterType;
             }

@@ -15,14 +15,15 @@
  */
 package org.parceler;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * @author John Ericksen
  */
-@Target(ElementType.CONSTRUCTOR)
-@Retention(RetentionPolicy.RUNTIME)
+@Target(CONSTRUCTOR)
+@Retention(RUNTIME)
 public @interface ParcelConstructor {}

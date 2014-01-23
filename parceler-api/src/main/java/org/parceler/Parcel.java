@@ -15,10 +15,11 @@
  */
 package org.parceler;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Identifies a class to be wrapped by a `Parcelable` wrapper.  This wrapper will serialize an instance of the current
@@ -55,8 +56,8 @@ import java.lang.annotation.Target;
  *
  * @author John Ericksen
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
+@Target(TYPE)
+@Retention(RUNTIME)
 public @interface Parcel {
 
     Serialization value() default Serialization.FIELD;
@@ -69,21 +70,5 @@ public @interface Parcel {
     /**
      * Optional Converter class.
      */
-    Class<? extends ParcelConverter> converter() default EmptyConverter.class;
-
-    /**
-     * Noop ParcelConverter used as a empty placeholder for the Parcel.value annotation parameter.  Performs no mapping
-     * and throws `ParcelerRuntimeExceptions` upon calling any method.
-     */
-    class EmptyConverter implements ParcelConverter<Object> {
-        @Override
-        public void toParcel(Object input, android.os.Parcel destinationParcel) {
-            throw new ParcelerRuntimeException("Empty Converter should not be used.");
-        }
-
-        @Override
-        public Object fromParcel(android.os.Parcel parcel) {
-            throw new ParcelerRuntimeException("Empty Converter should not be used.");
-        }
-    }
+    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 }

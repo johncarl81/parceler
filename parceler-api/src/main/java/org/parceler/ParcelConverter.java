@@ -40,4 +40,20 @@ public interface ParcelConverter<T> {
      * @return instance of the mapped class.
      */
     T fromParcel(android.os.Parcel parcel);
+
+    /**
+     * Noop ParcelConverter used as a empty placeholder for the Parcel.value annotation parameter.  Performs no mapping
+     * and throws `ParcelerRuntimeExceptions` upon calling any method.
+     */
+    class EmptyConverter implements ParcelConverter<Object> {
+        @Override
+        public void toParcel(Object input, android.os.Parcel destinationParcel) {
+            throw new ParcelerRuntimeException("Empty Converter should not be used.");
+        }
+
+        @Override
+        public Object fromParcel(android.os.Parcel parcel) {
+            throw new ParcelerRuntimeException("Empty Converter should not be used.");
+        }
+    }
 }
