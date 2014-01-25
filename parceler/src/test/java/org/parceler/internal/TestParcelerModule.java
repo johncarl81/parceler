@@ -16,9 +16,7 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.JCodeModel;
-import org.androidtransfuse.adapter.ASTArrayType;
 import org.androidtransfuse.adapter.ASTFactory;
-import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.annotations.Bind;
 import org.androidtransfuse.annotations.Bindings;
@@ -32,21 +30,12 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
-import org.androidtransfuse.util.matcher.Matchers;
-import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.ImplementsMatcher;
-import org.parceler.internal.matcher.InheritsMatcher;
-import org.parceler.internal.matcher.ParcelMatcher;
+import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @BootstrapModule
 @Bindings({
@@ -79,8 +68,6 @@ public class TestParcelerModule {
     public Messager getMessager(ErrorCheckingMessager messager){
         return messager;
     }
-
-
 
     @Provides
     public Generators getGenerators(ASTClassFactory astClassFactory,

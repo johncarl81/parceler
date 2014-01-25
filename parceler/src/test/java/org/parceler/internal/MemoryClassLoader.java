@@ -27,8 +27,14 @@ import java.util.Map;
  * @author John Ericksen
  */
 public class MemoryClassLoader extends ClassLoader {
+
     private final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     private final MemoryFileManager manager = new MemoryFileManager(this.compiler);
+
+    public MemoryClassLoader(){
+        //default ClassLoader backing
+        super(MemoryClassLoader.class.getClassLoader());
+    }
 
     public void add(String classname, String fileContent) {
         add(Collections.singletonMap(classname, fileContent));

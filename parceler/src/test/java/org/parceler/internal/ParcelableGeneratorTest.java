@@ -11,7 +11,6 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
-import org.androidtransfuse.util.matcher.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author John Ericksen
@@ -120,11 +118,6 @@ public class ParcelableGeneratorTest {
         descriptor.setConstructorPair(constructorReference);
 
         testSerialization(descriptor);
-    }
-
-    @Test
-    public void tester(){
-        assertTrue(Matchers.type(astClassFactory.getType(double[].class)).build().matches(astClassFactory.getType(double[].class)));
     }
 
     private ASTConstructor getConstructor(ImmutableSet<ASTConstructor> constructors, ASTType... parameters) {
