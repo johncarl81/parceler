@@ -282,10 +282,10 @@ public class ParcelableAnalysis {
         return parameters;
     }
 
-    private <T extends ASTBase> void validateSingleProperty(Map<String, List<ASTReference<T>>> input){
-        for (Map.Entry<String, List<ASTReference<T>>> entry : input.entrySet()) {
+    private void validateSingleProperty(Map<String, ? extends List<? extends ASTReference<? extends ASTBase>>> input){
+        for (Map.Entry<String, ? extends List<? extends ASTReference<? extends ASTBase>>> entry : input.entrySet()) {
             if(entry.getValue().size() != 1){
-                for (ASTReference<T> reference : entry.getValue()) {
+                for (ASTReference<? extends ASTBase> reference : entry.getValue()) {
                     validator.error("Too many properties defined under " + entry.getKey())
                             .element(reference.getReference())
                             .build();

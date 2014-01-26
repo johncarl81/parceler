@@ -108,6 +108,31 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
+    @Parcel
+    public static class UnnamedConstructorSerialization {
+        String value;
+
+        @ParcelConstructor
+        public UnnamedConstructorSerialization(@ASTClassFactory.ASTParameterName("value") String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testUnnamedConstructorSerialization() {
+
+        ASTType fieldType = astClassFactory.getType(UnnamedConstructorSerialization.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+
     @Parcel(Parcel.Serialization.METHOD)
     public static class Basic {
         String stringValue;
@@ -443,13 +468,36 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingConstructorParameterConverterSerialization {
-        @ParcelPropertyConverter(StringWriterConverter.class)
-        @ParcelProperty("value")
+    public static class UnnamedConstructorConverterSerialization {
         String value;
 
         @ParcelConstructor
-        public CollidingConstructorParameterConverterSerialization(@ParcelProperty("value") @ParcelPropertyConverter(StringWriterConverter.class) String value){
+        public UnnamedConstructorConverterSerialization(@ParcelPropertyConverter(StringWriterConverter.class) @ASTClassFactory.ASTParameterName("value")  String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testUnnamedConstructorConverterSerialization() {
+
+        ASTType targetAst = astClassFactory.getType(UnnamedConstructorConverterSerialization.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        ASTParameter parameter = analysis.getConstructorPair().getConstructor().getParameters().get(0);
+        Map<ASTParameter,ASTType> converters = analysis.getConstructorPair().getConverters();
+
+        assertEquals(1, converters.size());
+        assertEquals(converterAst, converters.get(parameter));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class CollidingConstructorParameterConverterSerialization {
+        @ParcelPropertyConverter(StringWriterConverter.class)
+        String value;
+
+        @ParcelConstructor
+        public CollidingConstructorParameterConverterSerialization(@ParcelPropertyConverter(StringWriterConverter.class) String value){
             this.value = value;
         }
     }
