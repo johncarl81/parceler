@@ -43,6 +43,7 @@ public class ParcelableGeneratorTest {
     private CodeGenerationUtil codeGenerationUtil;
 
     private ASTType targetType;
+    private ASTType converterType;
     private Parcel parcel;
     private Target target;
 
@@ -51,6 +52,7 @@ public class ParcelableGeneratorTest {
         Bootstraps.inject(this);
 
         targetType = astClassFactory.getType(Target.class);
+        converterType = astClassFactory.getType(StringWriterConverter.class);
         parcel = Parcel.obtain();
         target = new Target(TEST_VALUE);
     }
@@ -62,7 +64,19 @@ public class ParcelableGeneratorTest {
         descriptor.getFieldPairs().add(
                 new ReferencePair<FieldReference>("value",
                         new FieldReference("value", targetType.getFields().iterator().next()),
-                        new FieldReference("value", targetType.getFields().iterator().next())));
+                        new FieldReference("value", targetType.getFields().iterator().next()), null));
+
+        testSerialization(descriptor);
+    }
+
+    @Test
+    public void testFieldConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ParcelableDescriptor descriptor = new ParcelableDescriptor();
+
+        descriptor.getFieldPairs().add(
+                new ReferencePair<FieldReference>("value",
+                        new FieldReference("value", targetType.getFields().iterator().next()),
+                        new FieldReference("value", targetType.getFields().iterator().next()), converterType));
 
         testSerialization(descriptor);
     }
@@ -78,7 +92,23 @@ public class ParcelableGeneratorTest {
         descriptor.getMethodPairs().add(
                 new ReferencePair<MethodReference>("value",
                         new MethodReference("value", stringType, setter),
-                        new MethodReference("value", stringType, getter)));
+                        new MethodReference("value", stringType, getter), null));
+
+        testSerialization(descriptor);
+    }
+
+    @Test
+    public void testMethodConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ParcelableDescriptor descriptor = new ParcelableDescriptor();
+
+        ASTMethod getter = getMethod("getValue", targetType.getMethods());
+        ASTMethod setter = getMethod("setValue", targetType.getMethods());
+        ASTType stringType = astClassFactory.getType(String.class);
+
+        descriptor.getMethodPairs().add(
+                new ReferencePair<MethodReference>("value",
+                        new MethodReference("value", stringType, setter),
+                        new MethodReference("value", stringType, getter), converterType));
 
         testSerialization(descriptor);
     }
@@ -93,8 +123,28 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
-        constructorReference.getWriteReferences().put(constructor.getParameters().get(0),
+        constructorReference.putReference(constructor.getParameters().get(0),
                 new FieldReference("value", targetType.getFields().iterator().next()));
+
+        descriptor.setConstructorPair(constructorReference);
+
+        testSerialization(descriptor);
+    }
+
+    @Test
+    public void testConstructorFieldConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ParcelableDescriptor descriptor = new ParcelableDescriptor();
+
+        ASTType stringType = astClassFactory.getType(String.class);
+
+        ASTConstructor constructor = getConstructor(targetType.getConstructors(), stringType);
+
+        ConstructorReference constructorReference = new ConstructorReference(constructor);
+
+        constructorReference.putReference(constructor.getParameters().get(0),
+                new FieldReference("value", targetType.getFields().iterator().next()));
+
+        constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 
         descriptor.setConstructorPair(constructorReference);
 
@@ -112,8 +162,29 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
-        constructorReference.getWriteReferences().put(constructor.getParameters().get(0),
-                new MethodReference("value", stringType, getter));
+        constructorReference.putReference(constructor.getParameters().get(0),
+                new FieldReference("value", targetType.getFields().iterator().next()));
+
+        descriptor.setConstructorPair(constructorReference);
+
+        testSerialization(descriptor);
+    }
+
+    @Test
+    public void testConstructorMethodConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        ParcelableDescriptor descriptor = new ParcelableDescriptor();
+
+        ASTMethod getter = getMethod("getValue", targetType.getMethods());
+        ASTType stringType = astClassFactory.getType(String.class);
+
+        ASTConstructor constructor = getConstructor(targetType.getConstructors(), stringType);
+
+        ConstructorReference constructorReference = new ConstructorReference(constructor);
+
+        constructorReference.putReference(constructor.getParameters().get(0),
+                new FieldReference("value", targetType.getFields().iterator().next()));
+
+        constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 
         descriptor.setConstructorPair(constructorReference);
 

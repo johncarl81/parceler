@@ -27,34 +27,40 @@ import javax.tools.Diagnostic;
 public class ErrorCheckingMessager implements Messager {
 
     private boolean errored = false;
+    private String message = null;
 
     @Override
-    public void printMessage(Diagnostic.Kind kind, CharSequence charSequence) {
-        checkError(kind);
+    public void printMessage(Diagnostic.Kind kind, CharSequence message) {
+        checkError(kind, message.toString());
     }
 
     @Override
-    public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element) {
-        checkError(kind);
+    public void printMessage(Diagnostic.Kind kind, CharSequence message, Element element) {
+        checkError(kind, message.toString());
     }
 
     @Override
-    public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element, AnnotationMirror annotationMirror) {
-        checkError(kind);
+    public void printMessage(Diagnostic.Kind kind, CharSequence message, Element element, AnnotationMirror annotationMirror) {
+        checkError(kind, message.toString());
     }
 
     @Override
-    public void printMessage(Diagnostic.Kind kind, CharSequence charSequence, Element element, AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
-        checkError(kind);
+    public void printMessage(Diagnostic.Kind kind, CharSequence message, Element element, AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
+        checkError(kind, message.toString());
     }
 
-    private void checkError(Diagnostic.Kind kind){
+    private void checkError(Diagnostic.Kind kind, String message){
         if(Diagnostic.Kind.ERROR.equals(kind)){
             errored = true;
+            this.message = message;
         }
     }
 
     public boolean isErrored(){
         return errored;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

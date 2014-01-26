@@ -29,9 +29,9 @@ public interface ParcelConverter<T> {
      * Write the given input parameter to the destinationParcel.
      *
      * @param input T instance
-     * @param destinationParcel Parcel to write to
+     * @param parcel Parcel to write to
      */
-    void toParcel(T input, android.os.Parcel destinationParcel);
+    void toParcel(T input, android.os.Parcel parcel);
 
     /**
      * Generates an instance from the values provided in the given parcel.

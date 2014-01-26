@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import org.androidtransfuse.adapter.ASTParameter;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.parceler.*;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -36,10 +38,12 @@ public class ParcelableAnalysisTest {
     private ASTClassFactory astClassFactory;
     @Inject
     private ErrorCheckingMessager messager;
+    ASTType converterAst;
 
     @Before
     public void setup() {
         Bootstraps.inject(this);
+        converterAst = astClassFactory.getType(StringWriterConverter.class);
     }
 
     @Parcel
@@ -58,7 +62,7 @@ public class ParcelableAnalysisTest {
         assertEquals(0, analysis.getMethodPairs().size());
         assertNull(analysis.getConstructorPair());
         assertTrue(fieldsContain(analysis, "value"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel
@@ -77,7 +81,7 @@ public class ParcelableAnalysisTest {
         assertEquals(0, analysis.getMethodPairs().size());
         assertNull(analysis.getConstructorPair());
         assertFalse(fieldsContain(analysis, "value"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel
@@ -101,7 +105,7 @@ public class ParcelableAnalysisTest {
         assertEquals(0, analysis.getMethodPairs().size());
         assertNotNull(analysis.getConstructorPair());
         assertEquals(1, analysis.getConstructorPair().getWriteReferences().size());
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel(Parcel.Serialization.METHOD)
@@ -138,7 +142,7 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertTrue(methodsContain(analysis, "intValue"));
         assertTrue(methodsContain(analysis, "stringValue"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel(Parcel.Serialization.METHOD)
@@ -171,7 +175,7 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertTrue(methodsContain(analysis, "intValue"));
         assertFalse(methodsContain(analysis, "stringValue"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel(Parcel.Serialization.METHOD)
@@ -204,7 +208,7 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertTrue(methodsContain(analysis, "intValue"));
         assertFalse(methodsContain(analysis, "stringValue"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     public static class Converter implements ParcelConverter {
@@ -229,7 +233,7 @@ public class ParcelableAnalysisTest {
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, converterAst);
 
         assertEquals(converterAst, analysis.getParcelConverterType());
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel(Parcel.Serialization.METHOD)
@@ -268,7 +272,7 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertFalse(methodsContain(analysis, "stringValue"));
         assertFalse(methodsContain(analysis, "intValue"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel
@@ -313,7 +317,7 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertTrue(fieldsContain(analysis, "one"));
         assertTrue(methodsContain(analysis, "two"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel
@@ -345,7 +349,7 @@ public class ParcelableAnalysisTest {
         assertTrue(constructorContains(analysis, "value"));
         assertFalse(fieldsContain(analysis, "value"));
         assertFalse(methodsContain(analysis, "value"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     @Parcel
@@ -371,7 +375,130 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertFalse(fieldsContain(analysis, "value"));
         assertTrue(methodsContain(analysis, "value"));
-        assertFalse(messager.isErrored());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class PropertyConverterParcel{
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        String value;
+    }
+
+    @Test
+    public void testParcelPropertyConverter() {
+
+        ASTType targetAst = astClassFactory.getType(PropertyConverterParcel.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertEquals(1, analysis.getFieldPairs().size());
+        assertEquals(converterAst, analysis.getFieldPairs().get(0).getConverter());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class MethodPropertyConverter {
+        String value;
+
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testMethodPropertyConverter() {
+
+        ASTType targetAst = astClassFactory.getType(MethodPropertyConverter.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertEquals(converterAst, analysis.getMethodPairs().get(0).getConverter());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class ConstructorConverterSerialization {
+        String value;
+
+        @ParcelConstructor
+        public ConstructorConverterSerialization(@ParcelProperty(value = "value", converter = StringWriterConverter.class) String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testConstructorConverterSerialization() {
+
+        ASTType targetAst = astClassFactory.getType(ConstructorConverterSerialization.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        ASTParameter parameter = analysis.getConstructorPair().getConstructor().getParameters().get(0);
+        Map<ASTParameter,ASTType> converters = analysis.getConstructorPair().getConverters();
+
+        assertEquals(1, converters.size());
+        assertEquals(converterAst, converters.get(parameter));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class CollidingConstructorParameterConverterSerialization {
+        @ParcelProperty(value = "value1", converter = StringWriterConverter.class)
+        String value;
+
+        @ParcelConstructor
+        public CollidingConstructorParameterConverterSerialization(@ParcelProperty(value = "value1", converter = StringWriterConverter.class) String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testCollidingConverterSerialization() {
+
+        ASTType targetAst = astClassFactory.getType(CollidingConstructorParameterConverterSerialization.class);
+        parcelableAnalysis.analyze(targetAst, null);
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel
+    public static class CollidingMethodParameterConverterSerialization {
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        String value;
+
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testCollidingMethodParameterConverterSerialization() {
+
+        ASTType targetAst = astClassFactory.getType(CollidingMethodParameterConverterSerialization.class);
+        parcelableAnalysis.analyze(targetAst, null);
+       assertTrue(messager.isErrored());
+    }
+
+    @Parcel
+    public static class CollidingMethodConverterSerialization {
+        String value;
+
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        public String getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testCollidingMethodConverterSerialization() {
+
+        ASTType targetAst = astClassFactory.getType(CollidingMethodConverterSerialization.class);
+        parcelableAnalysis.analyze(targetAst, null);
+        assertTrue(messager.isErrored());
     }
 
     private boolean constructorContains(ParcelableDescriptor descriptor, String name) {
