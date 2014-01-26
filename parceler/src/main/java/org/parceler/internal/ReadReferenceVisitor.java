@@ -24,7 +24,7 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
 
         body.add(invocationBuilder.buildFieldSet(
                 fieldReference.getField().getAccessModifier(),
-                fieldReference.getField().getASTType(),
+                input.getType(),
                 input.getWrapped(),
                 fieldReference.getType(),
                 fieldReference.getField().getName(),
@@ -44,7 +44,7 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
                 methodReference.getMethod().getName(),
                 Collections.singletonList(input.getGetExpression()),
                 Collections.singletonList(input.getGetExpressionType()),
-                methodReference.getType(),
+                input.getType(),
                 input.getWrapped()));
         return null;
     }

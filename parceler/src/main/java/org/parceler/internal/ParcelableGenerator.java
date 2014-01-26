@@ -117,12 +117,12 @@ public class ParcelableGenerator {
                 }
                 //field
                 for (ReferencePair<FieldReference> fieldPair : parcelableDescriptor.getFieldPairs()) {
-                    buildReadFromParcel(parcelableClass, parcelConstructorBody, wrapped, fieldPair.getSetter(), parcelParam, fieldPair.getConverter());
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, fieldPair.getSetter(), parcelParam, fieldPair.getConverter());
                     buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, fieldPair.getAccessor(), type, wrapped, fieldPair.getConverter());
                 }
                 //method
                 for (ReferencePair<MethodReference> methodPair : parcelableDescriptor.getMethodPairs()) {
-                    buildReadFromParcel(parcelableClass, parcelConstructorBody, wrapped, methodPair.getSetter(), parcelParam, methodPair.getConverter());
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, methodPair.getSetter(), parcelParam, methodPair.getConverter());
                     buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, methodPair.getAccessor(), type, wrapped, methodPair.getConverter());
                 }
             } else {
@@ -179,16 +179,16 @@ public class ParcelableGenerator {
         }
     }
 
-    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, MethodReference propertyAccessor, JVar parcelParam, ASTType converter) {
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JFieldVar wrapped, MethodReference propertyAccessor, JVar parcelParam, ASTType converter) {
         //invocation
         propertyAccessor.accept(readFromParcelVisitor,
-                new ReadContext(parcelConstructorBody, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
+                new ReadContext(parcelConstructorBody, type, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
     }
 
-    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, FieldReference propertyAccessor, JVar parcelParam, ASTType converter) {
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JFieldVar wrapped, FieldReference propertyAccessor, JVar parcelParam, ASTType converter) {
         //invocation
         propertyAccessor.accept(readFromParcelVisitor,
-                new ReadContext(parcelConstructorBody, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
+                new ReadContext(parcelConstructorBody, type, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
     }
 
     private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, ConstructorReference propertyAccessor, ASTType wrappedType, JVar parcelParam){
