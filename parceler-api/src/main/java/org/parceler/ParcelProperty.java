@@ -28,6 +28,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ParcelProperty {
     String value();
-
-    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 }

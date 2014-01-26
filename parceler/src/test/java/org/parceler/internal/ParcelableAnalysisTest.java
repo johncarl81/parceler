@@ -380,7 +380,8 @@ public class ParcelableAnalysisTest {
 
     @Parcel
     public static class PropertyConverterParcel{
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         String value;
     }
 
@@ -399,7 +400,8 @@ public class ParcelableAnalysisTest {
     public static class MethodPropertyConverter {
         String value;
 
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         public void setValue(String value) {
             this.value = value;
         }
@@ -421,7 +423,7 @@ public class ParcelableAnalysisTest {
         String value;
 
         @ParcelConstructor
-        public ConstructorConverterSerialization(@ParcelProperty(value = "value", converter = StringWriterConverter.class) String value){
+        public ConstructorConverterSerialization(@ParcelProperty("value") @ParcelPropertyConverter(StringWriterConverter.class) String value){
             this.value = value;
         }
     }
@@ -442,11 +444,12 @@ public class ParcelableAnalysisTest {
 
     @Parcel
     public static class CollidingConstructorParameterConverterSerialization {
-        @ParcelProperty(value = "value1", converter = StringWriterConverter.class)
+        @ParcelPropertyConverter(StringWriterConverter.class)
+        @ParcelProperty("value")
         String value;
 
         @ParcelConstructor
-        public CollidingConstructorParameterConverterSerialization(@ParcelProperty(value = "value1", converter = StringWriterConverter.class) String value){
+        public CollidingConstructorParameterConverterSerialization(@ParcelProperty("value") @ParcelPropertyConverter(StringWriterConverter.class) String value){
             this.value = value;
         }
     }
@@ -461,10 +464,12 @@ public class ParcelableAnalysisTest {
 
     @Parcel
     public static class CollidingMethodParameterConverterSerialization {
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         String value;
 
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         public void setValue(String value) {
             this.value = value;
         }
@@ -482,12 +487,14 @@ public class ParcelableAnalysisTest {
     public static class CollidingMethodConverterSerialization {
         String value;
 
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         public void setValue(String value) {
             this.value = value;
         }
 
-        @ParcelProperty(value = "value", converter = StringWriterConverter.class)
+        @ParcelProperty("value")
+        @ParcelPropertyConverter(StringWriterConverter.class)
         public String getValue() {
             return value;
         }

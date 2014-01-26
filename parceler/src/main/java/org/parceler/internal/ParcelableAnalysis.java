@@ -17,7 +17,6 @@ package org.parceler.internal;
 
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.*;
-import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.*;
 
@@ -35,12 +34,10 @@ public class ParcelableAnalysis {
     private static final String[] PREPENDS = {GET, IS, SET};
     private final Map<ASTType, ParcelableDescriptor> parcelableCache = new HashMap<ASTType, ParcelableDescriptor>();
     private final Validator validator;
-    private final ASTType emptyConveter;
 
     @Inject
-    public ParcelableAnalysis(Validator validator, ASTClassFactory astClassFactory) {
+    public ParcelableAnalysis(Validator validator) {
         this.validator = validator;
-        this.emptyConveter = astClassFactory.getType(ParcelConverter.EmptyConverter.class);
     }
 
     public ParcelableDescriptor analyze(ASTType astType, ASTType converter) {
@@ -217,9 +214,11 @@ public class ParcelableAnalysis {
                 String name = astField.getName();
                 ASTType converter = null;
                 if(astField.isAnnotated(ParcelProperty.class)){
-                    ASTAnnotation propertyAnnotation = astField.getASTAnnotation(ParcelProperty.class);
-                    name = propertyAnnotation.getProperty("value", String.class);
-                    converter = propertyAnnotation.getProperty("converter", ASTType.class);
+                    name = astField.getAnnotation(ParcelProperty.class).value();
+                }
+                if(astField.isAnnotated(ParcelPropertyConverter.class)){
+                    ASTAnnotation converterAnnotation = astField.getASTAnnotation(ParcelPropertyConverter.class);
+                    converter = converterAnnotation.getProperty("value", ASTType.class);
                 }
                 if(!fields.containsKey(name)){
                     fields.put(name, new ArrayList<ASTReference<ASTField>>());
@@ -271,9 +270,11 @@ public class ParcelableAnalysis {
             String name = parameter.getName();
             ASTType converter = null;
             if(parameter.isAnnotated(ParcelProperty.class)){
-                ASTAnnotation parameterAnnotation = parameter.getASTAnnotation(ParcelProperty.class);
-                name = parameterAnnotation.getProperty("value", String.class);
-                converter = parameterAnnotation.getProperty("converter", ASTType.class);
+                name = parameter.getAnnotation(ParcelProperty.class).value();
+            }
+            if(parameter.isAnnotated(ParcelPropertyConverter.class)){
+                ASTAnnotation conveterAnnotation = parameter.getASTAnnotation(ParcelPropertyConverter.class);
+                converter = conveterAnnotation.getProperty("value", ASTType.class);
             }
             parameters.put(name, new ASTReference<ASTParameter>(parameter, converter));
         }
@@ -303,7 +304,7 @@ public class ParcelableAnalysis {
             boolean found = false;
             if(input.containsKey(key)){
                 for (ASTReference<ASTMethod> reference : input.get(key)) {
-                    if(reference.getConverter() != null && !reference.getConverter().equals(emptyConveter)){
+                    if(reference.getConverter() != null){
                         if(found){
                             validator.error("Only one ParcelConverter may be declared per property")
                                     .element(reference.getReference())
@@ -315,7 +316,7 @@ public class ParcelableAnalysis {
             }
             if(fieldReferences.containsKey(key)){
                 for (ASTReference<ASTField> fieldReference : fieldReferences.get(key)) {
-                    if(fieldReference.getConverter() != null && !fieldReference.getConverter().equals(emptyConveter)){
+                    if(fieldReference.getConverter() != null){
                         if(found){
                             validator.error("Only one ParcelConverter may be declared per property")
                                     .element(fieldReference.getReference())
@@ -327,7 +328,7 @@ public class ParcelableAnalysis {
             }
             if(parameterReferences.containsKey(key)){
                 ASTReference<ASTParameter> parameterReference = parameterReferences.get(key);
-                if(parameterReference.getConverter() != null && !parameterReference.getConverter().equals(emptyConveter)){
+                if(parameterReference.getConverter() != null){
                     if(found){
                         validator.error("Only one ParcelConverter may be declared per property")
                                 .element(parameterReference.getReference())
@@ -371,8 +372,8 @@ public class ParcelableAnalysis {
     }
 
     private ASTType getConverter(ASTMethod astMethod) {
-        if(astMethod.isAnnotated(ParcelProperty.class)){
-            return astMethod.getASTAnnotation(ParcelProperty.class).getProperty("converter", ASTType.class);
+        if(astMethod.isAnnotated(ParcelProperty.class) && astMethod.isAnnotated(ParcelPropertyConverter.class)){
+            return astMethod.getASTAnnotation(ParcelPropertyConverter.class).getProperty("value", ASTType.class);
         }
         return null;
     }
