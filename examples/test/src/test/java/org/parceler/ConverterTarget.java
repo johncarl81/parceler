@@ -20,24 +20,31 @@ public class ConverterTarget {
     byte b;
     Byte bobj;
     //todo: test byte[] bya;
+    //todo: test Byte[] bobja;
     double d;
     Double dobj;
     double[] da;
+    Double[] dobja;
     float f;
     Float fobj;
     float[] fa;
+    Float[] fobja;
     int i;
     Integer iobj;
     int[] ia;
+    Integer[] iobja;
     long l;
     Long lobj;
     long[] la;
+    Long[] lobja;
     //todo: test char c;
     //todo: test Character cobj;
     //todo: test char[] ca;
+    //todo: test Character[] cobja;
     //todo: test boolean bo;
     //todo: test Boolean boobj;
     //todo: test boolean[] ba;
+    //todo: test Boolean[] bobja;
     String s;
     String[] sa;
     @PodamCollection(collectionElementStrategy = SubParcelStrategy.class)
@@ -101,6 +108,14 @@ public class ConverterTarget {
         this.da = da;
     }
 
+    public Double[] getDobja() {
+        return dobja;
+    }
+
+    public void setDobja(Double[] dobja) {
+        this.dobja = dobja;
+    }
+
     public float getF() {
         return f;
     }
@@ -123,6 +138,14 @@ public class ConverterTarget {
 
     public void setFa(float[] fa) {
         this.fa = fa;
+    }
+
+    public Float[] getFobja() {
+        return fobja;
+    }
+
+    public void setFobja(Float[] fobja) {
+        this.fobja = fobja;
     }
 
     public int getI() {
@@ -149,6 +172,14 @@ public class ConverterTarget {
         this.ia = ia;
     }
 
+    public Integer[] getIobja() {
+        return iobja;
+    }
+
+    public void setIobja(Integer[] iobja) {
+        this.iobja = iobja;
+    }
+
     public long getL() {
         return l;
     }
@@ -171,6 +202,14 @@ public class ConverterTarget {
 
     public void setLa(long[] la) {
         this.la = la;
+    }
+
+    public Long[] getLobja() {
+        return lobja;
+    }
+
+    public void setLobja(Long[] lobja) {
+        this.lobja = lobja;
     }
 
     public String getS() {
@@ -277,6 +316,14 @@ public class ConverterTarget {
         this.stringHashSet = stringHashSet;
     }
 
+    public HashSet<String[]> getStringHashSetArray() {
+        return stringHashSetArray;
+    }
+
+    public void setStringHashSetArray(HashSet<String[]> stringHashSetArray) {
+        this.stringHashSetArray = stringHashSetArray;
+    }
+
     public Integer[][] getMultidimensionalArray() {
         return multidimensionalArray;
     }
@@ -291,14 +338,6 @@ public class ConverterTarget {
 
     public void setSparseArray(SparseArray<String> sparseArray) {
         this.sparseArray = sparseArray;
-    }
-
-    public HashSet<String[]> getStringHashSetArray() {
-        return stringHashSetArray;
-    }
-
-    public void setStringHashSetArray(HashSet<String[]> stringHashSetArray) {
-        this.stringHashSetArray = stringHashSetArray;
     }
 
     @Override
