@@ -75,33 +75,23 @@ Only a select number of types may be used as attributes of a +@Parcel+ class.  T
 types:
 
  * +byte+
- * +byte[]+
  * +double+
- * +double[]+
  * +float+
- * +float[]+
  * +int+
- * +int[]+
  * +long+
- * +long[]+
  * +String+
- * +String[]+
  * +IBinder+
  * +Bundle+
- * +Object[]+
- * +SparseArray+
- * +SparseBooleanArray+
+ * +SparseArray+ of any of the mapped types
+ * +SparseBooleanArray+ of any of the mapped types
  * +Exception+
- * +List+
- * +ArrayList+
- * +Map+
- * +HashMap+
- * +Set+
- * +HashSet+
+ * +List+ of any of the mapped types
+ * +Map+ of any of the mapped types
+ * +Set+ of any of the mapped types
  * +Parcel+
- * +Parcel[]+
  * +Serializable+
- * Other classes annotated with +@Parcel+
+ * Array of any of the mapped types
+ * Any other class annotated with +@Parcel+
 
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
 In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.

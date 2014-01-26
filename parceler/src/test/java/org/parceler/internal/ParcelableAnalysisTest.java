@@ -472,7 +472,7 @@ public class ParcelableAnalysisTest {
         String value;
 
         @ParcelConstructor
-        public UnnamedConstructorConverterSerialization(@ParcelPropertyConverter(StringWriterConverter.class) @ASTClassFactory.ASTParameterName("value")  String value){
+        public UnnamedConstructorConverterSerialization(@ParcelPropertyConverter(StringWriterConverter.class) @ASTClassFactory.ASTParameterName("value") String value){
             this.value = value;
         }
     }
