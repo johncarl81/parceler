@@ -25,6 +25,7 @@ import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.annotations.*;
 import org.androidtransfuse.bootstrap.BootstrapModule;
 import org.androidtransfuse.bootstrap.Namespace;
+import org.androidtransfuse.config.SynchronizedElements;
 import org.androidtransfuse.gen.*;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
@@ -75,7 +76,7 @@ public class ParcelerModule {
     @Provides
     @Singleton
     public Elements getElements(ProcessingEnvironment processingEnvironment){
-        return processingEnvironment.getElementUtils();
+        return new SynchronizedElements(processingEnvironment.getElementUtils());
     }
 
     @Provides
