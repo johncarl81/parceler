@@ -83,7 +83,7 @@ types:
  * +IBinder+
  * +Bundle+
  * +SparseArray+ of any of the mapped types
- * +SparseBooleanArray+ of any of the mapped types
+ * +SparseBooleanArray+
  * +Exception+
  * +List+ of any of the mapped types
  * +Map+ of any of the mapped types
