@@ -1,5 +1,3 @@
-= TODO:Remove me when github upgrades asciidoctor
-
 = Parceler
 
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
