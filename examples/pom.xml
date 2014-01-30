@@ -16,6 +16,7 @@
     </parent>
 
     <modules>
+        <module>app</module>
         <module>test</module>
     </modules>
 

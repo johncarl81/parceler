@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Parceler Sample Android App</string>
+    <string name="message">Message</string>
+    <string name="submit">Submit</string>
+</resources>
