@@ -25,6 +25,8 @@ import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.annotations.*;
 import org.androidtransfuse.bootstrap.BootstrapModule;
 import org.androidtransfuse.bootstrap.Namespace;
+import org.androidtransfuse.config.OutOfScopeException;
+import org.androidtransfuse.config.ThreadLocalScope;
 import org.androidtransfuse.gen.ClassGenerationStrategy;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.InjectionBuilderContextFactory;
@@ -34,7 +36,10 @@ import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFacto
 import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
-import org.androidtransfuse.util.matcher.ASTArrayMatcher;import org.androidtransfuse.util.matcher.ImplementsMatcher;import org.androidtransfuse.util.matcher.InheritsMatcher;import org.androidtransfuse.util.matcher.Matchers;
+import org.androidtransfuse.util.matcher.ASTArrayMatcher;
+import org.androidtransfuse.util.matcher.ImplementsMatcher;
+import org.androidtransfuse.util.matcher.InheritsMatcher;
+import org.androidtransfuse.util.matcher.Matchers;
 import org.parceler.internal.generator.*;
 import org.parceler.internal.matcher.ParcelMatcher;
 
