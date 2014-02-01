@@ -34,11 +34,8 @@ import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFacto
 import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
-import org.androidtransfuse.util.matcher.Matchers;
+import org.androidtransfuse.util.matcher.ASTArrayMatcher;import org.androidtransfuse.util.matcher.ImplementsMatcher;import org.androidtransfuse.util.matcher.InheritsMatcher;import org.androidtransfuse.util.matcher.Matchers;
 import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.ArrayMatcher;
-import org.parceler.internal.matcher.ImplementsMatcher;
-import org.parceler.internal.matcher.InheritsMatcher;
 import org.parceler.internal.matcher.ParcelMatcher;
 
 import javax.annotation.processing.Filer;
@@ -173,7 +170,7 @@ public class ParcelerModule {
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil));
-        generators.add(new ArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
+        generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));

@@ -3,6 +3,7 @@ package org.parceler.internal;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.gen.ClassGenerationStrategy;
 import org.parceler.Generated;
+import org.parceler.ParcelAnnotationProcessor;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -19,7 +20,7 @@ public class ParcelerClassGenerationStrategy implements ClassGenerationStrategy 
     @Override
     public void annotateGenerated(JDefinedClass definedClass) {
         definedClass.annotate(Generated.class)
-                .param("value", "org.parceler.ParcelAnnotationProcessor")
+                .param("value", ParcelAnnotationProcessor.class.getName())
                 .param("date", ISO_8601.format(new Date()));
     }
 }

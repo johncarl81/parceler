@@ -17,11 +17,11 @@ package org.parceler;
 
 import org.androidtransfuse.AnnotationProcessorBase;
 import org.androidtransfuse.SupportedAnnotations;
+import org.androidtransfuse.adapter.element.ReloadableASTElementFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.androidtransfuse.scope.ScopeKey;
 import org.parceler.internal.ParcelProcessor;
-import org.parceler.internal.ReloadableASTElementFactory;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
