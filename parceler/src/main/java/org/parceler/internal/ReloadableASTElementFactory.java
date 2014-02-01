@@ -48,27 +48,27 @@ public class ReloadableASTElementFactory implements Function<Element, Provider<A
 
     @Override
     public Provider<ASTType> apply(Element input) {
-        return new ReloadableASTTypeProvider(input);
+        return new ReloadableASTTypeProvider(input.asType().toString());
     }
 
     private final class ReloadableASTTypeProvider implements Provider<ASTType> {
 
-        private Element element;
+        private String elementName;
 
-        private ReloadableASTTypeProvider(Element element) {
-            this.element = element;
+        private ReloadableASTTypeProvider(String elementName) {
+            this.elementName = elementName;
         }
 
         @Override
         public ASTType get() {
-            TypeElement typeElement = elements.getTypeElement(element.asType().toString());
+            TypeElement typeElement = elements.getTypeElement(elementName);
 
             return astElementFactory.getType(typeElement);
         }
 
         @Override
         public String toString() {
-            return element.toString();
+            return elementName;
         }
     }
 }
