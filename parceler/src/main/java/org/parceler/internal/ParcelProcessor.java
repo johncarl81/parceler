@@ -18,6 +18,7 @@ package org.parceler.internal;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.transaction.ScopedTransactionBuilder;
 import org.androidtransfuse.transaction.TransactionProcessor;
 import org.androidtransfuse.transaction.TransactionProcessorPool;
 import org.parceler.Parcel;
@@ -38,34 +39,37 @@ public class ParcelProcessor {
     private final TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor;
     private final TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor;
     private final TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor;
-    private final ExternalParcelRepositoryTransactionFactory externalParcelRepositoryTransactionFactory;
-    private final ExternalParcelTransactionFactory externalParcelTransactionFactory;
-    private final ParcelTransactionFactory parcelTransactionFactory;
+    private final Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider;
+    private final Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider;
+    private final Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider;
+    private final ScopedTransactionBuilder scopedTransactionBuilder;
 
     public ParcelProcessor(TransactionProcessor processor,
                            TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor,
                            TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor,
                            TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor,
-                           ExternalParcelRepositoryTransactionFactory externalParcelRepositoryTransactionFactory,
-                           ExternalParcelTransactionFactory externalParcelTransactionFactory,
-                           ParcelTransactionFactory parcelTransactionFactory) {
+                           Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
+                           Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
+                           Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
+                           ScopedTransactionBuilder scopedTransactionBuilder) {
         this.processor = processor;
         this.externalParcelRepositoryProcessor = externalParcelRepositoryProcessor;
         this.externalParcelProcessor = externalParcelProcessor;
         this.parcelProcessor = parcelProcessor;
-        this.externalParcelRepositoryTransactionFactory = externalParcelRepositoryTransactionFactory;
-        this.externalParcelTransactionFactory = externalParcelTransactionFactory;
-        this.parcelTransactionFactory = parcelTransactionFactory;
+        this.externalParcelRepositoryTransactionWorkerProvider = externalParcelRepositoryTransactionWorkerProvider;
+        this.externalParcelTransactionWorkerProvider = externalParcelTransactionWorkerProvider;
+        this.parcelTransactionWorkerProvider = parcelTransactionWorkerProvider;
+        this.scopedTransactionBuilder = scopedTransactionBuilder;
     }
 
     public void submit(Class<? extends Annotation> annotation, Collection<Provider<ASTType>> parcelProviders) {
         for (Provider<ASTType> parcelProvider : parcelProviders) {
             if(annotation == ParcelClass.class || annotation == ParcelClasses.class){
-                externalParcelRepositoryProcessor.submit(externalParcelRepositoryTransactionFactory.buildTransaction(parcelProvider));
-                externalParcelProcessor.submit(externalParcelTransactionFactory.buildTransaction(parcelProvider));
+                externalParcelRepositoryProcessor.submit(scopedTransactionBuilder.build(parcelProvider, externalParcelRepositoryTransactionWorkerProvider));
+                externalParcelProcessor.submit(scopedTransactionBuilder.build(parcelProvider, externalParcelTransactionWorkerProvider));
             }
             if(annotation == Parcel.class){
-                parcelProcessor.submit(parcelTransactionFactory.buildTransaction(parcelProvider));
+                parcelProcessor.submit(scopedTransactionBuilder.build(parcelProvider, parcelTransactionWorkerProvider));
             }
         }
     }
