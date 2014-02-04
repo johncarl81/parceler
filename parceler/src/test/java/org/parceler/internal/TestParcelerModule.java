@@ -30,6 +30,8 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
+import org.parceler.Generated;
+import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
@@ -40,7 +42,6 @@ import javax.lang.model.util.Elements;
 @BootstrapModule
 @Bindings({
         @Bind(type = InvocationBuilderStrategy.class, to = DefaultInvocationBuilderStrategy.class),
-        @Bind(type = ClassGenerationStrategy.class, to = ParcelerClassGenerationStrategy.class),
         @Bind(type = Elements.class, to = NoOpElements.class),
         @Bind(type = Filer.class, to = NoOpFiler.class)
 })
@@ -51,6 +52,11 @@ import javax.lang.model.util.Elements;
         InjectionBuilderContextFactory.class
 })
 public class TestParcelerModule {
+
+    @Provides
+    public ClassGenerationStrategy getClassGenerationStrategy(){
+        return new ClassGenerationStrategy(Generated.class, ParcelAnnotationProcessor.class.getName());
+    }
 
     @Provides
     @Singleton

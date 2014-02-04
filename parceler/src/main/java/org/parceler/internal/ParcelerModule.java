@@ -40,6 +40,8 @@ import org.androidtransfuse.util.matcher.ASTArrayMatcher;
 import org.androidtransfuse.util.matcher.ImplementsMatcher;
 import org.androidtransfuse.util.matcher.InheritsMatcher;
 import org.androidtransfuse.util.matcher.Matchers;
+import org.parceler.Generated;
+import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
 import org.parceler.internal.matcher.ParcelMatcher;
 
@@ -55,8 +57,7 @@ import java.util.*;
 @BootstrapModule
 @DefineScope(annotation = CodeGenerationScope.class, scope = ThreadLocalScope.class)
 @Bindings({
-    @Bind(type = InvocationBuilderStrategy.class, to = ParcelerInvocationBuilderStrategy.class),
-    @Bind(type = ClassGenerationStrategy.class, to = ParcelerClassGenerationStrategy.class)
+    @Bind(type = InvocationBuilderStrategy.class, to = ParcelerInvocationBuilderStrategy.class)
 })
 @Install({
         ASTFactory.class,
@@ -64,6 +65,11 @@ import java.util.*;
         InjectionBuilderContextFactory.class})
 @Namespace("Parceler")
 public class ParcelerModule {
+
+    @Provides
+    public ClassGenerationStrategy getClassGenerationStrategy(){
+        return new ClassGenerationStrategy(Generated.class, ParcelAnnotationProcessor.class.getName());
+    }
 
     @Provides
     @CodeGenerationScope

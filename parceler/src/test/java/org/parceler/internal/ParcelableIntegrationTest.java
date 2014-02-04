@@ -83,7 +83,7 @@ public class ParcelableIntegrationTest {
 
         parcelsGenerator.generate(generated);
 
-        ClassLoader classLoader = codeGenerationUtil.build();
+        ClassLoader classLoader = codeGenerationUtil.build(true);
 
         parcelableClass = (Class<Parcelable>) classLoader.loadClass(parcelableDefinedClass.fullName());
 
