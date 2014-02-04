@@ -3,7 +3,7 @@ jdk: openjdk6
 env:
   matrix:
     # android-16 is always included
-    - ANDROID_SDKS=android-10  ANDROID_TARGET=android-10  ANDROID_ABI=armeabi
+    - ANDROID_SDKS=android-10,android-19  ANDROID_TARGET=android-10  ANDROID_ABI=armeabi
 
 before_install:
   # Install base Android SDK
