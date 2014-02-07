@@ -16,80 +16,49 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.*;
-import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.PackageClass;
+import org.androidtransfuse.gen.AbstractRepositoryGenerator;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
-import org.parceler.ParcelerRuntimeException;
+import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.Parcels;
 import org.parceler.Repository;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author John Ericksen
  */
-public class ParcelsGenerator {
+public class ParcelsGenerator extends AbstractRepositoryGenerator {
 
     public static final PackageClass PARCELS_NAME = new PackageClass(Parcels.PARCELS_PACKAGE, Parcels.PARCELS_NAME);
     public static final PackageClass REPOSITORY_NAME = new PackageClass(Parcels.PARCELS_PACKAGE, Parcels.PARCELS_REPOSITORY_NAME);
-    private static final String MAP_NAME = "parcelWrappers";
 
     private final ClassGenerationUtil generationUtil;
-    private final JCodeModel codeModel;
     private final ClassNamer classNamer;
 
     @Inject
-    public ParcelsGenerator(ClassGenerationUtil generationUtil, JCodeModel codeModel, ClassNamer classNamer) {
+    public ParcelsGenerator(ClassGenerationUtil generationUtil, ClassNamer classNamer, UniqueVariableNamer namer) {
+        super(Repository.class, generationUtil, namer, REPOSITORY_NAME, Parcels.ParcelableFactory.class);
         this.generationUtil = generationUtil;
-        this.codeModel = codeModel;
         this.classNamer = classNamer;
     }
 
-    public void generate(Map<Provider<ASTType>, JDefinedClass> generated) {
+    @Override
+    protected JExpression generateInstance(JDefinedClass parcelsDefinedClass, JClass inputClass, JClass outputClass) throws JClassAlreadyExistsException {
 
-        try {
-            JDefinedClass parcelsDefinedClass = generationUtil.defineClass(REPOSITORY_NAME);
+        String innerClassName = classNamer.numberedClassName(inputClass).append(Parcels.IMPL_EXT).namespaced().build().getClassName();
 
-            JClass parcelableFactoryWildcard = generationUtil.ref(Parcels.ParcelableFactory.class).narrow(codeModel.wildcard());
-            parcelsDefinedClass._implements(generationUtil.ref(Repository.class).narrow(parcelableFactoryWildcard));
+        JDefinedClass factoryInnerClass = parcelsDefinedClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, innerClassName);
 
-            JClass mapRef = generationUtil.ref(Map.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
-            JClass hashMapRef = generationUtil.ref(HashMap.class).narrow(Class.class).narrow(parcelableFactoryWildcard);
+        factoryInnerClass._implements(generationUtil.ref(Parcels.ParcelableFactory.class).narrow(inputClass));
 
-            JFieldVar parcelWrappers = parcelsDefinedClass.field(JMod.PRIVATE | JMod.FINAL, mapRef, MAP_NAME, JExpr._new(hashMapRef));
+        JMethod method = factoryInnerClass.method(JMod.PUBLIC, outputClass, Parcels.ParcelableFactory.BUILD_PARCELABLE);
+        method.annotate(Override.class);
+        JVar input = method.param(inputClass, "input");
 
-            JBlock constructorBody = parcelsDefinedClass.constructor(JMod.PUBLIC).body();
+        method.body()._return(JExpr._new(outputClass).arg(input));
 
-            for (Map.Entry<Provider<ASTType>, JDefinedClass> astTypeJDefinedClassEntry : generated.entrySet()) {
-
-                JClass type = generationUtil.ref(astTypeJDefinedClassEntry.getKey().get());
-
-                String innerClassName = classNamer.numberedClassName(astTypeJDefinedClassEntry.getValue()).append(Parcels.IMPL_EXT).namespaced().build().getClassName();
-
-                JDefinedClass factoryDefinedClass = parcelsDefinedClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, innerClassName);
-
-                factoryDefinedClass._implements(generationUtil.ref(Parcels.ParcelableFactory.class).narrow(type));
-
-                JMethod method = factoryDefinedClass.method(JMod.PUBLIC, astTypeJDefinedClassEntry.getValue(), Parcels.ParcelableFactory.BUILD_PARCELABLE);
-                method.annotate(Override.class);
-                JVar input = method.param(type, "input");
-
-                method.body()._return(JExpr._new(astTypeJDefinedClassEntry.getValue()).arg(input));
-
-                constructorBody.invoke(parcelWrappers, "put").arg(type.staticRef("class")).arg(JExpr._new(factoryDefinedClass));
-            }
-
-            JMethod getMethod = parcelsDefinedClass.method(JMod.PUBLIC, mapRef, "get");
-            getMethod.body()._return(parcelWrappers);
-
-        } catch (JClassAlreadyExistsException e) {
-            throw new ParcelerRuntimeException("Class already exists", e);
-        }
-
-
+        return JExpr._new(factoryInnerClass);
     }
 }
