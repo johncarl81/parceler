@@ -58,6 +58,9 @@ public final class Parcels {
      */
     @SuppressWarnings("unchecked")
     public static <T> Parcelable wrap(T input) {
+        if(input == null){
+            return null;
+        }
         ParcelableFactory parcelableFactory = REPOSITORY.get(input.getClass());
 
         return parcelableFactory.buildParcelable(input);
@@ -73,6 +76,9 @@ public final class Parcels {
      */
     @SuppressWarnings("unchecked")
     public static <T> T unwrap(Parcelable input) {
+        if(input == null){
+            return null;
+        }
         ParcelWrapper<T> wrapper = (ParcelWrapper<T>) input;
         return wrapper.getParcel();
     }

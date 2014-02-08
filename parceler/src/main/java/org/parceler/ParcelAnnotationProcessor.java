@@ -25,7 +25,6 @@ import org.parceler.internal.ParcelProcessor;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.lang.model.SourceVersion;
@@ -41,7 +40,6 @@ import java.util.Set;
  * @author John Ericksen
  */
 @SupportedAnnotations({Parcel.class, ParcelClass.class})
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 @Bootstrap
 public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
 
@@ -74,5 +72,10 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
         }
 
         return true;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
     }
 }
