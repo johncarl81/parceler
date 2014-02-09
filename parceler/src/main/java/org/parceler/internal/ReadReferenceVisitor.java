@@ -38,12 +38,8 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
         JBlock body = input.getBody();
 
         body.add(invocationBuilder.buildFieldSet(
-                fieldReference.getField().getAccessModifier(),
-                input.getType(),
+                fieldReference.getField(),
                 input.getWrapped(),
-                fieldReference.getType(),
-                fieldReference.getField().getName(),
-                input.getGetExpressionType(),
                 input.getGetExpression()
         ));
         return null;
@@ -54,12 +50,8 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
         JBlock body = input.getBody();
 
         body.add(invocationBuilder.buildMethodCall(
-                methodReference.getMethod().getAccessModifier(),
-                methodReference.getMethod().getReturnType(),
-                methodReference.getMethod().getName(),
-                Collections.singletonList(input.getGetExpression()),
-                Collections.singletonList(input.getGetExpressionType()),
-                input.getType(),
+                methodReference.getMethod(),
+                Collections.singletonList(input.getGetExpression().getExpression()),
                 input.getWrapped()));
         return null;
     }

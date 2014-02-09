@@ -25,6 +25,7 @@ import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.InvocationBuilder;
 import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.androidtransfuse.model.TypedExpression;
 import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
 import org.parceler.Parcels;
@@ -182,13 +183,17 @@ public class ParcelableGenerator {
     private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JFieldVar wrapped, MethodReference propertyAccessor, JVar parcelParam, ASTType converter) {
         //invocation
         propertyAccessor.accept(readFromParcelVisitor,
-                new ReadContext(parcelConstructorBody, type, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
+                new ReadContext(parcelConstructorBody,
+                        new TypedExpression(type, wrapped),
+                        buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
     }
 
     private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JFieldVar wrapped, FieldReference propertyAccessor, JVar parcelParam, ASTType converter) {
         //invocation
         propertyAccessor.accept(readFromParcelVisitor,
-                new ReadContext(parcelConstructorBody, type, wrapped, propertyAccessor.getType(), buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
+                new ReadContext(parcelConstructorBody,
+                        new TypedExpression(type, wrapped),
+                        buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
     }
 
     private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JFieldVar wrapped, ConstructorReference propertyAccessor, ASTType wrappedType, JVar parcelParam){
@@ -201,13 +206,13 @@ public class ParcelableGenerator {
         for (ASTParameter parameter : constructor.getParameters()) {
             parameterTypes.add(parameter.getASTType());
             ASTType converter = converters.containsKey(parameter) ? converters.get(parameter) : null;
-            inputExpression.add(buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter));
+            inputExpression.add(buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
         }
 
-        parcelConstructorBody.assign(wrapped, invocationBuilder.buildConstructorCall(constructor.getAccessModifier(), parameterTypes, inputExpression, wrappedType));
+        parcelConstructorBody.assign(wrapped, invocationBuilder.buildConstructorCall(constructor, wrappedType, inputExpression));
     }
 
-    private JExpression buildReadFromParcelExpression(JBlock body, JVar parcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter){
+    private TypedExpression buildReadFromParcelExpression(JBlock body, JVar parcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter){
         JClass returnJClassRef = generationUtil.ref(type);
 
         ReadWriteGenerator generator;
@@ -218,12 +223,12 @@ public class ParcelableGenerator {
             generator = generators.getGenerator(type);
         }
 
-        return generator.generateReader(body, parcelParam, type, returnJClassRef, parcelableClass);
+        return new TypedExpression(type, generator.generateReader(body, parcelParam, type, returnJClassRef, parcelableClass));
     }
 
     private void buildWriteToParcel(JBlock body, JVar parcel, JVar flags, AccessibleReference reference, ASTType wrappedType, JFieldVar wrapped, ASTType converter) {
         ASTType type = reference.getType();
-        JExpression getExpression = reference.accept(writeToParcelVisitor, new WriteContext(wrapped, wrappedType));
+        JExpression getExpression = reference.accept(writeToParcelVisitor, new WriteContext(new TypedExpression(wrappedType, wrapped)));
 
         ReadWriteGenerator generator;
         if(converter != null){

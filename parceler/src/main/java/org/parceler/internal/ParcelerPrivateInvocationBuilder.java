@@ -16,9 +16,10 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.*;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.invocationBuilder.ModifierInjectionBuilder;
+import org.androidtransfuse.gen.invocationBuilder.ModifiedInvocationBuilder;
+import org.androidtransfuse.model.TypedExpression;
 import org.parceler.InjectionUtil;
 
 import javax.inject.Inject;
@@ -29,17 +30,17 @@ import java.util.List;
  *
  * @author John Ericksen
  */
-public class ParcelerPrivateInjectionBuilder implements ModifierInjectionBuilder {
+public class ParcelerPrivateInvocationBuilder implements ModifiedInvocationBuilder {
 
     private final ClassGenerationUtil generationUtil;
 
     @Inject
-    public ParcelerPrivateInjectionBuilder(ClassGenerationUtil generationUtil) {
+    public ParcelerPrivateInvocationBuilder(ClassGenerationUtil generationUtil) {
         this.generationUtil = generationUtil;
     }
 
     @Override
-    public JExpression buildConstructorCall(ASTType type, List<ASTType> parameterTypes, Iterable<? extends JExpression> parameters) {
+    public JExpression buildConstructorCall(ASTConstructor constructor, ASTType type, List<? extends JExpression> parameters) {
 
         //InjectionUtil.setConstructor(Class<T> targetClass, Class[] argClasses,Object[] args)
         JInvocation constructorInvocation = generationUtil.ref(InjectionUtil.class).staticInvoke(InjectionUtil.CALL_CONSTRUCTOR_METHOD)
@@ -47,8 +48,8 @@ public class ParcelerPrivateInjectionBuilder implements ModifierInjectionBuilder
 
         //add classes
         JArray classArray = JExpr.newArray(generationUtil.ref(Class.class));
-        for (ASTType parameterType : parameterTypes) {
-            classArray.add(generationUtil.ref(parameterType).dotclass());
+        for (ASTParameter parameterType : constructor.getParameters()) {
+            classArray.add(generationUtil.ref(parameterType.getASTType()).dotclass());
         }
         constructorInvocation.arg(classArray);
 
@@ -59,20 +60,20 @@ public class ParcelerPrivateInjectionBuilder implements ModifierInjectionBuilder
     }
 
     @Override
-    public JInvocation buildMethodCall(ASTType returnType, String methodName, Iterable<? extends JExpression> parameters, List<ASTType> injectionNodeType, ASTType targetExpressionType, JExpression targetExpression) {
+    public JInvocation buildMethodCall(ASTMethod method, List<? extends JExpression> parameters, TypedExpression expression) {
 
-        JClass targetType = generationUtil.ref(targetExpressionType.getName());
+        JClass targetType = generationUtil.ref(expression.getType());
         //InjectionUtil.getInstance().setMethod(Class targetClass, Object target, String method, Class[] argClasses,Object[] args)
         JInvocation methodInvocation = generationUtil.ref(InjectionUtil.class).staticInvoke(InjectionUtil.CALL_METHOD_METHOD)
-                .arg(generationUtil.ref(returnType.getName()).dotclass())
+                .arg(generationUtil.ref(method.getReturnType()).dotclass())
                 .arg(targetType.dotclass())
-                .arg(targetExpression)
-                .arg(methodName);
+                .arg(expression.getExpression())
+                .arg(method.getName());
 
         //add classes
         JArray classArray = JExpr.newArray(generationUtil.ref(Class.class));
-        for (ASTType injectionNode : injectionNodeType) {
-            classArray.add(generationUtil.ref(injectionNode).dotclass());
+        for (ASTParameter parameter : method.getParameters()) {
+            classArray.add(generationUtil.ref(parameter.getASTType()).dotclass());
         }
         methodInvocation.arg(classArray);
 
@@ -83,23 +84,25 @@ public class ParcelerPrivateInjectionBuilder implements ModifierInjectionBuilder
     }
 
     @Override
-    public JExpression buildFieldGet(ASTType returnType, ASTType variableType, JExpression variable, String name) {
+    public JExpression buildFieldGet(ASTField field, TypedExpression targetExpression) {
+        //InjectionUtil.getInstance().getField(Class returnType, Class targetClass, Object target, String field)
         return generationUtil.ref(InjectionUtil.class).staticInvoke(InjectionUtil.GET_FIELD_METHOD)
-                .arg(generationUtil.ref(returnType).dotclass())
-                .arg(generationUtil.ref(variableType).dotclass())
-                .arg(variable)
-                .arg(name);
+                .arg(generationUtil.ref(field.getASTType()).dotclass())
+                .arg(generationUtil.ref(targetExpression.getType()).dotclass())
+                .arg(targetExpression.getExpression())
+                .arg(field.getName());
     }
 
     @Override
-    public JStatement buildFieldSet(ASTType expressionType, JExpression expression, ASTType containingType, ASTType fieldType, String fieldName, JExpression variable) {
-        JClass variableType = generationUtil.ref(containingType);
+    public JStatement buildFieldSet(ASTField field, TypedExpression expression, TypedExpression containingType) {
+        JClass variableType = generationUtil.ref(containingType.getType());
 
+        //InjectionUtil.getInstance().setField(Class targetClass, Object target, String field, Object value)
         return generationUtil.ref(InjectionUtil.class).staticInvoke(InjectionUtil.SET_FIELD_METHOD)
                 .arg(variableType.dotclass())
-                .arg(variable)
-                .arg(fieldName)
-                .arg(expression);
+                .arg(containingType.getExpression())
+                .arg(field.getName())
+                .arg(expression.getExpression());
     }
 
     private JExpression buildArgsArray(Iterable<? extends JExpression> parameters) {

@@ -16,7 +16,6 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.JExpression;
-import com.sun.codemodel.JFieldVar;
 import org.androidtransfuse.gen.InvocationBuilder;
 
 import javax.inject.Inject;
@@ -36,27 +35,18 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
 
     @Override
     public JExpression visit(FieldReference fieldReference, WriteContext input) {
-        JFieldVar wrapped = input.getWrapped();
 
         return invocationBuilder.buildFieldGet(
-                fieldReference.getType(),
-                input.getType(),
-                wrapped,
-                fieldReference.getField().getName(),
-                fieldReference.getField().getAccessModifier());
+                fieldReference.getField(),
+                input.getExpression());
     }
 
     @Override
     public JExpression visit(MethodReference methodReference, WriteContext input) {
-        JFieldVar wrapped = input.getWrapped();
 
         return invocationBuilder.buildMethodCall(
-                methodReference.getMethod().getAccessModifier(),
-                methodReference.getType(),
-                methodReference.getMethod().getName(),
+                methodReference.getMethod(),
                 Collections.EMPTY_LIST,
-                Collections.EMPTY_LIST,
-                input.getType(),
-                wrapped);
+                input.getExpression());
     }
 }

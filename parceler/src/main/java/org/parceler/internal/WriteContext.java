@@ -15,27 +15,20 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JFieldVar;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.model.TypedExpression;
 
 /**
  * @author John Ericksen
  */
 public class WriteContext {
 
-    private final JFieldVar wrapped;
-    private final ASTType type;
+    private final TypedExpression expression;
 
-    public WriteContext(JFieldVar wrapped, ASTType type) {
-        this.wrapped = wrapped;
-        this.type = type;
+    public WriteContext(TypedExpression expression) {
+        this.expression = expression;
     }
 
-    public JFieldVar getWrapped() {
-        return wrapped;
-    }
-
-    public ASTType getType() {
-        return type;
+    public TypedExpression getExpression() {
+        return expression;
     }
 }

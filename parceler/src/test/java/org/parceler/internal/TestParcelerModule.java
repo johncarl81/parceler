@@ -30,12 +30,14 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
+import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
 
@@ -73,6 +75,12 @@ public class TestParcelerModule {
     @Provides
     public Messager getMessager(ErrorCheckingMessager messager){
         return messager;
+    }
+
+    @Provides
+    @Named(Validator.LOG_PREPEND)
+    public String getLogPreprend(){
+        return "Parceler: ";
     }
 
     @Provides

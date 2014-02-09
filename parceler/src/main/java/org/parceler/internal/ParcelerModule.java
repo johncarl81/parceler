@@ -40,6 +40,7 @@ import org.androidtransfuse.util.matcher.ASTArrayMatcher;
 import org.androidtransfuse.util.matcher.ImplementsMatcher;
 import org.androidtransfuse.util.matcher.InheritsMatcher;
 import org.androidtransfuse.util.matcher.Matchers;
+import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
@@ -48,6 +49,7 @@ import org.parceler.internal.matcher.ParcelMatcher;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
@@ -92,7 +94,13 @@ public class ParcelerModule {
     @Provides
     @Singleton
     public Logger getLogger(ProcessingEnvironment processingEnvironment){
-        return new MessagerLogger(processingEnvironment.getMessager());
+        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager());
+    }
+
+    @Provides
+    @Named(Validator.LOG_PREPEND)
+    public String getLogPreprend(){
+        return "Parceler: ";
     }
 
     @Provides
