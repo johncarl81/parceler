@@ -3,12 +3,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.1'
-        classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.android.tools.build:gradle:0.8.+'
     }
 }
 apply plugin: 'android'
-apply plugin: 'android-apt'
 
 repositories {
     mavenCentral()
@@ -18,13 +16,13 @@ repositories {
 }
 
 dependencies {
-    apt 'org.parceler:parceler:0.2.6-SNAPSHOT'
     compile 'org.parceler:parceler-api:0.2.6-SNAPSHOT'
+    provided 'org.parceler:parceler:0.2.6-SNAPSHOT'
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    buildToolsVersion '19.0.1'
 
     defaultConfig {
         minSdkVersion 7
