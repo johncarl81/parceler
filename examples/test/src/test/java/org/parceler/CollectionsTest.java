@@ -24,7 +24,7 @@ public class CollectionsTest {
 
         exampleList.add(new SubParcel("name"));
 
-        List<SubParcel> exampleParcelList = Parcels.unwrap(new Parcels.ListParcelable(wrap(exampleList)));
+        List<SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleList));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.get(0);
@@ -38,7 +38,7 @@ public class CollectionsTest {
 
         exampleSet.add(new SubParcel("name"));
 
-        Set<SubParcel> exampleParcelList = Parcels.unwrap(new Parcels.SetParcelable(wrap(exampleSet)));
+        Set<SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleSet));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.iterator().next();
@@ -53,7 +53,7 @@ public class CollectionsTest {
         SubParcel key = new SubParcel("key");
         exampleSet.put(key, new SubParcel("name"));
 
-        Map<SubParcel, SubParcel> exampleParcelList = Parcels.unwrap(new Parcels.MapParcelable(wrap(exampleSet)));
+        Map<SubParcel, SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleSet));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.get(key);
@@ -68,7 +68,7 @@ public class CollectionsTest {
 
         exampleArray.append(1, new SubParcel("name"));
 
-        SparseArray<SubParcel> exampleSparseArray = Parcels.unwrap(new Parcels.SparseArrayParcelable(wrap(exampleArray)));
+        SparseArray<SubParcel> exampleSparseArray = Parcels.unwrap(wrap(exampleArray));
         assertEquals(1, exampleSparseArray.size());
 
         SubParcel exampleParcel = exampleSparseArray.get(1);
@@ -76,12 +76,11 @@ public class CollectionsTest {
     }
 
 
-    private android.os.Parcel wrap(Object input){
+    private <T extends Parcelable> T wrap(Object input){
         android.os.Parcel parcel = android.os.Parcel.obtain();
 
-        Parcelable parcelable = Parcels.wrap(input);
-        parcelable.writeToParcel(parcel, 0);
-
-        return parcel;
+        parcel.writeParcelable(Parcels.wrap(input), 0);
+        
+        return parcel.readParcelable(CollectionsTest.class.getClassLoader());
     }
 }
