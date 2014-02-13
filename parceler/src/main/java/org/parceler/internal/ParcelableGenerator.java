@@ -118,12 +118,12 @@ public class ParcelableGenerator {
                 }
                 //field
                 for (ReferencePair<FieldReference> fieldPair : parcelableDescriptor.getFieldPairs()) {
-                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, fieldPair.getSetter(), parcelParam, fieldPair.getConverter());
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, fieldPair.getReference(), parcelParam, fieldPair.getConverter());
                     buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, fieldPair.getAccessor(), type, wrapped, fieldPair.getConverter());
                 }
                 //method
                 for (ReferencePair<MethodReference> methodPair : parcelableDescriptor.getMethodPairs()) {
-                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, methodPair.getSetter(), parcelParam, methodPair.getConverter());
+                    buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, methodPair.getReference(), parcelParam, methodPair.getConverter());
                     buildWriteToParcel(writeToParcelMethod.body(), wtParcelParam, flags, methodPair.getAccessor(), type, wrapped, methodPair.getConverter());
                 }
             } else {

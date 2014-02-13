@@ -17,6 +17,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JBlock;
 import org.androidtransfuse.gen.InvocationBuilder;
+import org.androidtransfuse.model.TypedExpression;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
 
         body.add(invocationBuilder.buildFieldSet(
                 fieldReference.getField(),
-                input.getWrapped(),
+                new TypedExpression(fieldReference.getOwner(), input.getWrapped().getExpression()),
                 input.getGetExpression()
         ));
         return null;

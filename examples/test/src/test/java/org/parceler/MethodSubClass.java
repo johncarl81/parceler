@@ -15,13 +15,13 @@
  */
 package org.parceler;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.parceler.sub.SuperClass;
 
+/**
+ * @author John Ericksen
+ */
 @Parcel(Parcel.Serialization.METHOD)
-public class MethodModifiers {
-
-    private static final String[] IGNORE_FIELDS = {"two", "three", "four"};
+public class MethodSubClass extends SuperClass {
 
     private String one;
     private String two;
@@ -60,13 +60,39 @@ public class MethodModifiers {
         this.four = four;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that, IGNORE_FIELDS);
+    @Transient
+    public String getSubOne() {
+        return one;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, IGNORE_FIELDS);
+    public void setSubOne(String one) {
+        this.one = one;
+    }
+
+    @Transient
+    public String getSubTwo() {
+        return two;
+    }
+
+    public void setSubTwo(String two) {
+        this.two = two;
+    }
+
+    @Transient
+    public String getSubThree() {
+        return three;
+    }
+
+    public void setSubThree(String three) {
+        this.three = three;
+    }
+
+    @Transient
+    public String getSubFour() {
+        return four;
+    }
+
+    public void setSubFour(String four) {
+        this.four = four;
     }
 }

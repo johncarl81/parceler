@@ -15,8 +15,6 @@
  */
 package org.parceler;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -41,7 +39,7 @@ public class ParcelTest {
 
         ExampleParcel example = new ExampleParcel(one, two, three, sub);
 
-        ExampleParcel exampleParcel = Parcels.unwrap(new ExampleParcel$$Parcelable(wrap(example)));
+        ExampleParcel exampleParcel = Parcels.unwrap(new ExampleParcel$$Parcelable(ParcelsTestUtil.wrap(example)));
 
         assertEquals(one, exampleParcel.getOne());
         assertEquals(two, exampleParcel.getTwo());
@@ -58,7 +56,7 @@ public class ParcelTest {
         Manual input = new Manual();
         input.setValue(value);
 
-        Manual output = Parcels.unwrap(new Manual$$Parcelable(wrap(input)));
+        Manual output = Parcels.unwrap(new Manual$$Parcelable(ParcelsTestUtil.wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -71,7 +69,7 @@ public class ParcelTest {
         ExternalParcel input = new ExternalParcel();
         input.setValue(value);
 
-        ExternalParcel output = Parcels.unwrap(new ExternalParcel$$Parcelable(wrap(input)));
+        ExternalParcel output = Parcels.unwrap(new ExternalParcel$$Parcelable(ParcelsTestUtil.wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -84,17 +82,8 @@ public class ParcelTest {
         ManuallyRegistered input = new ManuallyRegistered();
         input.setValue(value);
 
-        ManuallyRegistered output = Parcels.unwrap(new ManuallyRegistered$$Parcelable(wrap(input)));
+        ManuallyRegistered output = Parcels.unwrap(new ManuallyRegistered$$Parcelable(ParcelsTestUtil.wrap(input)));
 
         assertEquals(input.getValue(), output.getValue());
-    }
-
-    private Parcel wrap(Object input){
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-
-        Parcelable parcelable = Parcels.wrap(input);
-        parcelable.writeToParcel(parcel, 0);
-
-        return parcel;
     }
 }

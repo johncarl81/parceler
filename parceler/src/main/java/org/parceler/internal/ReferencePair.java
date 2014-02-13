@@ -23,13 +23,13 @@ import org.androidtransfuse.adapter.ASTType;
 public class ReferencePair<T extends Reference> {
 
     private final String name;
-    private final T setter;
+    private final T reference;
     private final AccessibleReference accessor;
     private final ASTType converter;
 
-    public ReferencePair(String name, T setter, AccessibleReference accessor, ASTType converter) {
+    public ReferencePair(String name, T reference, AccessibleReference accessor, ASTType converter) {
         this.name = name;
-        this.setter = setter;
+        this.reference = reference;
         this.accessor = accessor;
         this.converter = converter;
     }
@@ -38,8 +38,8 @@ public class ReferencePair<T extends Reference> {
         return name;
     }
 
-    public T getSetter() {
-        return setter;
+    public T getReference() {
+        return reference;
     }
 
     public AccessibleReference getAccessor() {

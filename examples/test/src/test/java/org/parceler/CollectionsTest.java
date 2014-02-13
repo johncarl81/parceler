@@ -1,6 +1,20 @@
+/**
+ * Copyright 2013 John Ericksen
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.parceler;
 
-import android.os.Parcelable;
 import android.util.SparseArray;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +38,7 @@ public class CollectionsTest {
 
         exampleList.add(new SubParcel("name"));
 
-        List<SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleList));
+        List<SubParcel> exampleParcelList = Parcels.unwrap(new CollectionsRepository.ListParcelable(ParcelsTestUtil.wrap(exampleList)));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.get(0);
@@ -38,7 +52,7 @@ public class CollectionsTest {
 
         exampleSet.add(new SubParcel("name"));
 
-        Set<SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleSet));
+        Set<SubParcel> exampleParcelList = Parcels.unwrap(new CollectionsRepository.SetParcelable(ParcelsTestUtil.wrap(exampleSet)));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.iterator().next();
@@ -53,7 +67,7 @@ public class CollectionsTest {
         SubParcel key = new SubParcel("key");
         exampleSet.put(key, new SubParcel("name"));
 
-        Map<SubParcel, SubParcel> exampleParcelList = Parcels.unwrap(wrap(exampleSet));
+        Map<SubParcel, SubParcel> exampleParcelList = Parcels.unwrap(new CollectionsRepository.MapParcelable(ParcelsTestUtil.wrap(exampleSet)));
         assertEquals(1, exampleParcelList.size());
 
         SubParcel exampleParcel = exampleParcelList.get(key);
@@ -68,19 +82,10 @@ public class CollectionsTest {
 
         exampleArray.append(1, new SubParcel("name"));
 
-        SparseArray<SubParcel> exampleSparseArray = Parcels.unwrap(wrap(exampleArray));
+        SparseArray<SubParcel> exampleSparseArray = Parcels.unwrap(new CollectionsRepository.SparseArrayParcelable(ParcelsTestUtil.wrap(exampleArray)));
         assertEquals(1, exampleSparseArray.size());
 
         SubParcel exampleParcel = exampleSparseArray.get(1);
         assertEquals("name", exampleParcel.getName());
-    }
-
-
-    private <T extends Parcelable> T wrap(Object input){
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-
-        parcel.writeParcelable(Parcels.wrap(input), 0);
-        
-        return parcel.readParcelable(CollectionsTest.class.getClassLoader());
     }
 }

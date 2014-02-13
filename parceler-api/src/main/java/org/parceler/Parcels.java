@@ -16,7 +16,6 @@
 package org.parceler;
 
 import android.os.Parcelable;
-import org.parceler.collections.CollectionsRepository;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +37,7 @@ public final class Parcels {
     private static final ParcelCodeRepository REPOSITORY = new ParcelCodeRepository();
 
     static{
-        REPOSITORY.loadRepository(new CollectionsRepository());
+        REPOSITORY.loadRepository(CollectionsRepository.getInstance());
     }
 
     private Parcels(){

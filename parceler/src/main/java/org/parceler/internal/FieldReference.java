@@ -23,10 +23,12 @@ import org.androidtransfuse.adapter.ASTType;
  */
 public class FieldReference implements AccessibleReference {
 
+    private final ASTType owner;
     private final String name;
     private final ASTField field;
 
-    public FieldReference(String name, ASTField field) {
+    public FieldReference(ASTType owner, String name, ASTField field) {
+        this.owner = owner;
         this.field = field;
         this.name = name;
     }
@@ -45,5 +47,9 @@ public class FieldReference implements AccessibleReference {
 
     public String getName() {
         return name;
+    }
+
+    public ASTType getOwner() {
+        return owner;
     }
 }

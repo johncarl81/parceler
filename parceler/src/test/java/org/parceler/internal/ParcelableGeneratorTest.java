@@ -78,8 +78,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getFieldPairs().add(
                 new ReferencePair<FieldReference>("value",
-                        new FieldReference("value", targetType.getFields().iterator().next()),
-                        new FieldReference("value", targetType.getFields().iterator().next()), null));
+                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()),
+                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()), null));
 
         testSerialization(descriptor);
     }
@@ -90,8 +90,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getFieldPairs().add(
                 new ReferencePair<FieldReference>("value",
-                        new FieldReference("value", targetType.getFields().iterator().next()),
-                        new FieldReference("value", targetType.getFields().iterator().next()), converterType));
+                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()),
+                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()), converterType));
 
         testSerialization(descriptor);
     }
@@ -106,8 +106,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getMethodPairs().add(
                 new ReferencePair<MethodReference>("value",
-                        new MethodReference("value", stringType, setter),
-                        new MethodReference("value", stringType, getter), null));
+                        new MethodReference(targetType, "value", stringType, setter),
+                        new MethodReference(targetType, "value", stringType, getter), null));
 
         testSerialization(descriptor);
     }
@@ -122,8 +122,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getMethodPairs().add(
                 new ReferencePair<MethodReference>("value",
-                        new MethodReference("value", stringType, setter),
-                        new MethodReference("value", stringType, getter), converterType));
+                        new MethodReference(targetType, "value", stringType, setter),
+                        new MethodReference(targetType, "value", stringType, getter), converterType));
 
         testSerialization(descriptor);
     }
@@ -139,7 +139,7 @@ public class ParcelableGeneratorTest {
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference("value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
 
         descriptor.setConstructorPair(constructorReference);
 
@@ -157,7 +157,7 @@ public class ParcelableGeneratorTest {
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference("value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
 
         constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 
@@ -178,7 +178,7 @@ public class ParcelableGeneratorTest {
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference("value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
 
         descriptor.setConstructorPair(constructorReference);
 
@@ -197,7 +197,7 @@ public class ParcelableGeneratorTest {
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference("value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
 
         constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 

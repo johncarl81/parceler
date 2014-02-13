@@ -17,6 +17,7 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JExpression;
 import org.androidtransfuse.gen.InvocationBuilder;
+import org.androidtransfuse.model.TypedExpression;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
 
         return invocationBuilder.buildFieldGet(
                 fieldReference.getField(),
-                input.getExpression());
+                new TypedExpression(fieldReference.getOwner(), input.getExpression().getExpression()));
     }
 
     @Override
@@ -47,6 +48,6 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
         return invocationBuilder.buildMethodCall(
                 methodReference.getMethod(),
                 Collections.EMPTY_LIST,
-                input.getExpression());
+                new TypedExpression(methodReference.getOwner(), input.getExpression().getExpression()));
     }
 }

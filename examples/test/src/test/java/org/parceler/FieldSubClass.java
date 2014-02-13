@@ -15,17 +15,17 @@
  */
 package org.parceler;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.parceler.sub.SuperClass;
 
-@Parcel(Parcel.Serialization.METHOD)
-public class MethodModifiers {
+/**
+ * @author John Ericksen
+ */
+@Parcel
+public class FieldSubClass extends SuperClass {
 
-    private static final String[] IGNORE_FIELDS = {"two", "three", "four"};
-
-    private String one;
-    private String two;
-    private String three;
+    public String one;
+    String two;
+    protected String three;
     private String four;
 
     public String getOne() {
@@ -36,37 +36,27 @@ public class MethodModifiers {
         this.one = one;
     }
 
-    String getTwo() {
+    public String getTwo() {
         return two;
     }
 
-    void setTwo(String two) {
+    public void setTwo(String two) {
         this.two = two;
     }
 
-    protected String getThree() {
+    public String getThree() {
         return three;
     }
 
-    protected void setThree(String three) {
+    public void setThree(String three) {
         this.three = three;
     }
 
-    private String getFour() {
+    public String getFour() {
         return four;
     }
 
-    private void setFour(String four) {
+    public void setFour(String four) {
         this.four = four;
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that, IGNORE_FIELDS);
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, IGNORE_FIELDS);
     }
 }

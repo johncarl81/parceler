@@ -22,6 +22,8 @@ import org.androidtransfuse.adapter.ASTType;
  */
 public interface AccessibleReference extends Reference{
 
+    ASTType getOwner();
+
     ASTType getType();
 
     String getName();

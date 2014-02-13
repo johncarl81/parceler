@@ -23,11 +23,13 @@ import org.androidtransfuse.adapter.ASTType;
  */
 public class MethodReference implements AccessibleReference {
 
+    private final ASTType owner;
     private final String name;
     private final ASTMethod method;
     private final ASTType type;
 
-    public MethodReference(String name, ASTType type, ASTMethod method) {
+    public MethodReference(ASTType owner, String name, ASTType type, ASTMethod method) {
+        this.owner = owner;
         this.method = method;
         this.type = type;
         this.name = name;
@@ -47,5 +49,9 @@ public class MethodReference implements AccessibleReference {
 
     public String getName() {
         return name;
+    }
+
+    public ASTType getOwner() {
+        return owner;
     }
 }

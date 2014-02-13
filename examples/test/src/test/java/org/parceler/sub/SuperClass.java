@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.parceler;
+package org.parceler.sub;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.parceler.Transient;
 
-@Parcel(Parcel.Serialization.METHOD)
-public class MethodModifiers {
+/**
+ * @author John Ericksen
+ */
+public abstract class SuperClass {
 
-    private static final String[] IGNORE_FIELDS = {"two", "three", "four"};
-
-    private String one;
-    private String two;
-    private String three;
+    public String one;
+    String two;
+    protected String three;
     private String four;
+    private String extra;
 
     public String getOne() {
         return one;
@@ -60,13 +60,47 @@ public class MethodModifiers {
         this.four = four;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        return EqualsBuilder.reflectionEquals(this, that, IGNORE_FIELDS);
+    @Transient
+    public String getSuperOne() {
+        return one;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, IGNORE_FIELDS);
+    public void setSuperOne(String one) {
+        this.one = one;
+    }
+
+    @Transient
+    public String getSuperTwo() {
+        return two;
+    }
+
+    public void setSuperTwo(String two) {
+        this.two = two;
+    }
+
+    @Transient
+    public String getSuperThree() {
+        return three;
+    }
+
+    public void setSuperThree(String three) {
+        this.three = three;
+    }
+
+    @Transient
+    public String getSuperFour() {
+        return four;
+    }
+
+    public void setSuperFour(String four) {
+        this.four = four;
+    }
+
+    public final String getFinal() {
+        return extra;
+    }
+
+    public final void setFinal(String extra) {
+        this.extra = extra;
     }
 }

@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.demo;
+package org.parceler;
 
-import org.parceler.Parcel;
+import android.os.Parcelable;
 
 /**
- * Intentionally in a different package to make sure we don't accidentally match it with org.parceler Proguard matchers.
+ * @author John Ericksen
  */
-@Parcel
-public class ExampleParcel {
-    private String message;
+public class ParcelsTestUtil {
 
-    public String getMessage() {
-        return message;
-    }
+    public static android.os.Parcel wrap(Object input){
+        android.os.Parcel parcel = android.os.Parcel.obtain();
 
-    public void setMessage(String message) {
-        this.message = message;
+        Parcelable parcelable = Parcels.wrap(input);
+        parcelable.writeToParcel(parcel, 0);
+
+        return parcel;
     }
 }

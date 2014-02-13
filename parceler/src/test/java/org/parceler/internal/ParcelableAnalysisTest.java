@@ -171,6 +171,60 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.METHOD)
+    public static class Modifiers {
+        String one;
+        String two;
+        String three;
+        String four;
+
+        public String getOne() {
+            return one;
+        }
+
+        public void setOne(String one) {
+            this.one = one;
+        }
+
+        String getTwo() {
+            return two;
+        }
+
+        void setTwo(String two) {
+            this.two = two;
+        }
+
+        protected String getThree() {
+            return three;
+        }
+
+        protected void setThree(String three) {
+            this.three = three;
+        }
+
+        private String getFour() {
+            return four;
+        }
+
+        private void setFour(String four) {
+            this.four = four;
+        }
+    }
+
+    @Test
+    public void testMethodModifers() {
+
+        ASTType basicAst = astClassFactory.getType(Modifiers.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertNull(analysis.getConstructorPair());
+        assertTrue(methodsContain(analysis, "one"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
     public static class MissingSetter {
         String stringValue;
         int intValue;
@@ -554,6 +608,66 @@ public class ParcelableAnalysisTest {
         ASTType targetAst = astClassFactory.getType(CollidingMethodConverterSerialization.class);
         parcelableAnalysis.analyze(targetAst, null);
         assertTrue(messager.isErrored());
+    }
+
+    public static class SuperClass{
+        String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    @Parcel
+    static class FieldSubClass extends SuperClass{
+        String value;
+    }
+
+    @Test
+    public void testFieldInheritance() {
+
+        ASTType targetAst = astClassFactory.getType(FieldSubClass.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        assertFalse(messager.isErrored());
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(2, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNull(analysis.getConstructorPair());
+        assertTrue(fieldsContain(analysis, "value"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
+    static class MethodSubClass extends SuperClass{
+        String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testMethodOverrideInheritance() {
+
+        ASTType targetAst = astClassFactory.getType(MethodSubClass.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        assertFalse(messager.isErrored());
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertNull(analysis.getConstructorPair());
+        assertTrue(methodsContain(analysis, "value"));
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     private boolean constructorContains(ParcelableDescriptor descriptor, String name) {
