@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.parceler:parceler-api:0.2.6-SNAPSHOT'
-    provided 'org.parceler:parceler:0.2.6-SNAPSHOT'
+    compile 'org.parceler:parceler-api:0.2.7-SNAPSHOT'
+    provided 'org.parceler:parceler:0.2.7-SNAPSHOT'
 }
 
 android {
@@ -32,5 +32,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
+    }
+    lintOptions {
+        abortOnError false
     }
 }
