@@ -42,31 +42,31 @@ To use the generated code, you may reference the generated class directly, or vi
 
 [source,java]
 ----
-    Parcelable wrapped = Parcels.wrap(new Example("Andy", 42);
+Parcelable wrapped = Parcels.wrap(new Example("Andy", 42);
 ----
 
 To dereference the +@Parcel+, just call the +Parcels.unwrap()+ method:
 
 [source,java]
 ----
-    Example example = Parcels.unwrap(wrapped);
-    example.getName(); // Andy
-    example.getAge(); // 42
+Example example = Parcels.unwrap(wrapped);
+example.getName(); // Andy
+example.getAge(); // 42
 ----
 
 Of course, the ParcelWrapper can be added to an Android Bundle to transfer from Activity to Activity:
 
 [source,java]
 ----
-    Bundle bundle = new Bundle();
-    bundle.putParcelable("example", Parcels.wrap(example));
+Bundle bundle = new Bundle();
+bundle.putParcelable("example", Parcels.wrap(example));
 ----
 
 And dereferenced in the +onCreate()+ method:
 
 [source,java]
 ----
-    Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
+Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
 ----
 
 Only a select number of types may be used as attributes of a +@Parcel+ class.  The following list includes the mapped
