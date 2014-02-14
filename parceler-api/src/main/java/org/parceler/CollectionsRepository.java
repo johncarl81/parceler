@@ -86,7 +86,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
         private List contents;
 
         @SuppressWarnings("UnusedDeclaration")
-        public final ListParcelableCreator CREATOR = new ListParcelableCreator();
+        public static final ListParcelableCreator CREATOR = new ListParcelableCreator();
 
         @SuppressWarnings("unchecked")
         ListParcelable(android.os.Parcel parcel) {
@@ -96,7 +96,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             } else {
                 contents = new ArrayList<String>();
                 for (int i = 0; (i < size); i++) {
-                    contents.add(Parcels.unwrap(parcel.readParcelable(ClassLoader.getSystemClassLoader())));
+                    contents.add(Parcels.unwrap(parcel.readParcelable(SparseArrayParcelableFactory.class.getClassLoader())));
                 }
             }
         }
@@ -127,7 +127,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             return contents;
         }
 
-        private final static class ListParcelableCreator implements Creator<ListParcelable> {
+        private static final class ListParcelableCreator implements Creator<ListParcelable> {
 
             @Override
             public ListParcelable createFromParcel(android.os.Parcel parcel) {
@@ -145,7 +145,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
 
         private Map<Object, Object> contents;
         @SuppressWarnings("UnusedDeclaration")
-        public final static MapParcelable.MapParcelableCreator CREATOR = new MapParcelable.MapParcelableCreator();
+        public static final MapParcelable.MapParcelableCreator CREATOR = new MapParcelable.MapParcelableCreator();
 
         MapParcelable(android.os.Parcel parcel) {
             int size = parcel.readInt();
@@ -154,8 +154,8 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             } else {
                 contents = new HashMap<Object, Object>();
                 for (int i = 0; (i < size); i++) {
-                    Parcelable key = parcel.readParcelable(ClassLoader.getSystemClassLoader());
-                    Parcelable value = parcel.readParcelable(ClassLoader.getSystemClassLoader());
+                    Parcelable key = parcel.readParcelable(MapParcelable.class.getClassLoader());
+                    Parcelable value = parcel.readParcelable(MapParcelable.class.getClassLoader());
                     contents.put(Parcels.unwrap(key), Parcels.unwrap(value));
                 }
             }
@@ -189,7 +189,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             return contents;
         }
 
-        private final static class MapParcelableCreator implements Creator<MapParcelable> {
+        private static final class MapParcelableCreator implements Creator<MapParcelable> {
 
 
             @Override
@@ -210,7 +210,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
         private Set contents;
 
         @SuppressWarnings("UnusedDeclaration")
-        public final static ListParcelableCreator CREATOR = new ListParcelableCreator();
+        public static final ListParcelableCreator CREATOR = new ListParcelableCreator();
 
         @SuppressWarnings("unchecked")
         SetParcelable(android.os.Parcel parcel) {
@@ -220,7 +220,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             } else {
                 contents = new HashSet<String>();
                 for (int i = 0; (i < size); i++) {
-                    contents.add(Parcels.unwrap(parcel.readParcelable(ClassLoader.getSystemClassLoader())));
+                    contents.add(Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader())));
                 }
             }
         }
@@ -251,7 +251,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             return contents;
         }
 
-        private final static class ListParcelableCreator implements Creator<SetParcelable> {
+        private static final class ListParcelableCreator implements Creator<SetParcelable> {
 
             @Override
             public SetParcelable createFromParcel(android.os.Parcel parcel) {
@@ -271,7 +271,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
 
         private SparseArray contents;
         @SuppressWarnings("UnusedDeclaration")
-        public final static SparseArrayCreator CREATOR = new SparseArrayCreator();
+        public static final SparseArrayCreator CREATOR = new SparseArrayCreator();
 
         @SuppressWarnings("unchecked")
         SparseArrayParcelable(android.os.Parcel parcel) {
@@ -282,7 +282,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
                 contents = new android.util.SparseArray<android.os.Parcelable>(size);
                 for (int i = 0; (i < size); i++) {
                     int key = parcel.readInt();
-                    contents.append(key, Parcels.unwrap(parcel.readParcelable(ClassLoader.getSystemClassLoader())));
+                    contents.append(key, Parcels.unwrap(parcel.readParcelable(SparseArrayParcelable.class.getClassLoader())));
                 }
             }
         }
@@ -314,7 +314,7 @@ final class CollectionsRepository implements Repository<Parcels.ParcelableFactor
             return contents;
         }
 
-        private final static class SparseArrayCreator implements Creator<SparseArrayParcelable> {
+        private static final class SparseArrayCreator implements Creator<SparseArrayParcelable> {
 
             @Override
             public SparseArrayParcelable createFromParcel(android.os.Parcel parcel) {
