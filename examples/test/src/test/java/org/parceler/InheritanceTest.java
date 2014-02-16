@@ -45,14 +45,14 @@ public class InheritanceTest {
         prewrap.setSuperFour("4b");
         prewrap.setFinal("9");
 
-        FieldSubClass unwrapped = Parcels.unwrap(new FieldSubClass$$Parcelable(ParcelsTestUtil.wrap(prewrap)));
+        FieldSubClass unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(prewrap));
 
         assertEquals("1a", unwrapped.getOne());
-        //assertEquals("1b", unwrapped.getSuperOne());
+        //todo: assertEquals("1b", unwrapped.getSuperOne());
         assertEquals("2a", unwrapped.getTwo());
-        //assertEquals("2b", unwrapped.getSuperTwo());
+        assertEquals("2b", unwrapped.getSuperTwo());
         assertEquals("3a", unwrapped.getThree());
-        //assertEquals("3b", unwrapped.getSuperThree());
+        assertEquals("3b", unwrapped.getSuperThree());
         assertEquals("4a", unwrapped.getFour());
         assertEquals("4b", unwrapped.getSuperFour());
         assertEquals("9", unwrapped.getFinal());
@@ -73,7 +73,7 @@ public class InheritanceTest {
         prewrap.setSuperFour("4b");
         prewrap.setFinal("9");
 
-        MethodSubClass unwrapped = Parcels.unwrap(new MethodSubClass$$Parcelable(ParcelsTestUtil.wrap(prewrap)));
+        MethodSubClass unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(prewrap));
 
         assertEquals("1a", unwrapped.getSubOne());
         assertNull(unwrapped.getSuperOne());

@@ -17,17 +17,28 @@ package org.parceler;
 
 import android.os.Parcelable;
 
+import java.lang.reflect.Field;
+
 /**
  * @author John Ericksen
  */
 public class ParcelsTestUtil {
 
-    public static android.os.Parcel wrap(Object input){
-        android.os.Parcel parcel = android.os.Parcel.obtain();
+    public static Parcelable wrap(Object input){
+        try{
+            android.os.Parcel parcel = android.os.Parcel.obtain();
 
-        Parcelable parcelable = Parcels.wrap(input);
-        parcelable.writeToParcel(parcel, 0);
+            Parcelable parcelable = Parcels.wrap(input);
 
-        return parcel;
+            parcelable.writeToParcel(parcel, 0);
+
+            Field creatorField = parcelable.getClass().getField("CREATOR");
+
+            return (Parcelable) ((Parcelable.Creator)creatorField.get(parcelable)).createFromParcel(parcel);
+        } catch (IllegalAccessException e) {
+            throw new ParcelerRuntimeException("IllegalAccessException", e);
+        } catch (NoSuchFieldException e) {
+            throw new ParcelerRuntimeException("NoSuchFieldException", e);
+        }
     }
 }

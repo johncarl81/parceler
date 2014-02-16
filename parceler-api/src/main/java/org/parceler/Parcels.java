@@ -35,9 +35,10 @@ public final class Parcels {
     public static final String IMPL_EXT = "Parcelable";
 
     private static final ParcelCodeRepository REPOSITORY = new ParcelCodeRepository();
+    private static final NullParcelable NULL_PARCELABLE = new NullParcelable();
 
     static{
-        REPOSITORY.loadRepository(CollectionsRepository.getInstance());
+        REPOSITORY.loadRepository(NonParcelRepository.getInstance());
     }
 
     private Parcels(){
@@ -63,7 +64,7 @@ public final class Parcels {
     @SuppressWarnings("unchecked")
     public static <T> Parcelable wrap(T input) {
         if(input == null){
-            return null;
+            return NULL_PARCELABLE;
         }
         ParcelableFactory parcelableFactory = REPOSITORY.get(input.getClass());
 
@@ -85,6 +86,42 @@ public final class Parcels {
         }
         ParcelWrapper<T> wrapper = (ParcelWrapper<T>) input;
         return wrapper.getParcel();
+    }
+
+    private static class NullParcelable implements Parcelable, ParcelWrapper<Object>{
+        @SuppressWarnings("UnusedDeclaration")
+        public static final NullParcelableCreator CREATOR = new NullParcelableCreator();
+
+        @SuppressWarnings("unchecked")
+        NullParcelable(android.os.Parcel parcel) {}
+
+        NullParcelable() {}
+
+        @Override
+        public void writeToParcel(android.os.Parcel parcel, int flags) {}
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public Object getParcel() {
+            return null;
+        }
+
+        private static final class NullParcelableCreator implements Creator<NullParcelable> {
+
+            @Override
+            public NullParcelable createFromParcel(android.os.Parcel parcel) {
+                return new NullParcelable(parcel);
+            }
+
+            @Override
+            public NullParcelable[] newArray(int size) {
+                return new NullParcelable[size];
+            }
+        }
     }
 
     /**

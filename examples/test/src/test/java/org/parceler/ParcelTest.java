@@ -39,7 +39,7 @@ public class ParcelTest {
 
         ExampleParcel example = new ExampleParcel(one, two, three, sub);
 
-        ExampleParcel exampleParcel = Parcels.unwrap(new ExampleParcel$$Parcelable(ParcelsTestUtil.wrap(example)));
+        ExampleParcel exampleParcel = Parcels.unwrap(ParcelsTestUtil.wrap(example));
 
         assertEquals(one, exampleParcel.getOne());
         assertEquals(two, exampleParcel.getTwo());
@@ -56,7 +56,7 @@ public class ParcelTest {
         Manual input = new Manual();
         input.setValue(value);
 
-        Manual output = Parcels.unwrap(new Manual$$Parcelable(ParcelsTestUtil.wrap(input)));
+        Manual output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -69,7 +69,7 @@ public class ParcelTest {
         ExternalParcel input = new ExternalParcel();
         input.setValue(value);
 
-        ExternalParcel output = Parcels.unwrap(new ExternalParcel$$Parcelable(ParcelsTestUtil.wrap(input)));
+        ExternalParcel output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
 
         assertEquals(input.getValue(), output.getValue());
     }
@@ -82,7 +82,7 @@ public class ParcelTest {
         ManuallyRegistered input = new ManuallyRegistered();
         input.setValue(value);
 
-        ManuallyRegistered output = Parcels.unwrap(new ManuallyRegistered$$Parcelable(ParcelsTestUtil.wrap(input)));
+        ManuallyRegistered output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
 
         assertEquals(input.getValue(), output.getValue());
     }

@@ -105,7 +105,7 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
         JBlock writeBody = nullConditional._else();
 
         writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
-        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression);
+        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), JExpr.cast(generationUtil.narrowRef(type), getExpression));
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 

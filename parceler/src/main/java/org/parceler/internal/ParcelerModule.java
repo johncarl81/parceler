@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import com.google.common.collect.ImmutableSet;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
@@ -120,6 +121,7 @@ public class ParcelerModule {
                                               Provider<ParcelsTransactionWorker> parcelsTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
+                                              Provider<PackageHelperGeneratorAdapter> packageHelperGeneratorAdapterProvider,
                                               ScopedTransactionBuilder scopedTransactionBuilder) {
 
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
@@ -140,7 +142,9 @@ public class ParcelerModule {
                         parcelsProcessor,
                         scopedTransactionBuilder.buildFactory(parcelsTransactionWorkerProvider));
 
-        TransactionProcessor processorChain = new TransactionProcessorChain(externalParcelProcessor, processor);
+        TransactionProcessor processorChain = new TransactionProcessorChain(externalParcelProcessor,
+                new TransactionProcessorChain(processor,
+                        new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider)))));
 
         return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder);
     }

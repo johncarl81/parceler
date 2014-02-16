@@ -16,10 +16,7 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.adapter.ASTAccessModifier;
-import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
-import org.androidtransfuse.gen.invocationBuilder.ModifiedInvocationBuilder;
-import org.androidtransfuse.gen.invocationBuilder.PublicInvocationBuilder;
-import org.androidtransfuse.gen.invocationBuilder.WarningInvocationBuilderDecorator;
+import org.androidtransfuse.gen.invocationBuilder.*;
 import org.androidtransfuse.validation.Validator;
 
 import javax.inject.Inject;
@@ -31,12 +28,15 @@ public class ParcelerInvocationBuilderStrategy implements InvocationBuilderStrat
 
     private final ModifiedInvocationBuilder publicInvocationBuilder;
     private final ModifiedInvocationBuilder privateInvocationBuilder;
+    private final ModifiedInvocationBuilder protectedInvocationBuilder;
 
     @Inject
     public ParcelerInvocationBuilderStrategy(PublicInvocationBuilder publicInvocationBuilder,
+                                             ProtectedInvocationBuilder protectedInvocationBuilder,
                                              ParcelerPrivateInvocationBuilder privateInvocationBuilder,
                                              Validator validator) {
         this.publicInvocationBuilder = publicInvocationBuilder;
+        this.protectedInvocationBuilder = protectedInvocationBuilder;
         this.privateInvocationBuilder = new WarningInvocationBuilderDecorator(privateInvocationBuilder, validator);
     }
 
@@ -44,9 +44,10 @@ public class ParcelerInvocationBuilderStrategy implements InvocationBuilderStrat
     public ModifiedInvocationBuilder getInjectionBuilder(ASTAccessModifier modifier) {
         switch (modifier) {
             case PUBLIC:
+                return publicInvocationBuilder;
             case PACKAGE_PRIVATE:
             case PROTECTED:
-                return publicInvocationBuilder;
+                return protectedInvocationBuilder;
             default:
                 return privateInvocationBuilder;
         }
