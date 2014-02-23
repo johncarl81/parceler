@@ -54,6 +54,7 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
 
         body.add(invocationBuilder.buildMethodCall(
                 input.getContainer(),
+                methodReference.getRoot(),
                 methodReference.getMethod(),
                 Collections.singletonList(input.getGetExpression().getExpression()),
                 input.getWrapped()));

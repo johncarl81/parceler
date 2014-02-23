@@ -49,6 +49,7 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
 
         return invocationBuilder.buildMethodCall(
                 input.getContainer(),
+                methodReference.getRoot(),
                 methodReference.getMethod(),
                 Collections.EMPTY_LIST,
                 new TypedExpression(methodReference.getOwner(), input.getExpression().getExpression()));

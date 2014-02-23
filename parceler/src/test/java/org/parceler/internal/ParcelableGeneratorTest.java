@@ -106,8 +106,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getMethodPairs().add(
                 new ReferencePair<MethodReference>("value",
-                        new MethodReference(targetType, "value", stringType, setter),
-                        new MethodReference(targetType, "value", stringType, getter), null));
+                        new MethodReference(targetType, targetType, "value", stringType, setter),
+                        new MethodReference(targetType, targetType, "value", stringType, getter), null));
 
         testSerialization(descriptor);
     }
@@ -122,8 +122,8 @@ public class ParcelableGeneratorTest {
 
         descriptor.getMethodPairs().add(
                 new ReferencePair<MethodReference>("value",
-                        new MethodReference(targetType, "value", stringType, setter),
-                        new MethodReference(targetType, "value", stringType, getter), converterType));
+                        new MethodReference(targetType, targetType, "value", stringType, setter),
+                        new MethodReference(targetType, targetType, "value", stringType, getter), converterType));
 
         testSerialization(descriptor);
     }
