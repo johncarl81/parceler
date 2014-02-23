@@ -48,7 +48,7 @@ public class InheritanceTest {
         FieldSubClass unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(prewrap));
 
         assertEquals("1a", unwrapped.getOne());
-        //todo: assertEquals("1b", unwrapped.getSuperOne());
+        assertEquals("1b", unwrapped.getSuperOne());
         assertEquals("2a", unwrapped.getTwo());
         assertEquals("2b", unwrapped.getSuperTwo());
         assertEquals("3a", unwrapped.getThree());
