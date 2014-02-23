@@ -84,7 +84,7 @@ public class ParcelerPrivateInvocationBuilder implements ModifiedInvocationBuild
     }
 
     @Override
-    public JExpression buildFieldGet(ASTField field, TypedExpression targetExpression) {
+    public JExpression buildFieldGet(boolean cast, ASTField field, TypedExpression targetExpression) {
         //InjectionUtil.getInstance().getField(Class returnType, Class targetClass, Object target, String field)
         return generationUtil.ref(InjectionUtil.class).staticInvoke(InjectionUtil.GET_FIELD_METHOD)
                 .arg(generationUtil.ref(field.getASTType()).dotclass())
@@ -94,7 +94,7 @@ public class ParcelerPrivateInvocationBuilder implements ModifiedInvocationBuild
     }
 
     @Override
-    public JStatement buildFieldSet(ASTField field, TypedExpression expression, TypedExpression containingType) {
+    public JStatement buildFieldSet(boolean cast, ASTField field, TypedExpression expression, TypedExpression containingType) {
         JClass variableType = generationUtil.ref(containingType.getType());
 
         //InjectionUtil.getInstance().setField(Class targetClass, Object target, String field, Object value)

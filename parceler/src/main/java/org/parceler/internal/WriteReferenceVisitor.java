@@ -38,7 +38,9 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
     public JExpression visit(FieldReference fieldReference, WriteContext input) {
 
         return invocationBuilder.buildFieldGet(
+                input.getContainer(),
                 fieldReference.getField(),
+                input.getExpression().getType(),
                 new TypedExpression(fieldReference.getOwner(), input.getExpression().getExpression()));
     }
 
@@ -46,6 +48,7 @@ public class WriteReferenceVisitor implements ReferenceVisitor<WriteContext, JEx
     public JExpression visit(MethodReference methodReference, WriteContext input) {
 
         return invocationBuilder.buildMethodCall(
+                input.getContainer(),
                 methodReference.getMethod(),
                 Collections.EMPTY_LIST,
                 new TypedExpression(methodReference.getOwner(), input.getExpression().getExpression()));

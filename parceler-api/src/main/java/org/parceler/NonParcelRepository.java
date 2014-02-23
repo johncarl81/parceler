@@ -672,7 +672,6 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
         @SuppressWarnings("unchecked")
         StringParcelable(android.os.Parcel parcel) {
-            System.out.println("READING STRING");
             contents = parcel.readString();
         }
 
@@ -682,7 +681,6 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
         @Override
         public void writeToParcel(android.os.Parcel parcel, int flags) {
-            System.out.println("WRITING STRING");
             parcel.writeString(contents);
         }
 

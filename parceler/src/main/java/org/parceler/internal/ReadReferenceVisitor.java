@@ -39,7 +39,9 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
         JBlock body = input.getBody();
 
         body.add(invocationBuilder.buildFieldSet(
+                input.getContainer(),
                 fieldReference.getField(),
+                input.getWrapped().getType(),
                 new TypedExpression(fieldReference.getOwner(), input.getWrapped().getExpression()),
                 input.getGetExpression()
         ));
@@ -51,6 +53,7 @@ public class ReadReferenceVisitor implements ReferenceVisitor<ReadContext, Void>
         JBlock body = input.getBody();
 
         body.add(invocationBuilder.buildMethodCall(
+                input.getContainer(),
                 methodReference.getMethod(),
                 Collections.singletonList(input.getGetExpression().getExpression()),
                 input.getWrapped()));

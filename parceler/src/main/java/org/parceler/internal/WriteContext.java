@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.model.TypedExpression;
 
 /**
@@ -23,12 +24,18 @@ import org.androidtransfuse.model.TypedExpression;
 public class WriteContext {
 
     private final TypedExpression expression;
+    private final ASTType container;
 
-    public WriteContext(TypedExpression expression) {
+    public WriteContext(ASTType container, TypedExpression expression) {
         this.expression = expression;
+        this.container = container;
     }
 
     public TypedExpression getExpression() {
         return expression;
+    }
+
+    public ASTType getContainer() {
+        return container;
     }
 }

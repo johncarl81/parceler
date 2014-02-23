@@ -16,6 +16,7 @@
 package org.parceler.internal;
 
 import com.sun.codemodel.JBlock;
+import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.model.TypedExpression;
 
 /**
@@ -26,11 +27,13 @@ public class ReadContext {
     private final JBlock body;
     private final TypedExpression wrapped;
     private final TypedExpression getExpression;
+    private final ASTType container;
 
-    public ReadContext(JBlock body, TypedExpression wrapped, TypedExpression getExpression) {
+    public ReadContext(ASTType container, JBlock body, TypedExpression wrapped, TypedExpression getExpression) {
         this.body = body;
         this.wrapped = wrapped;
         this.getExpression = getExpression;
+        this.container = container;
     }
 
     public JBlock getBody() {
@@ -43,5 +46,9 @@ public class ReadContext {
 
     public TypedExpression getGetExpression() {
         return getExpression;
+    }
+
+    public ASTType getContainer() {
+        return container;
     }
 }
