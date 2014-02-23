@@ -20,7 +20,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Parcel
 public class FieldModifiers {
-    String one;
+    public String one;
     String two;
     protected String three;
     private String four;
