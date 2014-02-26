@@ -231,7 +231,9 @@ public class ParcelableAnalysis {
         Map<String, List<ASTReference<ASTField>>> fields = new HashMap<String, List<ASTReference<ASTField>>>();
 
         for (ASTField astField : astType.getFields()) {
-            if(!astField.isAnnotated(Transient.class) && (declaredProperty == astField.isAnnotated(ParcelProperty.class))){
+            if(!astField.isAnnotated(Transient.class) &&
+                    !astField.isTransient() &&
+                    (declaredProperty == astField.isAnnotated(ParcelProperty.class))){
                 String name = astField.getName();
                 ASTType converter = null;
                 if(astField.isAnnotated(ParcelProperty.class)){

@@ -355,6 +355,27 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
+    public static class FieldTransient {
+        @Transient String stringValue;
+        transient int intValue;
+    }
+
+    @Test
+    public void testFieldTransientTransient() {
+
+        ASTType basicAst = astClassFactory.getType(FieldTransient.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNull(analysis.getConstructorPair());
+        assertFalse(methodsContain(analysis, "stringValue"));
+        assertFalse(methodsContain(analysis, "intValue"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
     public static class DuplicateProperty {
         @ParcelProperty("value")
         String value;
