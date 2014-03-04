@@ -15,7 +15,6 @@
  */
 package org.parceler;
 
-import android.os.Parcelable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +44,7 @@ public class ConverterTest {
 
         ConverterTarget target = factory.manufacturePojo(ConverterTarget.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new ConverterTarget$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        ConverterTarget unwrapped = Parcels.unwrap(new ConverterTarget$$Parcelable(parcel));
+        ConverterTarget unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }

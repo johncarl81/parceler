@@ -33,6 +33,7 @@ import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFacto
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
+import org.parceler.internal.generator.NullCheckFactory;
 import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
@@ -89,8 +90,9 @@ public class TestParcelerModule {
                                     ExternalParcelRepository externalParcelRepository,
                                     UniqueVariableNamer namer,
                                     JCodeModel codeModel,
-                                    SerializableReadWriteGenerator serializableReadWriteGenerator){
+                                    SerializableReadWriteGenerator serializableReadWriteGenerator,
+                                    NullCheckFactory nullCheckFactory){
 
-        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator);
+        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory);
     }
 }

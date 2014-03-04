@@ -15,7 +15,6 @@
  */
 package org.parceler;
 
-import android.os.Parcelable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +44,7 @@ public class ModifierTest {
 
         FieldModifiers target = factory.manufacturePojo(FieldModifiers.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new FieldModifiers$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        FieldModifiers unwrapped = Parcels.unwrap(new FieldModifiers$$Parcelable(parcel));
+        FieldModifiers unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }
@@ -59,11 +54,7 @@ public class ModifierTest {
 
         MethodModifiers target = factory.manufacturePojo(MethodModifiers.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new MethodModifiers$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        MethodModifiers unwrapped = Parcels.unwrap(new MethodModifiers$$Parcelable(parcel));
+        MethodModifiers unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }
@@ -73,11 +64,7 @@ public class ModifierTest {
 
         PublicConstructorModifier target = factory.manufacturePojo(PublicConstructorModifier.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new PublicConstructorModifier$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        PublicConstructorModifier unwrapped = Parcels.unwrap(new PublicConstructorModifier$$Parcelable(parcel));
+        PublicConstructorModifier unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }
@@ -87,11 +74,7 @@ public class ModifierTest {
 
         PackagePrivateConstructorModifier target = factory.manufacturePojo(PackagePrivateConstructorModifier.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new PackagePrivateConstructorModifier$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        PackagePrivateConstructorModifier unwrapped = Parcels.unwrap(new PackagePrivateConstructorModifier$$Parcelable(parcel));
+        PackagePrivateConstructorModifier unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }
@@ -101,11 +84,7 @@ public class ModifierTest {
 
         ProtectedConstructorModifier target = factory.manufacturePojo(ProtectedConstructorModifier.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new ProtectedConstructorModifier$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        ProtectedConstructorModifier unwrapped = Parcels.unwrap(new ProtectedConstructorModifier$$Parcelable(parcel));
+        ProtectedConstructorModifier unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }
@@ -115,11 +94,7 @@ public class ModifierTest {
 
         PrivateConstructorModifier target = factory.manufacturePojo(PrivateConstructorModifier.class);
 
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        Parcelable parcelable = new PrivateConstructorModifier$$Parcelable(target);
-        parcelable.writeToParcel(parcel, 0);
-
-        PrivateConstructorModifier unwrapped = Parcels.unwrap(new PrivateConstructorModifier$$Parcelable(parcel));
+        PrivateConstructorModifier unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(target));
 
         assertTrue(target.equals(unwrapped));
     }

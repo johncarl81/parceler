@@ -155,9 +155,10 @@ public class ParcelerModule {
                                     ExternalParcelRepository externalParcelRepository,
                                     UniqueVariableNamer namer,
                                     JCodeModel codeModel,
-                                    SerializableReadWriteGenerator serializableReadWriteGenerator){
+                                    SerializableReadWriteGenerator serializableReadWriteGenerator,
+                                    NullCheckFactory nullCheckFactory){
 
-        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator);
+        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory);
     }
     
     public static Generators addGenerators(Generators generators,
@@ -166,18 +167,19 @@ public class ParcelerModule {
                                            ExternalParcelRepository externalParcelRepository,
                                            UniqueVariableNamer namer,
                                            JCodeModel codeModel,
-                                           SerializableReadWriteGenerator serializableReadWriteGenerator){
+                                           SerializableReadWriteGenerator serializableReadWriteGenerator,
+                                           NullCheckFactory nullCheckFactory){
 
         generators.addPair(byte.class, "readByte", "writeByte");
-        generators.addPair(Byte.class, "readByte", "writeByte", byte.class);
+        generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));
         generators.addPair(double.class, "readDouble", "writeDouble");
-        generators.addPair(Double.class, "readDouble", "writeDouble", double.class);
+        generators.addPair(Double.class, nullCheckFactory.get(Double.class, generators, double.class));
         generators.addPair(float.class, "readFloat", "writeFloat");
-        generators.addPair(Float.class, "readFloat", "writeFloat", float.class);
+        generators.addPair(Float.class, nullCheckFactory.get(Float.class, generators, float.class));
         generators.addPair(int.class, "readInt", "writeInt");
-        generators.addPair(Integer.class, "readInt", "writeInt", int.class);
+        generators.addPair(Integer.class, nullCheckFactory.get(Integer.class, generators, int.class));
         generators.addPair(long.class, "readLong", "writeLong");
-        generators.addPair(Long.class, "readLong", "writeLong", long.class);
+        generators.addPair(Long.class, nullCheckFactory.get(Long.class, generators, long.class));
         generators.addPair(char.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
         generators.addPair(Character.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
         generators.addPair(boolean.class, new SingleEntryArrayReadWriteGenerator("createBooleanArray", "writeBooleanArray", boolean.class, codeModel));
@@ -188,7 +190,7 @@ public class ParcelerModule {
         generators.addPair(String.class, "readString", "writeString");
         generators.addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
         generators.addPair("android.os.Bundle", "readBundle", "writeBundle");
-        generators.addPair(Exception.class, "readException", "writeException");
+        //todo: handle generators.addPair(Exception.class, "readException", "writeException");
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));

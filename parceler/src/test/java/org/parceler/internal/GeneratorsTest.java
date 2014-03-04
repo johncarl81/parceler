@@ -30,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author John Ericksen
@@ -56,9 +55,6 @@ public class GeneratorsTest {
                 assertNotNull(readMethod);
                 Method writeMethod = Parcel.class.getMethod(readWriteGeneratorBase.getWriteMethod(), readWriteGeneratorBase.getWriteMethodParams());
                 assertNotNull(writeMethod);
-            }
-            else{
-                assertTrue("Found ReadWriteGenerator that wasn't covered by test: "+ entry.getValue().getClass(), false);
             }
         }
     }
