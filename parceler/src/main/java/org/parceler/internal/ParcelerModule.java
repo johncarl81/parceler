@@ -181,9 +181,9 @@ public class ParcelerModule {
         generators.addPair(long.class, "readLong", "writeLong");
         generators.addPair(Long.class, nullCheckFactory.get(Long.class, generators, long.class));
         generators.addPair(char.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
-        generators.addPair(Character.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
+        generators.addPair(Character.class, nullCheckFactory.get(Character.class, generators, char.class));
         generators.addPair(boolean.class, new SingleEntryArrayReadWriteGenerator("createBooleanArray", "writeBooleanArray", boolean.class, codeModel));
-        generators.addPair(Boolean.class, new SingleEntryArrayReadWriteGenerator("createBooleanArray", "writeBooleanArray", boolean.class, codeModel));
+        generators.addPair(Boolean.class, nullCheckFactory.get(Boolean.class, generators, boolean.class));
         generators.addPair(byte[].class, "createByteArray", "writeByteArray");
         generators.addPair(char[].class, "createCharArray", "writeCharArray");
         generators.addPair(boolean[].class, "createBooleanArray", "writeBooleanArray");
