@@ -29,13 +29,19 @@ public class ParcelableDescriptor {
     private final List<ReferencePair<FieldReference>> fieldPairs = new ArrayList<ReferencePair<FieldReference>>();
     private final List<ReferencePair<MethodReference>> methodPairs = new ArrayList<ReferencePair<MethodReference>>();
     private final ASTType parcelConverterType;
+    private ASTType[] extraImplementations;
 
     public ParcelableDescriptor() {
-        parcelConverterType = null;
+        this(new ASTType[0]);
     }
 
-    public ParcelableDescriptor(ASTType parcelConverterType) {
+    public ParcelableDescriptor(ASTType[] extraImplementations) {
+        this(extraImplementations, null);
+    }
+
+    public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType) {
         this.parcelConverterType = parcelConverterType;
+        this.extraImplementations = extraImplementations;
     }
 
     public List<ReferencePair<FieldReference>> getFieldPairs() {
@@ -56,5 +62,9 @@ public class ParcelableDescriptor {
 
     public ConstructorReference getConstructorPair() {
         return constructorPair;
+    }
+
+    public ASTType[] getExtraImplementations() {
+        return extraImplementations;
     }
 }

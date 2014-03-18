@@ -21,6 +21,7 @@ import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.parceler.*;
 
@@ -716,7 +717,6 @@ public class ParcelableAnalysisTest {
 
         ASTType targetAst = astClassFactory.getType(FieldSubClass.class);
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
-        assertFalse(messager.isErrored());
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(2, analysis.getFieldPairs().size());
@@ -745,7 +745,6 @@ public class ParcelableAnalysisTest {
 
         ASTType targetAst = astClassFactory.getType(MethodSubClass.class);
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
-        assertFalse(messager.isErrored());
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -815,6 +814,88 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructorAmbiguousReaderSubclass() {
         parcelableAnalysis.analyze(astClassFactory.getType(ConstructorAmbiguousReaderSubclass.class), null);
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel
+    static class FactoryMethod {
+        String value;
+
+        @ParcelProperty("value")
+        public String getValue() {
+            return value;
+        }
+
+        @ParcelFactory
+        public static FactoryMethod build(@ParcelProperty("value") String value) {
+            return new FactoryMethod();
+        }
+    }
+
+    @Test
+    public void testFactoryMethod() {
+
+        ASTType targetAst = astClassFactory.getType(FactoryMethod.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertNull(analysis.getParcelConverterType());
+
+        assertNotNull(analysis.getConstructorPair());
+        assertNotNull(analysis.getConstructorPair().getFactoryMethod());
+        assertNull(analysis.getConstructorPair().getConstructor());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class FactoryMethodAndConstructor {
+        String value;
+
+        @ParcelConstructor
+        public FactoryMethodAndConstructor(){}
+
+        @ParcelProperty("value")
+        public String getValue() {
+            return value;
+        }
+
+        @ParcelFactory
+        public static FactoryMethod build(String value) {
+            return new FactoryMethod();
+        }
+    }
+
+    @Test
+    @Ignore // todo: add factory and constructor validation
+    public void testFactoryMethodAndConstructor() {
+
+        ASTType targetAst = astClassFactory.getType(FactoryMethodAndConstructor.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel
+    static class NonStaticFactoryMethod {
+        String value;
+
+        @ParcelProperty("value")
+        public String getValue() {
+            return value;
+        }
+
+        @ParcelFactory
+        public FactoryMethod build(String value) {
+            return new FactoryMethod();
+        }
+    }
+
+    @Test
+    @Ignore // todo: add static method validation
+    public void testNonStaticFactoryMethod() {
+
+        ASTType targetAst = astClassFactory.getType(NonStaticFactoryMethod.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
         assertTrue(messager.isErrored());
     }
 

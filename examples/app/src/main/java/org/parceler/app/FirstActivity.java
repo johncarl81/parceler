@@ -42,8 +42,7 @@ public class FirstActivity extends Activity implements OnClickListener {
     @Override
     public void onClick(View view) {
         String message = messageView.getText().toString();
-        ExampleParcel exampleParcel = new ExampleParcel();
-        exampleParcel.setMessage(message);
+        ExampleParcel exampleParcel = ExampleParcel.create(message);
 
         for (Field field : ExampleParcel.class.getDeclaredFields()) {
             System.out.println(field.getName());

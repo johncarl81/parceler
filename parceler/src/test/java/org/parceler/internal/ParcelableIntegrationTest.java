@@ -77,9 +77,9 @@ public class ParcelableIntegrationTest {
         JDefinedClass parcelableDefinedClass = parcelableGenerator.generateParcelable(mockParcelASTType, parcelableDescriptor);
         JDefinedClass parcelableTwoDefinedClass = parcelableGenerator.generateParcelable(mockParcelTwoASTType, parcelableTwoDescriptor);
 
-        Map<Provider<ASTType>, JDefinedClass> generated = new HashMap<Provider<ASTType>, JDefinedClass>();
-        generated.put(Providers.of(mockParcelASTType), parcelableDefinedClass);
-        generated.put(Providers.of(mockParcelTwoASTType), parcelableTwoDefinedClass);
+        Map<Provider<ASTType>, ParcelImplementations> generated = new HashMap<Provider<ASTType>, ParcelImplementations>();
+        generated.put(Providers.of(mockParcelASTType), new ParcelImplementations(parcelableDefinedClass));
+        generated.put(Providers.of(mockParcelTwoASTType), new ParcelImplementations(parcelableTwoDefinedClass));
 
         parcelsGenerator.generate(generated);
 

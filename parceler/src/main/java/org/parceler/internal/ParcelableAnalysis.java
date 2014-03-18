@@ -53,20 +53,32 @@ public class ParcelableAnalysis {
 
         Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
         Parcel.Serialization serialization = parcelAnnotation != null ? parcelAnnotation.value() : null;
+        ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
 
-        ParcelableDescriptor parcelableDescriptor= new ParcelableDescriptor();
+        ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
+
+        ParcelableDescriptor parcelableDescriptor= new ParcelableDescriptor(interfaces);
 
         if (converter != null) {
-            parcelableDescriptor = new ParcelableDescriptor(converter);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter);
         }
         else {
-
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
             Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
 
             Set<ASTConstructor> constructors = findConstructors(astType);
+            Set<ASTMethod> factoryMethods = findFactoryMethods(astType);
             ConstructorReference constructorReference = null;
-            if(constructors.size() == 1){
+            if(factoryMethods.size() == 1){
+                writeParameters.putAll(findMethodParameters(factoryMethods.iterator().next()));
+                constructorReference = new ConstructorReference(factoryMethods.iterator().next());
+
+                parcelableDescriptor.setConstructorPair(constructorReference);
+            }
+            else if(factoryMethods.size() > 1){
+                validator.error("Too many @ParcelFactory annotated factory methods.").element(astType).build();
+            }
+            else if(constructors.size() == 1){
                 writeParameters.putAll(findConstructorParameters(constructors.iterator().next()));
                 constructorReference = new ConstructorReference(constructors.iterator().next());
 
@@ -208,14 +220,25 @@ public class ParcelableAnalysis {
         return parcelableDescriptor;
     }
 
+    private Set<ASTMethod> findFactoryMethods(ASTType astType) {
+        Set<ASTMethod> methodResult = new HashSet<ASTMethod>();
+        for(ASTMethod method : astType.getMethods()){
+            if(method.isAnnotated(ParcelFactory.class) /*&& method.isStatic()*/){
+                methodResult.add(method);
+            }
+        }
+
+        return methodResult;
+    }
+
     public Map<String, List<ASTReference<ASTMethod>>> findWriteMethods(ASTType astType, Set<MethodSignature> definedMethods, boolean declaredProperty){
         Map<String, List<ASTReference<ASTMethod>>> writeMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
 
         for (ASTMethod astMethod : astType.getMethods()) {
             if(!astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
-                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class)) &&
-                    isSetter(astMethod)){
+                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) &&
+                    isSetter(astMethod))){
                 String propertyName = getPropertyName(astMethod);
                 ASTType converter = getConverter(astMethod);
                 if(!writeMethods.containsKey(propertyName)){
@@ -234,7 +257,7 @@ public class ParcelableAnalysis {
         for (ASTMethod astMethod : astType.getMethods()) {
             if(!astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
-                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class)) && isGetter(astMethod)){
+                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) && isGetter(astMethod))){
                 String propertyName = getPropertyName(astMethod);
                 ASTType converter = getConverter(astMethod);
                 if(!writeMethods.containsKey(propertyName)){
@@ -318,6 +341,25 @@ public class ParcelableAnalysis {
         Map<String, ASTReference<ASTParameter>> parameters = new HashMap<String, ASTReference<ASTParameter>>();
 
         for (ASTParameter parameter : constructor.getParameters()) {
+            String name = parameter.getName();
+            ASTType converter = null;
+            if(parameter.isAnnotated(ParcelProperty.class)){
+                name = parameter.getAnnotation(ParcelProperty.class).value();
+            }
+            if(parameter.isAnnotated(ParcelPropertyConverter.class)){
+                ASTAnnotation conveterAnnotation = parameter.getASTAnnotation(ParcelPropertyConverter.class);
+                converter = conveterAnnotation.getProperty("value", ASTType.class);
+            }
+            parameters.put(name, new ASTReference<ASTParameter>(parameter, converter));
+        }
+
+        return parameters;
+    }
+
+    private Map<String, ASTReference<ASTParameter>> findMethodParameters(ASTMethod method) {
+        Map<String, ASTReference<ASTParameter>> parameters = new HashMap<String, ASTReference<ASTParameter>>();
+
+        for (ASTParameter parameter : method.getParameters()) {
             String name = parameter.getName();
             ASTType converter = null;
             if(parameter.isAnnotated(ParcelProperty.class)){

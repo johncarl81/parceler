@@ -16,6 +16,7 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.adapter.ASTConstructor;
+import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTParameter;
 import org.androidtransfuse.adapter.ASTType;
 
@@ -28,11 +29,18 @@ import java.util.Map;
 public class ConstructorReference {
 
     private final ASTConstructor constructor;
+    private final ASTMethod factoryMethod;
     private Map<ASTParameter, AccessibleReference> writeReferences = new HashMap<ASTParameter, AccessibleReference>();
     private Map<ASTParameter, ASTType> converters = new HashMap<ASTParameter, ASTType>();
 
     public ConstructorReference(ASTConstructor constructor) {
         this.constructor = constructor;
+        this.factoryMethod = null;
+    }
+
+    public ConstructorReference(ASTMethod factoryMethod) {
+        this.constructor = null;
+        this.factoryMethod = factoryMethod;
     }
 
     public ASTConstructor getConstructor() {
@@ -57,5 +65,9 @@ public class ConstructorReference {
 
     public Map<ASTParameter, ASTType> getConverters(){
         return converters;
+    }
+
+    public ASTMethod getFactoryMethod() {
+        return factoryMethod;
     }
 }

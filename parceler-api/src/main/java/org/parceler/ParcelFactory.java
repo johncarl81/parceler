@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.demo;
+package org.parceler;
 
-import com.google.auto.value.AutoValue;
-import org.parceler.Parcel;
-import org.parceler.ParcelFactory;
-import org.parceler.ParcelProperty;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Intentionally in a different package to make sure we don't accidentally match it with org.parceler Proguard matchers.
+ * @author John Ericksen
  */
-@AutoValue
-@Parcel
-public abstract class ExampleParcel {
-
-    @ParcelProperty("message")
-    public abstract String getMessage();
-
-    @ParcelFactory
-    public static ExampleParcel create(@ParcelProperty("message") String message) {
-        return new AutoValue_ExampleParcel(message);
-    }
-}
+@Target(METHOD)
+@Retention(RUNTIME)
+public @interface ParcelFactory {}

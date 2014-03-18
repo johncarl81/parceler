@@ -15,7 +15,6 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.transaction.ScopedTransactionBuilder;
@@ -37,8 +36,8 @@ public class ParcelProcessor {
 
     private final TransactionProcessor processor;
     private final TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor;
-    private final TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor;
-    private final TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor;
+    private final TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor;
+    private final TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor;
     private final Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider;
     private final Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider;
     private final Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider;
@@ -46,8 +45,8 @@ public class ParcelProcessor {
 
     public ParcelProcessor(TransactionProcessor processor,
                            TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor,
-                           TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor,
-                           TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor,
+                           TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor,
+                           TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor,
                            Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                            Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                            Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,

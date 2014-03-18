@@ -17,7 +17,6 @@ package org.parceler.internal;
 
 import com.google.common.collect.ImmutableSet;
 import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTStringType;
@@ -126,16 +125,16 @@ public class ParcelerModule {
 
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
-        TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> externalParcelProcessor =
-                new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>>();
-        TransactionProcessorPool<Provider<ASTType>, JDefinedClass> parcelProcessor =
-                new TransactionProcessorPool<Provider<ASTType>, JDefinedClass>();
-        TransactionProcessorPool<Map<Provider<ASTType>, JDefinedClass>, Void> parcelsProcessor =
-                new TransactionProcessorPool<Map<Provider<ASTType>, JDefinedClass>, Void>();
+        TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor =
+                new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>>();
+        TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor =
+                new TransactionProcessorPool<Provider<ASTType>, ParcelImplementations>();
+        TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, Void> parcelsProcessor =
+                new TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, Void>();
 
         TransactionProcessor processor =
-                new TransactionProcessorChannel<Provider<ASTType>, JDefinedClass, Void>(
-                        new TransactionProcessorParcelJoin<Provider<ASTType>, JDefinedClass>(
+                new TransactionProcessorChannel<Provider<ASTType>, ParcelImplementations, Void>(
+                        new TransactionProcessorParcelJoin<Provider<ASTType>, ParcelImplementations>(
                                 externalParcelRepositoryProcessor,
                                 externalParcelProcessor,
                                 parcelProcessor),

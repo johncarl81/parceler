@@ -15,7 +15,6 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 
@@ -28,7 +27,7 @@ import java.util.Map;
  *
  * @author John Ericksen
  */
-public class ParcelsTransactionWorker extends AbstractCompletionTransactionWorker<Map<Provider<ASTType>, JDefinedClass>, Void> {
+public class ParcelsTransactionWorker extends AbstractCompletionTransactionWorker<Map<Provider<ASTType>, ParcelImplementations>, Void> {
 
     private ParcelsGenerator parcelsGenerator;
 
@@ -38,7 +37,7 @@ public class ParcelsTransactionWorker extends AbstractCompletionTransactionWorke
     }
 
     @Override
-    public Void innerRun(Map<Provider<ASTType>, JDefinedClass> value) {
+    public Void innerRun(Map<Provider<ASTType>, ParcelImplementations> value) {
         parcelsGenerator.generate(value);
         return null;
     }

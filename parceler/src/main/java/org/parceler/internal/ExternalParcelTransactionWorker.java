@@ -15,7 +15,6 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
@@ -34,7 +33,7 @@ import java.util.Map;
  *
  * @author John Ericksen
  */
-public class ExternalParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, JDefinedClass>> {
+public class ExternalParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> {
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
@@ -48,10 +47,10 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
     }
 
     @Override
-    public Map<Provider<ASTType>, JDefinedClass> innerRun(Provider<ASTType> valueProvider) {
+    public Map<Provider<ASTType>, ParcelImplementations> innerRun(Provider<ASTType> valueProvider) {
 
         ASTType value = valueProvider.get();
-        Map<Provider<ASTType>, JDefinedClass> generatedSource = new HashMap<Provider<ASTType>, JDefinedClass>();
+        Map<Provider<ASTType>, ParcelImplementations> generatedSource = new HashMap<Provider<ASTType>, ParcelImplementations>();
 
         ASTAnnotation parcelClassesAnnotation = value.getASTAnnotation(ParcelClasses.class);
         if(parcelClassesAnnotation != null){
@@ -60,7 +59,7 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
             for(ASTAnnotation annotation : parcelTypes){
                 ASTType parcelType = annotation.getProperty("value", ASTType.class);
                 ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(annotation));
-                generatedSource.put(new ASTTypeProvider(parcelType), parcelableGenerator.generateParcelable(parcelType, analysis));
+                generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis)));
             }
         }
 
@@ -68,7 +67,7 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
         if(astAnnotation != null){
             ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
             ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(astAnnotation));
-            generatedSource.put(new ASTTypeProvider(parcelType), parcelableGenerator.generateParcelable(parcelType, analysis));
+            generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis)));
         }
 
         return generatedSource;

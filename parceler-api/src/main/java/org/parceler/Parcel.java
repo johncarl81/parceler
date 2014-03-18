@@ -62,6 +62,8 @@ public @interface Parcel {
 
     Serialization value() default Serialization.FIELD;
 
+    Class[] implementations() default {};
+
     enum Serialization {
         FIELD,
         METHOD

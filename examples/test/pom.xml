@@ -28,6 +28,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.google.auto.value</groupId>
+            <artifactId>auto-value</artifactId>
+            <version>1.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
             <version>2.1_r1</version>

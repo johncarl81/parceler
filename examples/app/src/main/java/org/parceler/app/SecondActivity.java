@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 import org.demo.ExampleParcel;
+import org.demo.ExampleParcel$$Parcelable;
 import org.parceler.Parcels;
 
 public class SecondActivity extends Activity {
@@ -28,7 +29,7 @@ public class SecondActivity extends Activity {
 
     public static Intent buildIntent(Context context, ExampleParcel exampleParcel) {
         Intent intent = new Intent(context, SecondActivity.class);
-        intent.putExtra(EXTRA_EXAMPLE_PARCEL, Parcels.wrap(exampleParcel));
+        intent.putExtra(EXTRA_EXAMPLE_PARCEL, new ExampleParcel$$Parcelable(exampleParcel));
         return intent;
     }
 

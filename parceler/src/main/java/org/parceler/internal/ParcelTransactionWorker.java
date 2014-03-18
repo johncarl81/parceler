@@ -32,7 +32,7 @@ import javax.lang.model.util.Elements;
  *
  * @author John Ericksen
  */
-public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, JDefinedClass> {
+public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, ParcelImplementations> {
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
@@ -48,13 +48,15 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
     }
 
     @Override
-    public JDefinedClass innerRun(Provider<ASTType> valueProvider) {
+    public ParcelImplementations innerRun(Provider<ASTType> valueProvider) {
 
         ASTType value = valueProvider.get();
 
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, getConverterType(value));
 
-        return parcelableGenerator.generateParcelable(value, analysis);
+        JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
+
+        return new ParcelImplementations(definedClass, analysis.getExtraImplementations());
     }
 
     private ASTType getConverterType(ASTType astType) {
