@@ -93,4 +93,8 @@ public class NoOpElements implements Elements {
     public Name getName(CharSequence charSequence) {
         return null;
     }
+
+    public boolean isFunctionalInterface(TypeElement type) {
+        return false;
+    }
 }

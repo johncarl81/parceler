@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import com.google.common.collect.ImmutableMap;
 import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.PackageClass;
 import org.androidtransfuse.gen.AbstractRepositoryGenerator;
@@ -25,11 +26,12 @@ import org.parceler.Parcels;
 import org.parceler.Repository;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author John Ericksen
  */
-public class ParcelsGenerator extends AbstractRepositoryGenerator {
+public class ParcelsGenerator extends AbstractRepositoryGenerator<JDefinedClass> {
 
     public static final PackageClass PARCELS_NAME = new PackageClass(Parcels.PARCELS_PACKAGE, Parcels.PARCELS_NAME);
     public static final PackageClass REPOSITORY_NAME = new PackageClass(Parcels.PARCELS_PACKAGE, Parcels.PARCELS_REPOSITORY_NAME);
@@ -45,7 +47,7 @@ public class ParcelsGenerator extends AbstractRepositoryGenerator {
     }
 
     @Override
-    protected JExpression generateInstance(JDefinedClass parcelsDefinedClass, JClass inputClass, JClass outputClass) throws JClassAlreadyExistsException {
+    protected Map<? extends JExpression, ? extends JExpression> generateMapping(JDefinedClass parcelsDefinedClass, JClass inputClass, JDefinedClass implementation) throws JClassAlreadyExistsException {
 
         String innerClassName = classNamer.numberedClassName(inputClass).append(Parcels.IMPL_EXT).namespaced().build().getClassName();
 
@@ -53,12 +55,16 @@ public class ParcelsGenerator extends AbstractRepositoryGenerator {
 
         factoryInnerClass._implements(generationUtil.ref(Parcels.ParcelableFactory.class).narrow(inputClass));
 
-        JMethod method = factoryInnerClass.method(JMod.PUBLIC, outputClass, Parcels.ParcelableFactory.BUILD_PARCELABLE);
+        JMethod method = factoryInnerClass.method(JMod.PUBLIC, implementation, Parcels.ParcelableFactory.BUILD_PARCELABLE);
         method.annotate(Override.class);
         JVar input = method.param(inputClass, "input");
 
-        method.body()._return(JExpr._new(outputClass).arg(input));
+        method.body()._return(JExpr._new(implementation).arg(input));
 
-        return JExpr._new(factoryInnerClass);
+        ImmutableMap.Builder<JExpression, JExpression> builder = ImmutableMap.builder();
+
+        builder.put(inputClass.dotclass(), JExpr._new(factoryInnerClass));
+
+        return builder.build();
     }
 }
