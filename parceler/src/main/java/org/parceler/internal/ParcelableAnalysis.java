@@ -62,6 +62,23 @@ public class ParcelableAnalysis {
         else {
 
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
+            Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
+
+            Set<ASTConstructor> constructors = findConstructors(astType);
+            ConstructorReference constructorReference = null;
+            if(constructors.size() == 1){
+                writeParameters.putAll(findConstructorParameters(constructors.iterator().next()));
+                constructorReference = new ConstructorReference(constructors.iterator().next());
+
+                parcelableDescriptor.setConstructorPair(constructorReference);
+            }
+            else if(constructors.size() == 0){
+                validator.error("No @ParcelConstructor annotated constructor and no default empty bean constructor found.").element(astType).build();
+            }
+            else {
+                validator.error("Too many @ParcelConstructor annotated constructors found.").element(astType).build();
+            }
+
             for(ASTType hierarchyLoop = astType; hierarchyLoop != null && !hierarchyLoop.equals(OBJECT_TYPE); hierarchyLoop = hierarchyLoop.getSuperClass()){
                 Map<String, List<ASTReference<ASTMethod>>> defaultWriteMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
                 Map<String, List<ASTReference<ASTMethod>>> defaultReadMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
@@ -73,18 +90,6 @@ public class ParcelableAnalysis {
                 }
                 else{
                     defaultFields.putAll(findFields(hierarchyLoop, false));
-                }
-
-                Set<ASTConstructor> constructors;
-                if(hierarchyLoop.equals(astType)){
-                    constructors = findConstructors(hierarchyLoop);
-                }
-                else{
-                    constructors = Collections.emptySet();
-                }
-                Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
-                if(constructors.size() == 1){
-                    writeParameters.putAll(findConstructorParameters(constructors.iterator().next()));
                 }
 
                 Map<String, List<ASTReference<ASTMethod>>> propertyWriteMethods = findWriteMethods(hierarchyLoop, definedMethods, true);
@@ -142,18 +147,23 @@ public class ParcelableAnalysis {
                 }
 
                 //constructor
-                if(constructors.size() == 1){
-                    ConstructorReference constructorReference = new ConstructorReference(constructors.iterator().next());
+                if(constructorReference != null){
 
                     for (Map.Entry<String, ASTReference<ASTParameter>> parameterEntry : writeParameters.entrySet()) {
-                        validateReadReference(readReferences, parameterEntry.getValue().getReference(), parameterEntry.getKey());
-                        constructorReference.putReference(parameterEntry.getValue().getReference(), readReferences.get(parameterEntry.getKey()));
-                        if(parameterEntry.getValue().getConverter() != null){
-                            constructorReference.putConverter(parameterEntry.getValue().getReference(), parameterEntry.getValue().getConverter());
+                        if(readReferences.containsKey(parameterEntry.getKey())){
+                            if(constructorReference.getWriteReferences().containsKey(parameterEntry.getValue().getReference())){
+                                validator.error("More than one property found in inheritance hierarchy to match constructor parameter " + parameterEntry.getKey() +
+                                        ".  Consider renaming or using a manual ParcelConverter.").element(parameterEntry.getValue().getReference()).build();
+                            }
+                            else{
+                                validateReadReference(readReferences, parameterEntry.getValue().getReference(), parameterEntry.getKey());
+                                constructorReference.putReference(parameterEntry.getValue().getReference(), readReferences.get(parameterEntry.getKey()));
+                                if(parameterEntry.getValue().getConverter() != null){
+                                    constructorReference.putConverter(parameterEntry.getValue().getReference(), parameterEntry.getValue().getConverter());
+                                }
+                            }
                         }
                     }
-
-                    parcelableDescriptor.setConstructorPair(constructorReference);
                 }
 
                 //methods
@@ -180,6 +190,16 @@ public class ParcelableAnalysis {
                 for (ASTMethod astMethod : astType.getMethods()) {
                     if(astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC)){
                         definedMethods.add(new MethodSignature(astMethod));
+                    }
+                }
+            }
+
+            //validate all constructor parameters have a matching read converter
+            if(constructorReference != null && constructorReference.getConstructor() != null){
+                for (ASTParameter parameter : constructorReference.getConstructor().getParameters()) {
+                    if(constructorReference.getWriteReference(parameter) == null){
+                        validator.error("No corresponding property found for constructor parameter " + parameter.getName())
+                                .element(parameter).build();
                     }
                 }
             }
@@ -255,17 +275,25 @@ public class ParcelableAnalysis {
 
     public Set<ASTConstructor> findConstructors(ASTType astType){
         Set<ASTConstructor> constructorResult = new HashSet<ASTConstructor>();
-        if(astType.getConstructors().size() == 1 && astType.getConstructors().iterator().next().getParameters().size() != 0){
-            constructorResult.addAll(astType.getConstructors());
-            return constructorResult;
+        ASTConstructor emptyBeanConstructor = null;
+        for(ASTConstructor constructor : astType.getConstructors()){
+            if(constructor.getParameters().isEmpty()){
+                emptyBeanConstructor = constructor;
+            }
         }
         for(ASTConstructor constructor : astType.getConstructors()){
             if(constructor.isAnnotated(ParcelConstructor.class)){
                 constructorResult.add(constructor);
             }
         }
-
-        return constructorResult;
+        if(!constructorResult.isEmpty()){
+            return constructorResult;
+        }
+        //if none are found, then try to find empty bean constructor
+        if(emptyBeanConstructor != null){
+            return Collections.singleton(emptyBeanConstructor);
+        }
+        return Collections.emptySet();
     }
 
     private static final class ASTReference<T extends ASTBase>{
