@@ -38,7 +38,7 @@ public class ParcelableAnalysisTest {
     private ASTClassFactory astClassFactory;
     @Inject
     private ErrorCheckingMessager messager;
-    ASTType converterAst;
+    private ASTType converterAst;
 
     @Before
     public void setup() {
@@ -390,6 +390,21 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
+    public static class NoDesignatedConstructor {
+        String value;
+
+        public NoDesignatedConstructor(String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testNoDesignatedConstructor(){
+        parcelableAnalysis.analyze(astClassFactory.getType(NoDesignatedConstructor.class), null);
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel
     public static class FieldMethodProperty {
         String one;
         String two;
@@ -689,6 +704,33 @@ public class ParcelableAnalysisTest {
         assertNull(analysis.getConstructorPair());
         assertTrue(methodsContain(analysis, "value"));
         assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class ConstructorSubclass extends SuperClass{
+
+        @ParcelConstructor
+        public ConstructorSubclass(String value){
+            super.value = value;
+        }
+    }
+
+    @Test
+    public void testConstructorWithSuperClassParameter() {
+
+        ASTType targetAst = astClassFactory.getType(ConstructorSubclass.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+
+        ASTParameter parameter = analysis.getConstructorPair().getConstructor().getParameters().get(0);
+        Map<ASTParameter,ASTType> converters = analysis.getConstructorPair().getConverters();
+
+        assertEquals(1, converters.size());
+        assertEquals(converterAst, converters.get(parameter));
     }
 
     private boolean constructorContains(ParcelableDescriptor descriptor, String name) {
