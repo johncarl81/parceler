@@ -142,9 +142,8 @@ public class ParcelerModule {
                         parcelsProcessor,
                         scopedTransactionBuilder.buildFactory(parcelsTransactionWorkerProvider));
 
-        TransactionProcessor processorChain = new TransactionProcessorChain(externalParcelProcessor,
-                new TransactionProcessorChain(processor,
-                        new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider)))));
+        TransactionProcessor processorChain = new TransactionProcessorChain(processor,
+                        new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider))));
 
         return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder);
     }

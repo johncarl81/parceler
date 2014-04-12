@@ -39,7 +39,7 @@ import java.util.Set;
  *
  * @author John Ericksen
  */
-@SupportedAnnotations({Parcel.class, ParcelClass.class})
+@SupportedAnnotations({Parcel.class, ParcelClass.class, ParcelClasses.class})
 @Bootstrap
 public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
 
