@@ -213,7 +213,10 @@ public class ParcelableGenerator {
 
         for (ASTParameter parameter : factoryMethod.getParameters()) {
             ASTType converter = converters.containsKey(parameter) ? converters.get(parameter) : null;
-            inputExpression.add(buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
+            JVar var = parcelConstructorBody.decl(generationUtil.ref(parameter.getASTType()),
+                    variableNamer.generateName(parameter.getASTType()),
+                    buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
+            inputExpression.add(var);
         }
 
         parcelConstructorBody.assign(wrapped, invocationBuilder.buildMethodCall(new ASTJDefinedClassType(parcelableClass), new ASTJDefinedClassType(parcelableClass), factoryMethod, inputExpression, new TypedExpression(wrappedType, wrapped)));
@@ -227,7 +230,10 @@ public class ParcelableGenerator {
 
         for (ASTParameter parameter : constructor.getParameters()) {
             ASTType converter = converters.containsKey(parameter) ? converters.get(parameter) : null;
-            inputExpression.add(buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
+            JVar var = parcelConstructorBody.decl(generationUtil.ref(parameter.getASTType()),
+                    variableNamer.generateName(parameter.getASTType()),
+                    buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
+            inputExpression.add(var);
         }
 
         parcelConstructorBody.assign(wrapped, invocationBuilder.buildConstructorCall(new ASTJDefinedClassType(parcelableClass), constructor, wrappedType, inputExpression));

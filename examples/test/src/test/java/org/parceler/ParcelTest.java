@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -85,5 +86,71 @@ public class ParcelTest {
         ManuallyRegistered output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
 
         assertEquals(input.getValue(), output.getValue());
+    }
+
+    @Test
+    public void testIntArrayConstructorOrder() {
+        IntArrayClass prewrap = new IntArrayClass();
+        prewrap.setI(10);
+        prewrap.setArr(new int[] { 1,2,3,4,5 });
+
+        IntArrayClass unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(prewrap));
+
+        assertEquals(10, unwrapped.i);
+        assertArrayEquals(new int[]{1, 2, 3, 4, 5}, unwrapped.getArr());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
+    public static class IntArrayClass {
+
+        int[] arr;
+        int i;
+
+        @ParcelConstructor
+        public IntArrayClass(int i, int[] arr) {
+            this.arr = arr;
+            this.i = i;
+        }
+
+        public IntArrayClass() {}
+
+        public int[] getArr() { return arr; }
+        public void setArr(int[] arr) { this.arr = arr; }
+        public int getI() { return i; }
+        public void setI(int i) { this.i = i; }
+    }
+
+    @Test
+    public void testIntArrayFactoryOrder() {
+        IntArrayFactory prewrap = IntArrayFactory.build(10, new int[]{1, 2, 3, 4, 5});
+
+        IntArrayFactory unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(prewrap));
+
+        assertEquals(10, unwrapped.i);
+        assertArrayEquals(new int[]{1, 2, 3, 4, 5}, unwrapped.getArr());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
+    public static class IntArrayFactory {
+
+        int[] arr;
+        int i;
+
+        @ParcelFactory
+        public static IntArrayFactory build(int i, int[] arr){
+            return new IntArrayFactory(i, arr);
+        }
+
+        public IntArrayFactory(int i, int[] arr) {
+            this.arr = arr;
+            this.i = i;
+        }
+
+        public IntArrayFactory() {}
+
+        public int[] getArr() { return arr; }
+        public void setArr(int[] arr) { this.arr = arr; }
+        public int getI() { return i; }
+        public void setI(int i) { this.i = i; }
     }
 }
