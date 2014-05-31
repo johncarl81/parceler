@@ -17,12 +17,10 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Provider;
-import javax.lang.model.util.Elements;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -49,10 +47,8 @@ public class ParcelTransactionWorkerTest {
         inputProvider = mock(Provider.class);
         input = mock(ASTType.class);
         output = mock(JDefinedClass.class);
-        ASTElementFactory astElementFactory = mock(ASTElementFactory.class);
-        Elements elements = mock(Elements.class);
 
-        parcelTransaction = new ParcelTransactionWorker(mockAnalysis, mockGenerator, astElementFactory, elements);
+        parcelTransaction = new ParcelTransactionWorker(mockAnalysis, mockGenerator);
     }
 
     @Test

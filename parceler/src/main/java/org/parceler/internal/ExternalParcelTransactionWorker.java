@@ -16,8 +16,8 @@
 package org.parceler.internal;
 
 import org.androidtransfuse.adapter.ASTAnnotation;
+import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.parceler.ParcelClass;
 import org.parceler.ParcelClasses;
@@ -35,15 +35,14 @@ import java.util.Map;
  */
 public class ExternalParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> {
 
+    private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
-    private final ASTClassFactory astClassFactory;
 
     @Inject
-    public ExternalParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTClassFactory astClassFactory) {
+    public ExternalParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator) {
         this.parcelableAnalysis = parcelableAnalysis;
         this.parcelableGenerator = parcelableGenerator;
-        this.astClassFactory = astClassFactory;
     }
 
     @Override
@@ -75,8 +74,7 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
     private ASTType getConverterType(ASTAnnotation parcelClassAnnotation) {
         ASTType converterType = parcelClassAnnotation.getProperty("converter", ASTType.class);
-        ASTType emptyConverterType = astClassFactory.getType(ParcelConverter.EmptyConverter.class);
-        if(!emptyConverterType.equals(converterType)){
+        if(!EMPTY_CONVERTER_TYPE.equals(converterType)){
             return converterType;
         }
         return null;

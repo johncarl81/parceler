@@ -17,15 +17,14 @@ package org.parceler.internal;
 
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
+import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.adapter.element.ASTElementFactory;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
 import org.parceler.Parcel;
 import org.parceler.ParcelConverter;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.lang.model.util.Elements;
 
 /**
  * Executes the analysis and generation of an annotated @Parcel class.
@@ -34,17 +33,14 @@ import javax.lang.model.util.Elements;
  */
 public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, ParcelImplementations> {
 
+    private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
-    private final ASTElementFactory astElementFactory;
-    private final Elements elements;
 
     @Inject
-    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator, ASTElementFactory astElementFactory, Elements elements) {
+    public ParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator) {
         this.parcelableAnalysis = parcelableAnalysis;
         this.parcelableGenerator = parcelableGenerator;
-        this.astElementFactory = astElementFactory;
-        this.elements = elements;
     }
 
     @Override
@@ -64,8 +60,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         if(astAnnotation != null){
 
             ASTType converterType = astAnnotation.getProperty("converter", ASTType.class);
-            ASTType emptyConverterType = astElementFactory.getType(elements.getTypeElement(ParcelConverter.EmptyConverter.class.getCanonicalName()));
-            if(!emptyConverterType.equals(converterType)){
+            if(!EMPTY_CONVERTER_TYPE.equals(converterType)){
                 return converterType;
             }
         }
