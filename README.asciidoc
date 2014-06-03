@@ -181,8 +181,6 @@ public class AndroidApplication extends Application{
 
 Multiple +@ParcelClass+ annotations may be declared using the +@ParcelClasses+ annotation.
 
-
-
 == Getting Parceler
 
 You may download Parceler as a Maven dependency:
@@ -200,6 +198,13 @@ You may download Parceler as a Maven dependency:
     <artifactId>parceler-api</artifactId>
     <version>${parceler.version}</version>
 </dependency>
+----
+
+or Gradle:
+[source,groovy]
+----
+compile "org.parceler:parceler-api:${parcelerVersion}"
+provided "org.parceler:parceler:${parcelerVersion}"
 ----
 
 Or from http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.parceler%22[Maven Central].
