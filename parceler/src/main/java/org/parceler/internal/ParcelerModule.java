@@ -17,6 +17,7 @@ package org.parceler.internal;
 
 import com.google.common.collect.ImmutableSet;
 import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTStringType;
@@ -117,7 +118,7 @@ public class ParcelerModule {
 
     @Provides
     public ParcelProcessor getParcelProcessor(Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
-                                              Provider<ParcelsTransactionWorker> parcelsTransactionWorkerProvider,
+                                              Provider<ParcelsGenerator> parcelsTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                                               Provider<PackageHelperGeneratorAdapter> packageHelperGeneratorAdapterProvider,
@@ -129,11 +130,11 @@ public class ParcelerModule {
                 new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>>();
         TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, ParcelImplementations>();
-        TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, Void> parcelsProcessor =
-                new TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, Void>();
+        TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, JDefinedClass> parcelsProcessor =
+                new TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, JDefinedClass>();
 
         TransactionProcessor processor =
-                new TransactionProcessorChannel<Provider<ASTType>, ParcelImplementations, Void>(
+                new TransactionProcessorChannel<Provider<ASTType>, ParcelImplementations, JDefinedClass>(
                         new TransactionProcessorParcelJoin<Provider<ASTType>, ParcelImplementations>(
                                 externalParcelRepositoryProcessor,
                                 externalParcelProcessor,
