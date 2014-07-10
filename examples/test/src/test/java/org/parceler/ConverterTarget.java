@@ -34,8 +34,8 @@ public class ConverterTarget {
 
     byte b;
     Byte bobj;
-    //todo: test byte[] bya;
-    //todo: test Byte[] bobja;
+    byte[] bya;
+    Byte[] bbja;
     double d;
     Double dobj;
     double[] da;
@@ -52,14 +52,14 @@ public class ConverterTarget {
     Long lobj;
     long[] la;
     Long[] lobja;
-    //todo: test char c;
-    //todo: test Character cobj;
-    //todo: test char[] ca;
-    //todo: test Character[] cobja;
-    //todo: test boolean bo;
-    //todo: test Boolean boobj;
-    //todo: test boolean[] ba;
-    //todo: test Boolean[] bobja;
+    char c;
+    Character cobj;
+    char[] ca;
+    Character[] cobja;
+    boolean bo;
+    Boolean boobj;
+    boolean[] ba;
+    Boolean[] bobja;
     String s;
     String[] sa;
     @PodamCollection(collectionElementStrategy = SubParcelStrategy.class)
@@ -353,6 +353,86 @@ public class ConverterTarget {
 
     public void setSparseArray(SparseArray<String> sparseArray) {
         this.sparseArray = sparseArray;
+    }
+
+    public byte[] getBya() {
+        return bya;
+    }
+
+    public void setBya(byte[] bya) {
+        this.bya = bya;
+    }
+
+    public Byte[] getBbja() {
+        return bbja;
+    }
+
+    public void setBbja(Byte[] bbja) {
+        this.bbja = bbja;
+    }
+
+    public char getC() {
+        return c;
+    }
+
+    public void setC(char c) {
+        this.c = c;
+    }
+
+    public Character getCobj() {
+        return cobj;
+    }
+
+    public void setCobj(Character cobj) {
+        this.cobj = cobj;
+    }
+
+    public char[] getCa() {
+        return ca;
+    }
+
+    public void setCa(char[] ca) {
+        this.ca = ca;
+    }
+
+    public Character[] getCobja() {
+        return cobja;
+    }
+
+    public void setCobja(Character[] cobja) {
+        this.cobja = cobja;
+    }
+
+    public boolean isBo() {
+        return bo;
+    }
+
+    public void setBo(boolean bo) {
+        this.bo = bo;
+    }
+
+    public Boolean getBoobj() {
+        return boobj;
+    }
+
+    public void setBoobj(Boolean boobj) {
+        this.boobj = boobj;
+    }
+
+    public boolean[] getBa() {
+        return ba;
+    }
+
+    public void setBa(boolean[] ba) {
+        this.ba = ba;
+    }
+
+    public Boolean[] getBobja() {
+        return bobja;
+    }
+
+    public void setBobja(Boolean[] bobja) {
+        this.bobja = bobja;
     }
 
     @Override
