@@ -61,4 +61,13 @@ public class ParcelTarget {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
+
+    @Override
+    public String toString() {
+        return "ParcelTarget{" +
+                "stringValue='" + stringValue + '\'' +
+                ", doubleValue=" + doubleValue +
+                ", secondTarget=" + secondTarget +
+                '}';
+    }
 }

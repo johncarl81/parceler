@@ -15,6 +15,8 @@
  */
 package org.parceler.internal;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.parceler.Parcel;
 
 /**
@@ -31,5 +33,22 @@ public class ParcelSecondTarget {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object rhs) {
+        return EqualsBuilder.reflectionEquals(this, rhs);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public String toString() {
+        return "ParcelSecondTarget{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }

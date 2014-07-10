@@ -88,14 +88,14 @@ public final class Parcels {
         return wrapper.getParcel();
     }
 
-    private static class NullParcelable implements Parcelable, ParcelWrapper<Object>{
+    public static class NullParcelable implements Parcelable, ParcelWrapper<Object>{
         @SuppressWarnings("UnusedDeclaration")
         public static final NullParcelableCreator CREATOR = new NullParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        NullParcelable(android.os.Parcel parcel) {}
+        private NullParcelable(android.os.Parcel parcel) {}
 
-        NullParcelable() {}
+        private NullParcelable() {}
 
         @Override
         public void writeToParcel(android.os.Parcel parcel, int flags) {}

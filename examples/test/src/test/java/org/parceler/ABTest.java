@@ -1,9 +1,6 @@
 package org.parceler;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +10,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author John Ericksen
  */
-@RunWith(RobolectricTestRunner.class)
-@Config(manifest=Config.NONE)
 public class ABTest {
 
     @ParcelClasses({

@@ -31,6 +31,7 @@ public class ParcelsTestUtil {
             Parcelable parcelable = Parcels.wrap(input);
 
             parcelable.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
 
             Field creatorField = parcelable.getClass().getField("CREATOR");
 

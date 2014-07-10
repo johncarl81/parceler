@@ -249,6 +249,8 @@ public class ParcelableGeneratorTest {
 
         outputParcelable.writeToParcel(parcel, 0);
 
+        parcel.setDataPosition(0);
+
         Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
 
         Target wrapped = Parcels.unwrap(inputParcelable);

@@ -42,10 +42,6 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         parcelableCollectionFactories.put(String.class, new StringParcelableFactory());
     }
 
-    static {
-
-    }
-
     public static NonParcelRepository getInstance() {
         return INSTANCE;
     }
@@ -136,7 +132,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
     }
 
 
-    static final class ListParcelable implements Parcelable, ParcelWrapper<List> {
+    public static final class ListParcelable implements Parcelable, ParcelWrapper<List> {
 
         private List contents;
 
@@ -144,7 +140,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final ListParcelableCreator CREATOR = new ListParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        ListParcelable(android.os.Parcel parcel) {
+        private ListParcelable(android.os.Parcel parcel) {
             int size = parcel.readInt();
             if (size < 0) {
                 contents = null;
@@ -156,7 +152,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        ListParcelable(List contents) {
+        private ListParcelable(List contents) {
             this.contents = contents;
         }
 
@@ -196,13 +192,13 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class MapParcelable implements android.os.Parcelable, ParcelWrapper<Map> {
+    public static final class MapParcelable implements android.os.Parcelable, ParcelWrapper<Map> {
 
         private Map<Object, Object> contents;
         @SuppressWarnings("UnusedDeclaration")
         public static final MapParcelable.MapParcelableCreator CREATOR = new MapParcelable.MapParcelableCreator();
 
-        MapParcelable(android.os.Parcel parcel) {
+        private MapParcelable(android.os.Parcel parcel) {
             int size = parcel.readInt();
             if (size < 0) {
                 contents = null;
@@ -217,7 +213,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
 
         @SuppressWarnings("unchecked")
-        MapParcelable(Map contents) {
+        private MapParcelable(Map contents) {
             this.contents = contents;
         }
 
@@ -260,7 +256,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class SetParcelable implements Parcelable, ParcelWrapper<Set> {
+    public static final class SetParcelable implements Parcelable, ParcelWrapper<Set> {
 
         private Set contents;
 
@@ -268,7 +264,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final SetParcelableCreator CREATOR = new SetParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        SetParcelable(android.os.Parcel parcel) {
+        private SetParcelable(android.os.Parcel parcel) {
             int size = parcel.readInt();
             if (size < 0) {
                 contents = null;
@@ -280,7 +276,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        SetParcelable(Set contents) {
+        private SetParcelable(Set contents) {
             this.contents = contents;
         }
 
@@ -322,14 +318,14 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
     }
 
-    static final class SparseArrayParcelable implements android.os.Parcelable, ParcelWrapper<SparseArray> {
+    public static final class SparseArrayParcelable implements android.os.Parcelable, ParcelWrapper<SparseArray> {
 
         private SparseArray contents;
         @SuppressWarnings("UnusedDeclaration")
         public static final SparseArrayCreator CREATOR = new SparseArrayCreator();
 
         @SuppressWarnings("unchecked")
-        SparseArrayParcelable(android.os.Parcel parcel) {
+        private SparseArrayParcelable(android.os.Parcel parcel) {
             int size = parcel.readInt();
             if (size < 0) {
                 contents = null;
@@ -342,7 +338,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        SparseArrayParcelable(SparseArray contents) {
+        private SparseArrayParcelable(SparseArray contents) {
             this.contents = contents;
         }
 
@@ -383,7 +379,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class IntegerParcelable implements Parcelable, ParcelWrapper<Integer> {
+    public static final class IntegerParcelable implements Parcelable, ParcelWrapper<Integer> {
 
         private Integer contents;
 
@@ -391,7 +387,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final IntegerParcelableCreator CREATOR = new IntegerParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        IntegerParcelable(android.os.Parcel parcel) {
+        private IntegerParcelable(android.os.Parcel parcel) {
             if(parcel.readInt() == 1){
                 contents = parcel.readInt();
             }
@@ -400,7 +396,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        IntegerParcelable(Integer contents) {
+        private IntegerParcelable(Integer contents) {
             this.contents = contents;
         }
 
@@ -439,7 +435,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class LongParcelable implements Parcelable, ParcelWrapper<Long> {
+    public static final class LongParcelable implements Parcelable, ParcelWrapper<Long> {
 
         private Long contents;
 
@@ -447,7 +443,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final LongParcelableCreator CREATOR = new LongParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        LongParcelable(android.os.Parcel parcel) {
+        private LongParcelable(android.os.Parcel parcel) {
             if(parcel.readInt() == 1){
                 contents = parcel.readLong();
             }
@@ -456,7 +452,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        LongParcelable(Long contents) {
+        private LongParcelable(Long contents) {
             this.contents = contents;
         }
 
@@ -495,7 +491,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class DoubleParcelable implements Parcelable, ParcelWrapper<Double> {
+    public static final class DoubleParcelable implements Parcelable, ParcelWrapper<Double> {
 
         private Double contents;
 
@@ -503,7 +499,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final DoubleParcelableCreator CREATOR = new DoubleParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        DoubleParcelable(android.os.Parcel parcel) {
+        private DoubleParcelable(android.os.Parcel parcel) {
             if(parcel.readInt() == 1){
                 contents = parcel.readDouble();
             }
@@ -512,7 +508,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        DoubleParcelable(Double contents) {
+        private DoubleParcelable(Double contents) {
             this.contents = contents;
         }
 
@@ -551,7 +547,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class FloatParcelable implements Parcelable, ParcelWrapper<Float> {
+    public static final class FloatParcelable implements Parcelable, ParcelWrapper<Float> {
 
         private Float contents;
 
@@ -559,7 +555,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final FloatParcelableCreator CREATOR = new FloatParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        FloatParcelable(android.os.Parcel parcel) {
+        private FloatParcelable(android.os.Parcel parcel) {
             if(parcel.readInt() == 1){
                 contents = parcel.readFloat();
             }
@@ -568,7 +564,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        FloatParcelable(Float contents) {
+        private FloatParcelable(Float contents) {
             this.contents = contents;
         }
 
@@ -607,7 +603,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class ByteParcelable implements Parcelable, ParcelWrapper<Byte> {
+    public static final class ByteParcelable implements Parcelable, ParcelWrapper<Byte> {
 
         private Byte contents;
 
@@ -615,7 +611,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final ByteParcelableCreator CREATOR = new ByteParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        ByteParcelable(android.os.Parcel parcel) {
+        private ByteParcelable(android.os.Parcel parcel) {
             if(parcel.readInt() == 1){
                 contents = parcel.readByte();
             }
@@ -624,7 +620,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
         }
 
-        ByteParcelable(Byte contents) {
+        private ByteParcelable(Byte contents) {
             this.contents = contents;
         }
 
@@ -663,7 +659,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    static final class StringParcelable implements Parcelable, ParcelWrapper<String> {
+    public static final class StringParcelable implements Parcelable, ParcelWrapper<String> {
 
         private String contents;
 
@@ -671,11 +667,11 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         public static final StringParcelableCreator CREATOR = new StringParcelableCreator();
 
         @SuppressWarnings("unchecked")
-        StringParcelable(android.os.Parcel parcel) {
+        private StringParcelable(android.os.Parcel parcel) {
             contents = parcel.readString();
         }
 
-        StringParcelable(String contents) {
+        private StringParcelable(String contents) {
             this.contents = contents;
         }
 

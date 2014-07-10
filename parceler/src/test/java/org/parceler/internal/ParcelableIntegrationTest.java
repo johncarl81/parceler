@@ -107,6 +107,7 @@ public class ParcelableIntegrationTest {
         Parcelable outputParcelable = parcelableClass.getConstructor(ParcelTarget.class).newInstance(parcelTarget);
 
         outputParcelable.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
 
         Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
 
