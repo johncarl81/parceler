@@ -2,6 +2,7 @@
 _site/*
 *~
 *.iml
+dependency-reduced-pom.xml
 build.sh
 target
 tmp
