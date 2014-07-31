@@ -90,7 +90,7 @@ public class SparseArrayReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
 
         JClass sparseArrayType = generationUtil.ref("android.util.SparseArray");
         ASTType componentType = astClassFactory.getType(Object.class);
@@ -119,6 +119,6 @@ public class SparseArrayReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
-        generator.generateWriter(readLoopBody, parcel, flags, componentType, spareArrayVar.invoke("valueAt").arg(nVar));
+        generator.generateWriter(readLoopBody, parcel, flags, componentType, spareArrayVar.invoke("valueAt").arg(nVar), parcelableClass );
     }
 }

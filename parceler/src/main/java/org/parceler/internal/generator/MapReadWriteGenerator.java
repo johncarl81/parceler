@@ -102,7 +102,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
 
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);
@@ -130,7 +130,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);
 
-        keyGenerator.generateWriter(forEach.body(), parcel, flags, keyComponentType, forEach.var().invoke("getKey"));
-        valueGenerator.generateWriter(forEach.body(), parcel, flags, valueComponentType, forEach.var().invoke("getValue"));
+        keyGenerator.generateWriter(forEach.body(), parcel, flags, keyComponentType, forEach.var().invoke("getKey"), parcelableClass);
+        valueGenerator.generateWriter(forEach.body(), parcel, flags, valueComponentType, forEach.var().invoke("getValue"), parcelableClass);
     }
 }

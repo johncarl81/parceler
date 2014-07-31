@@ -86,7 +86,7 @@ public class ArrayReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
 
         if(!(type instanceof ASTArrayType)){
             throw new ParcelerRuntimeException("Input type not an array");
@@ -108,6 +108,6 @@ public class ArrayReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
-        generator.generateWriter(forEach.body(), parcel, flags, componentType, forEach.var());
+        generator.generateWriter(forEach.body(), parcel, flags, componentType, forEach.var(), parcelableClass);
     }
 }

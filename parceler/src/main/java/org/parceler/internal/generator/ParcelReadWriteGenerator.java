@@ -18,8 +18,12 @@ package org.parceler.internal.generator;
 import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.parceler.ParcelWrapper;
-import org.parceler.internal.ParcelsGenerator;
+import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.parceler.internal.ParcelableAnalysis;
+import org.parceler.internal.ParcelableDescriptor;
+import org.parceler.internal.ParcelableGenerator;
+
+import javax.inject.Provider;
 
 /**
 * @author John Ericksen
@@ -28,22 +32,36 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     public static final String WRAP_METHOD = "wrap";
 
     private final ClassGenerationUtil generationUtil;
+    private final ParcelableAnalysis analysis;
+    private final Provider<ParcelableGenerator> generator;
+    private final UniqueVariableNamer variableNamer;
 
-    public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil) {
+    public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, ParcelableAnalysis analysis, Provider<ParcelableGenerator> generator, UniqueVariableNamer variableNamer) {
         super("readParcelable", new String[]{ClassLoader.class.getName()}, "writeParcelable", new String[]{"android.os.Parcelable", int.class.getName()});
         this.generationUtil = generationUtil;
+        this.analysis = analysis;
+        this.generator = generator;
+        this.variableNamer = variableNamer;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
-        JClass wrapperRef = generationUtil.ref(ParcelWrapper.class).narrow(generationUtil.ref(type));
-        return ((JExpression) JExpr.cast(wrapperRef, parcelParam.invoke(getReadMethod())
-                .arg(parcelableClass.dotclass().invoke("getClassLoader")))).invoke(ParcelWrapper.GET_PARCEL);
+        JType inputType = generationUtil.ref(type);
+        JVar wrapped = body.decl(inputType, variableNamer.generateName(type));
+        JConditional nullCondition = body._if(parcelParam.invoke("readInt").eq(JExpr.lit(-1)));
+        nullCondition._then().assign(wrapped, JExpr._null());
+        ParcelableDescriptor analysis = this.analysis.analyze(type, null);
+        generator.get().buildParcelRead(analysis, parcelableClass, wrapped, type, inputType, parcelParam, nullCondition._else());
+        return wrapped;
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
-        JInvocation wrappedParcel = generationUtil.ref(ParcelsGenerator.PARCELS_NAME).staticInvoke(WRAP_METHOD).arg(getExpression);
-        body.invoke(parcel, getWriteMethod()).arg(wrappedParcel).arg(flags);
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+        JConditional nullCondition = body._if(getExpression.eq(JExpr._null()));
+        nullCondition._then().add(parcel.invoke("writeInt").arg(JExpr.lit(-1)));
+        JBlock nonNullcondition = nullCondition._else();
+        nonNullcondition.add(parcel.invoke("writeInt").arg(JExpr.lit(1)));
+        ParcelableDescriptor analysis = this.analysis.analyze(type, null);
+        generator.get().buildParcelWrite(analysis, parcelableClass, getExpression, type, parcel, flags, nonNullcondition);
     }
 }

@@ -155,9 +155,11 @@ public class ParcelerModule {
                                     UniqueVariableNamer namer,
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
-                                    NullCheckFactory nullCheckFactory){
+                                    NullCheckFactory nullCheckFactory,
+                                    ParcelableAnalysis analysis,
+                                    Provider<ParcelableGenerator> generator){
 
-        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory);
+        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, analysis, generator);
     }
     
     public static Generators addGenerators(Generators generators,
@@ -167,7 +169,9 @@ public class ParcelerModule {
                                            UniqueVariableNamer namer,
                                            JCodeModel codeModel,
                                            SerializableReadWriteGenerator serializableReadWriteGenerator,
-                                           NullCheckFactory nullCheckFactory){
+                                           NullCheckFactory nullCheckFactory,
+                                           ParcelableAnalysis analysis,
+                                           Provider<ParcelableGenerator> generator){
 
         generators.addPair(byte.class, "readByte", "writeByte");
         generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));
@@ -181,7 +185,7 @@ public class ParcelerModule {
         generators.addPair(Long.class, nullCheckFactory.get(Long.class, generators, long.class));
         generators.addPair(char.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
         generators.addPair(Character.class, nullCheckFactory.get(Character.class, generators, char.class));
-        generators.addPair(boolean.class, new SingleEntryArrayReadWriteGenerator("createBooleanArray", "writeBooleanArray", boolean.class, codeModel));
+        generators.addPair(boolean.class, new BooleanEntryReadWriteGenerator(codeModel));
         generators.addPair(Boolean.class, nullCheckFactory.get(Boolean.class, generators, boolean.class));
         generators.addPair(byte[].class, "createByteArray", "writeByteArray");
         generators.addPair(char[].class, "createCharArray", "writeCharArray");
@@ -192,7 +196,7 @@ public class ParcelerModule {
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
-        generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil));
+        generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, analysis, generator, namer));
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));

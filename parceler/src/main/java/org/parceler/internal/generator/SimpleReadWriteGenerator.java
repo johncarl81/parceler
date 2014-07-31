@@ -33,7 +33,7 @@ public class SimpleReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
         body.invoke(parcel, getWriteMethod()).arg(getExpression);
     }
 }

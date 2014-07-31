@@ -72,7 +72,7 @@ public class NullCheckReadWriteGenerator implements ReadWriteGenerator {
     }
 
     @Override
-    public void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
 
         JConditional nullConditional = body._if(getExpression.eq(JExpr._null()));
         nullConditional._then().invoke(parcel, "writeInt").arg(JExpr.lit(-1));
@@ -80,7 +80,7 @@ public class NullCheckReadWriteGenerator implements ReadWriteGenerator {
         JBlock writeBody = nullConditional._else();
         writeBody.invoke(parcel, "writeInt").arg(JExpr.lit(1));
 
-        getGenerator().generateWriter(writeBody, parcel, flags, type, getExpression);
+        getGenerator().generateWriter(writeBody, parcel, flags, type, getExpression, parcelableClass);
     }
 
     private ReadWriteGenerator getGenerator(){

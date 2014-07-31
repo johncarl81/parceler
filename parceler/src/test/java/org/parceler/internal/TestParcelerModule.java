@@ -39,6 +39,7 @@ import org.parceler.internal.generator.SerializableReadWriteGenerator;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
 
@@ -91,8 +92,10 @@ public class TestParcelerModule {
                                     UniqueVariableNamer namer,
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
-                                    NullCheckFactory nullCheckFactory){
+                                    NullCheckFactory nullCheckFactory,
+                                    ParcelableAnalysis analysis,
+                                    Provider<ParcelableGenerator> generatorProvider){
 
-        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory);
+        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, analysis, generatorProvider);
     }
 }

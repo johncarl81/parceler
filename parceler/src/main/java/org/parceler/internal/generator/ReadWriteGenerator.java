@@ -25,5 +25,5 @@ public interface ReadWriteGenerator {
 
     JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass);
 
-    void generateWriter(JBlock body, JVar parcel, JVar flags, ASTType type, JExpression getExpression);
+    void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass);
 }
