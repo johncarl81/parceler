@@ -75,8 +75,43 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>org.parceler:parceler-api</exclude>
+                                    <exclude>com.google.code.findbugs:jsr305</exclude>
                                 </excludes>
                             </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.common</pattern>
+                                    <shadedPattern>org.parceler.guava</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sun.codemodel</pattern>
+                                    <shadedPattern>org.parceler.codemodel</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sun_.codemodel</pattern>
+                                    <shadedPattern>org.parceler.codemodel</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>org.parceler.javaxinject</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax_.annotation</pattern>
+                                    <shadedPattern>org.parceler.javaxannotation</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.androidtransfuse</pattern>
+                                    <shadedPattern>org.parceler.transfuse</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache</pattern>
+                                    <shadedPattern>org.parceler.apache</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.aopalliance</pattern>
+                                    <shadedPattern>org.parceler.aopalliance</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
