@@ -59,6 +59,10 @@ public class ConstructorReference {
         return writeReferences.get(parameter);
     }
 
+    public boolean containsWriteReference(ASTParameter parameter){
+        return writeReferences.containsKey(parameter);
+    }
+
     public Map<ASTParameter, AccessibleReference> getWriteReferences() {
         return writeReferences;
     }

@@ -50,9 +50,12 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
 
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, getConverterType(value));
 
-        JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
+        if(analysis != null) {
+            JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
 
-        return new ParcelImplementations(definedClass, analysis.getExtraImplementations());
+            return new ParcelImplementations(definedClass, analysis.getExtraImplementations());
+        }
+        return null;
     }
 
     private ASTType getConverterType(ASTType astType) {

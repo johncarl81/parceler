@@ -135,6 +135,83 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
+    @Parcel(Parcel.Serialization.METHOD)
+    public static class ConstructorMethod {
+        String value;
+
+        @ParcelConstructor
+        public ConstructorMethod(@ASTClassFactory.ASTParameterName("value") String value){
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testConstructorMethod() {
+
+        ASTType fieldType = astClassFactory.getType(ConstructorMethod.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
+    public static class ConstructorProtectedMethod {
+        String value;
+
+        @ParcelConstructor
+        public ConstructorProtectedMethod(@ASTClassFactory.ASTParameterName("value") String value){
+            this.value = value;
+        }
+
+        String getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testConstructorProtectedMethod() {
+        parcelableAnalysis.analyze(astClassFactory.getType(ConstructorProtectedMethod.class), null);
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel(Parcel.Serialization.METHOD)
+    public static class ConstructorAnnotatedPrivateMethod {
+        String value;
+
+        @ParcelConstructor
+        public ConstructorAnnotatedPrivateMethod(@ASTClassFactory.ASTParameterName("value") String value){
+            this.value = value;
+        }
+
+        @ParcelProperty("value")
+        private String getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testConstructorAnnotatedPrivateMethod() {
+
+        ASTType fieldType = astClassFactory.getType(ConstructorAnnotatedPrivateMethod.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
 
     @Parcel(Parcel.Serialization.METHOD)
     public static class Basic {

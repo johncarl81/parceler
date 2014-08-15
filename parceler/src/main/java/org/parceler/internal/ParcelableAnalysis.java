@@ -209,12 +209,16 @@ public class ParcelableAnalysis {
             //validate all constructor parameters have a matching read converter
             if(constructorReference != null && constructorReference.getConstructor() != null){
                 for (ASTParameter parameter : constructorReference.getConstructor().getParameters()) {
-                    if(constructorReference.getWriteReference(parameter) == null){
+                    if(!constructorReference.containsWriteReference(parameter)){
                         validator.error("No corresponding property found for constructor parameter " + parameter.getName())
                                 .element(parameter).build();
                     }
                 }
             }
+        }
+
+        if(validator.isInError()){
+            return null;
         }
 
         return parcelableDescriptor;
@@ -238,7 +242,7 @@ public class ParcelableAnalysis {
             if(!astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
                     (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) &&
-                    isSetter(astMethod))){
+                    isSetter(astMethod, declaredProperty))){
                 String propertyName = getPropertyName(astMethod);
                 ASTType converter = getConverter(astMethod);
                 if(!writeMethods.containsKey(propertyName)){
@@ -257,7 +261,7 @@ public class ParcelableAnalysis {
         for (ASTMethod astMethod : astType.getMethods()) {
             if(!astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
-                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) && isGetter(astMethod))){
+                    (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) && isGetter(astMethod, declaredProperty))){
                 String propertyName = getPropertyName(astMethod);
                 ASTType converter = getConverter(astMethod);
                 if(!writeMethods.containsKey(propertyName)){
@@ -440,16 +444,16 @@ public class ParcelableAnalysis {
         }
     }
 
-    private boolean isGetter(ASTMethod astMethod) {
+    private boolean isGetter(ASTMethod astMethod, boolean ignoreModifier) {
         return astMethod.getParameters().size() == 0 &&
                 (astMethod.getName().startsWith(GET) || astMethod.getName().startsWith(IS)) &&
-                astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC);
+                (ignoreModifier || astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
-    private boolean isSetter(ASTMethod astMethod) {
+    private boolean isSetter(ASTMethod astMethod, boolean ignoreModifier) {
         return astMethod.getParameters().size() == 1 && astMethod.getName().startsWith(SET) &&
                 astMethod.getReturnType().equals(ASTVoidType.VOID) &&
-                astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC);
+                (ignoreModifier || astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
     private String getPropertyName(ASTMethod astMethod) {
