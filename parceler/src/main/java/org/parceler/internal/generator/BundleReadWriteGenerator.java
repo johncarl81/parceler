@@ -21,10 +21,10 @@ import org.androidtransfuse.adapter.ASTType;
 /**
 * @author John Ericksen
 */
-public class ParcelableReadWriteGenerator extends ReadWriteGeneratorBase {
+public class BundleReadWriteGenerator extends ReadWriteGeneratorBase {
 
-    public ParcelableReadWriteGenerator(String readMethod, String writeMethod, String parcelableType) {
-        super(readMethod, new String[]{ClassLoader.class.getName()}, writeMethod, new String[]{parcelableType, int.class.getName()});
+    public BundleReadWriteGenerator(String readMethod, String writeMethod, String bundleType) {
+        super(readMethod, new String[]{ClassLoader.class.getName()}, writeMethod, new String[]{bundleType});
     }
 
     @Override
@@ -34,6 +34,6 @@ public class ParcelableReadWriteGenerator extends ReadWriteGeneratorBase {
 
     @Override
     public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
-        body.invoke(parcel, getWriteMethod()).arg(getExpression).arg(flags);
+        body.invoke(parcel, getWriteMethod()).arg(getExpression);
     }
 }
