@@ -158,7 +158,7 @@
                     <docletArtifact>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoclet</artifactId>
-                        <version>0.1.4</version>
+                        <version>1.5.0</version>
                     </docletArtifact>
                     <linksource>true</linksource>
                 </configuration>
