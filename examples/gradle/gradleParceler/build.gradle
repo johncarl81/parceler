@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.parceler:parceler-api:0.2.11-SNAPSHOT'
-    provided 'org.parceler:parceler:0.2.11-SNAPSHOT'
+    compile 'org.parceler:parceler-api:0.2.12-SNAPSHOT'
+    provided 'org.parceler:parceler:0.2.12-SNAPSHOT'
 }
 
 android {
