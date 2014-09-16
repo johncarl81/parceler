@@ -24,11 +24,18 @@ import java.lang.reflect.Field;
  */
 public class ParcelsTestUtil {
 
-    public static Parcelable wrap(Object input){
+    public static Parcelable wrap(Object input) {
+        if(input == null){
+            return wrap(null, null);
+        }
+        return wrap(input.getClass(), input);
+    }
+
+    public static <T> Parcelable wrap(Class<? extends T> inputType, T input){
         try{
             android.os.Parcel parcel = android.os.Parcel.obtain();
 
-            Parcelable parcelable = Parcels.wrap(input);
+            Parcelable parcelable = Parcels.wrap(inputType, input);
 
             parcelable.writeToParcel(parcel, 0);
             parcel.setDataPosition(0);

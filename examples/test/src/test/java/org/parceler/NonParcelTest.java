@@ -33,6 +33,36 @@ import static org.junit.Assert.*;
 public class NonParcelTest {
 
     @Test
+    public void testUnmodifiableList(){
+        List<SubParcel> input = new ArrayList<SubParcel>();
+
+        input.add(new SubParcel("name"));
+        input.add(null);
+
+        List<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(List.class, Collections.unmodifiableList(input)));
+        assertEquals(2, output.size());
+
+        assertEquals("name", output.get(0).getName());
+        assertNull(output.get(1));
+    }
+
+    @Test
+    public void testSublist(){
+        List<SubParcel> input = new ArrayList<SubParcel>();
+
+        input.add(new SubParcel("one"));
+        input.add(new SubParcel("two"));
+        input.add(new SubParcel("three"));
+        input.add(null);
+
+        List<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(List.class, input.subList(0,2)));
+        assertEquals(2, output.size());
+
+        assertEquals("one", output.get(0).getName());
+        assertEquals("two", output.get(1).getName());
+    }
+
+    @Test
     public void testList(){
         List<SubParcel> input = new ArrayList<SubParcel>();
 

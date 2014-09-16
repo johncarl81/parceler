@@ -66,7 +66,23 @@ public final class Parcels {
         if(input == null){
             return NULL_PARCELABLE;
         }
-        ParcelableFactory parcelableFactory = REPOSITORY.get(input.getClass());
+        return wrap(input.getClass(), input);
+    }
+
+    /**
+     * Wraps the input `@Parcel` annotated class with a `Parcelable` wrapper.
+     *
+     * @throws ParcelerRuntimeException if there was an error looking up the wrapped Parceler$Parcels class.
+     * @param inputType specific type to parcel
+     * @param input Parcel
+     * @return Parcelable wrapper
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Parcelable wrap(Class<? extends T> inputType, T input) {
+        if(input == null){
+            return NULL_PARCELABLE;
+        }
+        ParcelableFactory parcelableFactory = REPOSITORY.get(inputType);
 
         return parcelableFactory.buildParcelable(input);
     }
