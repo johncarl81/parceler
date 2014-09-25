@@ -77,16 +77,17 @@ types:
  * +float+
  * +int+
  * +long+
+ * +char+
+ * +boolean+
  * +String+
  * +IBinder+
  * +Bundle+
  * +SparseArray+ of any of the mapped types
  * +SparseBooleanArray+
- * +Exception+
  * +List+ of any of the mapped types
  * +Map+ of any of the mapped types
  * +Set+ of any of the mapped types
- * +Parcel+
+ * +Parcelable+
  * +Serializable+
  * Array of any of the mapped types
  * Any other class annotated with +@Parcel+
@@ -162,6 +163,42 @@ public class Example {
 ----
 
 For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by +@Transient+.
+
+Parceler supports many different styles centering around the POJO.  This allows +@Parcel+ annotated classes to be used with other
+POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://bitbucket.org/qbusict/cupboard[Cupboard],
+and http://simple.sourceforge.net/[Simple XML] to name a few.
+
+Additionally, Parceler supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor
+/ code generation library for generating immutable beans.  Parceler interfaces with AutoValue via the +@ParcelFactory+ annotation,
+which maps a static factory method into the annotated +@Parcel+ serialization:
+
+[source,java]
+----
+@AutoValue
+@Parcel
+public abstract class AutoValueParcel {
+
+    @ParcelProperty("value") public abstract String value();
+
+    @ParcelFactory
+    public static AutoValueParcel create(@ParcelProperty("value") String value) {
+        return new AutoValue_AutoValueParcel(value);
+    }
+}
+----
+
+AutoValue generates a different class than the annotated +@Parcel+, therefore, you need to specify which class
+Parceler should build in the +Parcels+ utility class:
+
+[source,java]
+----
+Parcelable wrappedAutoValue = Parcels.wrap(AutoValueParcel.class, AutoValueParcel.create("example"));
+----
+And to deserialize:
+[source,java]
+----
+AuthValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
+----
 
 +@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
 serialization is necessary.  Ths provides a still cleaner option for using Parcelable classes than implementing them by
