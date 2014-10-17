@@ -57,6 +57,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>1.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -125,6 +131,7 @@
                     <target>1.6</target>
                     <annotationProcessors>
                         <annotationProcessor>org.androidtransfuse.bootstrap.BootstrapProcessor</annotationProcessor>
+                        <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor</annotationProcessor>
                     </annotationProcessors>
                 </configuration>
             </plugin>

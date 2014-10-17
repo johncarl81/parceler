@@ -15,6 +15,7 @@
  */
 package org.parceler;
 
+import com.google.auto.service.AutoService;
 import org.androidtransfuse.AnnotationProcessorBase;
 import org.androidtransfuse.SupportedAnnotations;
 import org.androidtransfuse.adapter.element.ReloadableASTElementFactory;
@@ -24,6 +25,7 @@ import org.androidtransfuse.scope.ScopeKey;
 import org.parceler.internal.ParcelProcessor;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,6 +43,7 @@ import java.util.Set;
  */
 @SupportedAnnotations({Parcel.class, ParcelClass.class, ParcelClasses.class})
 @Bootstrap
+@AutoService(Processor.class)
 public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
 
     @Inject
