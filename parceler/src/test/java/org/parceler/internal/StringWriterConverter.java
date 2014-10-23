@@ -21,7 +21,7 @@ import org.parceler.ParcelConverter;
 /**
  * @author John Ericksen
  */
-public  class StringWriterConverter implements ParcelConverter<String> {
+public class StringWriterConverter implements ParcelConverter<String> {
 
     @Override
     public void toParcel(String input, Parcel parcel) {

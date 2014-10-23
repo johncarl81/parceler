@@ -130,6 +130,9 @@ public class ParcelableAnalysis {
                 for (Map.Entry<String, List<ASTReference<ASTField>>> fieldEntry : defaultFields.entrySet()) {
                     readReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().get(0).getReference()));
                     fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().get(0).getReference()));
+                    if(fieldEntry.getValue().get(0).getConverter() != null){
+                        converters.put(fieldEntry.getKey(), fieldEntry.getValue().get(0).getConverter());
+                    }
                 }
                 //overwrite with property methods
                 for (Map.Entry<String, List<ASTReference<ASTMethod>>> methodEntry : propertyReadMethods.entrySet()) {
@@ -149,6 +152,9 @@ public class ParcelableAnalysis {
                 //default write via methods
                 for (Map.Entry<String, List<ASTReference<ASTMethod>>> methodEntry : defaultWriteMethods.entrySet()) {
                     methodWriteReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().get(0).getReference().getParameters().get(0).getASTType(), methodEntry.getValue().get(0).getReference()));
+                    if(methodEntry.getValue().get(0).getConverter() != null){
+                        converters.put(methodEntry.getKey(), methodEntry.getValue().get(0).getConverter());
+                    }
                 }
                 //overwrite with property methods
                 for (Map.Entry<String, List<ASTReference<ASTMethod>>> methodEntry : propertyWriteMethods.entrySet()) {
