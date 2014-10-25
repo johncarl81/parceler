@@ -139,7 +139,7 @@ If an empty constructor is present, Parceler will use that constructor unless an
 
 You may also mix and match serialization techniques using the +@ParcelParameter+ annotation.
 In the following example, +firstName+ and +lastName+ are written to the bean using the constructor while +firstName+
-is read from the bean using the field and +lastName+ is read using the +getLastName()+ method.  The paramters +firstName+
+is read from the bean using the field and +lastName+ is read using the +getLastName()+ method.  The parameters +firstName+
 and +lastName+ are coordinated by the parameter names +"first"+ and +"last"+ respectfully.
 
 [source,java]
@@ -202,7 +202,7 @@ AuthValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
 ----
 
 +@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
-serialization is necessary.  Ths provides a still cleaner option for using Parcelable classes than implementing them by
+serialization is necessary.  This provides a still cleaner option for using Parcelable classes than implementing them by
 hand.
 
 For classes whose corresponding Java source is not available, one may include the class as a Parcel by using the
