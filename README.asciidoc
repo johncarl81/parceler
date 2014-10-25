@@ -1,6 +1,7 @@
 = Parceler
 
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
+image:https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api/badge.svg["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api"]
 
 In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
 http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization, Parcelables take on the
