@@ -21,11 +21,13 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.*;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.*;
 
 /**
  * @author John Ericksen
  */
+@Singleton
 public class ParcelableAnalysis {
 
     private static final ASTType OBJECT_TYPE = new ASTStringType(Object.class.getName());
