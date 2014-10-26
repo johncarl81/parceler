@@ -42,27 +42,33 @@ public class ParcelableAnalysis {
     }
 
     public ParcelableDescriptor analyze(ASTType astType, ASTType converter) {
+        return analyze(astType, converter, true);
+    }
+
+    public ParcelableDescriptor analyze(ASTType astType, ASTType converter, boolean parcelsIndex) {
         if (!parcelableCache.containsKey(astType)) {
-            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, converter);
+            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, converter, parcelsIndex);
             parcelableCache.put(astType, parcelableDescriptor);
         }
         return parcelableCache.get(astType);
     }
 
-    private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter) {
+    private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter, boolean parcelsIndex) {
 
         Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
         Parcel.Serialization serialization = parcelAnnotation != null ? parcelAnnotation.value() : null;
         ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
+        boolean localParcelsIndex = parcelAnnotation != null ? parcelAnnotation.parcelsIndex() : parcelsIndex;
 
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
 
-        ParcelableDescriptor parcelableDescriptor= new ParcelableDescriptor(interfaces);
+        ParcelableDescriptor parcelableDescriptor;
 
         if (converter != null) {
-            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter, localParcelsIndex);
         }
         else {
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, localParcelsIndex);
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
             Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
 

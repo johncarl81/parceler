@@ -57,19 +57,27 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
             for(ASTAnnotation annotation : parcelTypes){
                 ASTType parcelType = annotation.getProperty("value", ASTType.class);
-                ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(annotation));
-                generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis)));
+                ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(annotation), getParcelsIndex(annotation));
+                generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis), analysis.isParcelsIndex()));
             }
         }
 
         ASTAnnotation astAnnotation = value.getASTAnnotation(ParcelClass.class);
         if(astAnnotation != null){
             ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
-            ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(astAnnotation));
-            generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis)));
+            ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, getConverterType(astAnnotation), getParcelsIndex(astAnnotation));
+            generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis), analysis.isParcelsIndex()));
         }
 
         return generatedSource;
+    }
+
+    private boolean getParcelsIndex(ASTAnnotation annotation) {
+        Boolean parcelsIndex = annotation.getProperty("parcelsIndex", Boolean.class);
+        if(parcelsIndex != null){
+            return parcelsIndex;
+        }
+        return true;
     }
 
     private ASTType getConverterType(ASTAnnotation parcelClassAnnotation) {

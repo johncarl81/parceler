@@ -13,14 +13,16 @@ import java.util.List;
 public class ParcelImplementations {
 
     private final JDefinedClass definedClass;
+    private final boolean parcelsIndex;
     private final List<ASTType> extraImplementations = new ArrayList<ASTType>();
 
-    public ParcelImplementations(JDefinedClass definedClass) {
-        this(definedClass, new ASTType[0]);
+    public ParcelImplementations(JDefinedClass definedClass, boolean parcelsIndex) {
+        this(definedClass, new ASTType[0], parcelsIndex);
     }
 
-    public ParcelImplementations(JDefinedClass definedClass, ASTType[] extraImplementations) {
+    public ParcelImplementations(JDefinedClass definedClass, ASTType[] extraImplementations, boolean parcelsIndex) {
         this.definedClass = definedClass;
+        this.parcelsIndex = parcelsIndex;
         if(extraImplementations != null){
             this.extraImplementations.addAll(Arrays.asList(extraImplementations));
         }
@@ -32,5 +34,9 @@ public class ParcelImplementations {
 
     public List<ASTType> getExtraImplementations() {
         return extraImplementations;
+    }
+
+    public boolean isParcelsIndex() {
+        return parcelsIndex;
     }
 }

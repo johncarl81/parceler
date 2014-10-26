@@ -64,6 +64,8 @@ public @interface Parcel {
 
     Class[] implementations() default {};
 
+    boolean parcelsIndex() default true;
+
     enum Serialization {
         FIELD,
         METHOD
