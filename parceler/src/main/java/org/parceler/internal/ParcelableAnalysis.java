@@ -21,6 +21,7 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.*;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.*;
 
@@ -37,10 +38,12 @@ public class ParcelableAnalysis {
     private static final String[] PREPENDS = {GET, IS, SET};
     private final Map<ASTType, ParcelableDescriptor> parcelableCache = new HashMap<ASTType, ParcelableDescriptor>();
     private final Validator validator;
+    private final Provider<Generators> generatorsProvider;
 
     @Inject
-    public ParcelableAnalysis(Validator validator) {
+    public ParcelableAnalysis(Validator validator, Provider<Generators> generatorsProvider) {
         this.validator = validator;
+        this.generatorsProvider = generatorsProvider;
     }
 
     public ParcelableDescriptor analyze(ASTType astType, ASTType converter) {
@@ -187,6 +190,9 @@ public class ParcelableAnalysis {
                                 if(parameterEntry.getValue().getConverter() != null){
                                     constructorReference.putConverter(parameterEntry.getValue().getReference(), parameterEntry.getValue().getConverter());
                                 }
+                                else {
+                                    validateType(parameterEntry.getValue().getReference().getASTType(), parameterEntry.getValue().getReference());
+                                }
                             }
                         }
                     }
@@ -194,21 +200,31 @@ public class ParcelableAnalysis {
 
                 //methods
                 for (Map.Entry<String, MethodReference> methodReferenceEntry : methodWriteReferences.entrySet()) {
-                    if(!writeParameters.containsKey(methodReferenceEntry.getKey()) && readReferences.containsKey(methodReferenceEntry.getKey())){
-                        validateReadReference(readReferences, methodReferenceEntry.getValue().getMethod(), methodReferenceEntry.getKey());
-                        ASTType propertyConverter = converters.containsKey(methodReferenceEntry.getKey()) ? converters.get(methodReferenceEntry.getKey()) : null;
-                        parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(methodReferenceEntry.getKey(), methodReferenceEntry.getValue(), readReferences.get(methodReferenceEntry.getKey()), propertyConverter));
+                    MethodReference methodReference = methodReferenceEntry.getValue();
+                    String propertyName = methodReferenceEntry.getKey();
+                    if(!writeParameters.containsKey(propertyName) && readReferences.containsKey(propertyName)){
+                        validateReadReference(readReferences, methodReference.getMethod(), propertyName);
+                        ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
+                        if(propertyConverter == null){
+                            validateType(methodReference.getType(), methodReference.getMethod());
+                        }
+                        parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(propertyName, methodReference, readReferences.get(propertyName), propertyConverter));
                     }
                 }
 
                 //fields
                 for (Map.Entry<String, FieldReference> fieldReferenceEntry : fieldWriteReferences.entrySet()) {
-                    if(!writeParameters.containsKey(fieldReferenceEntry.getKey()) &&
-                            !methodWriteReferences.containsKey(fieldReferenceEntry.getKey()) &&
-                            readReferences.containsKey(fieldReferenceEntry.getKey())){
-                        validateReadReference(readReferences, fieldReferenceEntry.getValue().getField(), fieldReferenceEntry.getKey());
-                        ASTType propertyConverter = converters.containsKey(fieldReferenceEntry.getKey()) ? converters.get(fieldReferenceEntry.getKey()) : null;
-                        parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(fieldReferenceEntry.getKey(), fieldReferenceEntry.getValue(), readReferences.get(fieldReferenceEntry.getKey()), propertyConverter));
+                    FieldReference fieldReference = fieldReferenceEntry.getValue();
+                    String propertyName = fieldReferenceEntry.getKey();
+                    if(!writeParameters.containsKey(propertyName) &&
+                            !methodWriteReferences.containsKey(propertyName) &&
+                            readReferences.containsKey(propertyName)){
+                        validateReadReference(readReferences, fieldReference.getField(), propertyName);
+                        ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
+                        if(propertyConverter == null){
+                            validateType(fieldReference.getType(), fieldReference.getField());
+                        }
+                        parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(propertyName, fieldReference, readReferences.get(propertyName), propertyConverter));
                     }
                 }
 
@@ -453,6 +469,14 @@ public class ParcelableAnalysis {
     private <T extends ASTBase> void validateReadReference(Map<String, AccessibleReference> references, ASTBase mutator, String name){
         if(!references.containsKey(name)){
             validator.error("Accessor not found for property " + name)
+                    .element(mutator)
+                    .build();
+        }
+    }
+
+    private void validateType(ASTType type, ASTBase mutator){
+        if(!generatorsProvider.get().matches(type)){
+            validator.error("Unable to find read/write generator for type " + type)
                     .element(mutator)
                     .build();
         }

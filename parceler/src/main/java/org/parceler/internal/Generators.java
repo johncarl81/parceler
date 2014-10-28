@@ -40,6 +40,15 @@ public class Generators {
         this.astClassFactory = astClassFactory;
     }
 
+    public boolean matches(ASTType type){
+        for (Matcher<ASTType> matcher : generators.keySet()) {
+            if(matcher.matches(type)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ReadWriteGenerator getGenerator(ASTType type) {
         for (Map.Entry<Matcher<ASTType>, ReadWriteGenerator> generatorEntry : generators.entrySet()) {
             if(generatorEntry.getKey().matches(type)){

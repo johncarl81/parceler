@@ -1015,6 +1015,35 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
+    @Parcel
+    static class MismatchedTypes {
+        String value;
+
+        @ParcelConstructor
+        public MismatchedTypes(Integer value) {}
+    }
+
+    @Test
+    public void testMismatchedTypes(){
+        ASTType targetAst = astClassFactory.getType(MismatchedTypes.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertTrue(messager.isErrored());
+    }
+
+    @Parcel
+    static class UnmappedType {
+        Object value;
+    }
+
+    @Test
+    public void testUnmappedType(){
+        ASTType targetAst = astClassFactory.getType(UnmappedType.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+
+        assertTrue(messager.isErrored());
+    }
+
     private boolean constructorContains(ParcelableDescriptor descriptor, String name) {
 
         if(descriptor.getConstructorPair() != null) {
