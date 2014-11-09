@@ -83,15 +83,16 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             writeMethod = parcelableClass.method(JMod.PRIVATE, Void.TYPE, writeMethodName);
             JVar writeInputVar = writeMethod.param(inputType, variableNamer.generateName(inputType));
             JVar parcelParam = writeMethod.param(parcelType, variableNamer.generateName(parcelType));
+            JVar flagsParam = writeMethod.param(int.class, variableNamer.generateName("flags"));
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type, null);
-            generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flags, writeMethod.body());
+            generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, writeMethod.body());
         }
 
         JConditional nullCondition = body._if(getExpression.eq(JExpr._null()));
         nullCondition._then().add(parcel.invoke("writeInt").arg(JExpr.lit(-1)));
         JBlock nonNullCondition = nullCondition._else();
         nonNullCondition.add(parcel.invoke("writeInt").arg(JExpr.lit(1)));
-        nonNullCondition.invoke(writeMethod).arg(getExpression).arg(parcel);
+        nonNullCondition.invoke(writeMethod).arg(getExpression).arg(parcel).arg(flags);
     }
 
     private JMethod findMethodByName(JDefinedClass definedClass, String name){
