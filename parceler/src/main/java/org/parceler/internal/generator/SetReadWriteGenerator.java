@@ -23,8 +23,8 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.internal.Generators;
 
 import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
 * @author John Ericksen
@@ -36,21 +36,23 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Generators generators;
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
+    private final Class<? extends Set> setType;
 
     @Inject
-    public SetReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel) {
+    public SetReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Set> setType) {
         super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
         this.namer = namer;
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
+        this.setType = setType;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass arrayListType = generationUtil.ref(HashSet.class);
+        JClass arrayListType = generationUtil.ref(setType);
 
         ASTType componentType = astClassFactory.getType(Object.class);
 

@@ -24,7 +24,6 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.internal.Generators;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,21 +36,23 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Generators generators;
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
+    private final Class<? extends Map> mapType;
 
     @Inject
-    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel) {
+    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType) {
         super("readHashMap", new Class[]{ClassLoader.class}, "writeMap", new Class[]{Map.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
         this.namer = namer;
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
+        this.mapType = mapType;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass hashMapType = generationUtil.ref(HashMap.class);
+        JClass hashMapType = generationUtil.ref(mapType);
 
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);

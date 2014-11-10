@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.parceler.*;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -198,8 +199,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testConstructorProtectedMethod() {
-        parcelableAnalysis.analyze(astClassFactory.getType(ConstructorProtectedMethod.class), null);
-        assertTrue(messager.isErrored());
+        errors(ConstructorProtectedMethod.class);
     }
 
     @Parcel(Parcel.Serialization.METHOD)
@@ -490,8 +490,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testDuplicatePropertyError(){
-        parcelableAnalysis.analyze(astClassFactory.getType(DuplicateProperty.class), null);
-        assertTrue(messager.isErrored());
+        errors(DuplicateProperty.class);
     }
 
     @Parcel
@@ -505,8 +504,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testNoDesignatedConstructor(){
-        parcelableAnalysis.analyze(astClassFactory.getType(NoDesignatedConstructor.class), null);
-        assertTrue(messager.isErrored());
+        errors(NoDesignatedConstructor.class);
     }
 
     @Parcel
@@ -524,8 +522,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testTooManyParcelConstructor(){
-        parcelableAnalysis.analyze(astClassFactory.getType(TooManyParcelConstructors.class), null);
-        assertTrue(messager.isErrored());
+        errors(TooManyParcelConstructors.class);
     }
 
     @Parcel
@@ -739,10 +736,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testCollidingConverterSerialization() {
-
-        ASTType targetAst = astClassFactory.getType(CollidingConstructorParameterConverterSerialization.class);
-        parcelableAnalysis.analyze(targetAst, null);
-        assertTrue(messager.isErrored());
+        errors(CollidingConstructorParameterConverterSerialization.class);
     }
 
     @Parcel
@@ -760,10 +754,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testCollidingMethodParameterConverterSerialization() {
-
-        ASTType targetAst = astClassFactory.getType(CollidingMethodParameterConverterSerialization.class);
-        parcelableAnalysis.analyze(targetAst, null);
-        assertTrue(messager.isErrored());
+        errors(CollidingMethodParameterConverterSerialization.class);
     }
 
     @Parcel
@@ -785,10 +776,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testCollidingMethodConverterSerialization() {
-
-        ASTType targetAst = astClassFactory.getType(CollidingMethodConverterSerialization.class);
-        parcelableAnalysis.analyze(targetAst, null);
-        assertTrue(messager.isErrored());
+        errors(CollidingMethodConverterSerialization.class);
     }
 
     public static class SuperClass{
@@ -965,10 +953,7 @@ public class ParcelableAnalysisTest {
     @Test
     @Ignore // todo: add factory and constructor validation
     public void testFactoryMethodAndConstructor() {
-
-        ASTType targetAst = astClassFactory.getType(FactoryMethodAndConstructor.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
-        assertTrue(messager.isErrored());
+        errors(FactoryMethodAndConstructor.class);
     }
 
     @Parcel
@@ -989,10 +974,7 @@ public class ParcelableAnalysisTest {
     @Test
     @Ignore // todo: add static method validation
     public void testNonStaticFactoryMethod() {
-
-        ASTType targetAst = astClassFactory.getType(NonStaticFactoryMethod.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
-        assertTrue(messager.isErrored());
+        errors(NonStaticFactoryMethod.class);
     }
 
     @Parcel
@@ -1025,10 +1007,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testMismatchedTypes(){
-        ASTType targetAst = astClassFactory.getType(MismatchedTypes.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
-
-        assertTrue(messager.isErrored());
+        errors(MismatchedTypes.class);
     }
 
     @Parcel
@@ -1038,8 +1017,52 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testUnmappedType(){
-        ASTType targetAst = astClassFactory.getType(UnmappedType.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        errors(UnmappedType.class);
+    }
+
+    @Parcel
+    static class NonGenericMapCollection {
+        Map value;
+    }
+
+    @Test
+    public void testNonGenericMapCollection(){
+        errors(NonGenericMapCollection.class);
+    }
+
+    @Parcel
+    static class NonMappedGenericsMapCollection {
+        Map<String, Object> value;
+    }
+
+    @Test
+    public void testNonMappedGenericsMapCollection(){
+        errors(NonMappedGenericsMapCollection.class);
+    }
+
+    @Parcel
+    static class NonGenericListCollection {
+        List value;
+    }
+
+    @Test
+    public void testNonGenericListCollection(){
+        errors(NonGenericListCollection.class);
+    }
+
+    @Parcel
+    static class NonMappedGenericsListCollection {
+        List<Object> value;
+    }
+
+    @Test
+    public void testNonMappedGenericsListCollection(){
+        errors(NonMappedGenericsListCollection.class);
+    }
+
+    private void errors(Class clazz){
+        ASTType targetAst = astClassFactory.getType(clazz);
+        parcelableAnalysis.analyze(targetAst, null);
 
         assertTrue(messager.isErrored());
     }

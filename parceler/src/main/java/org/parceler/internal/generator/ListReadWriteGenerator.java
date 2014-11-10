@@ -23,7 +23,6 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.parceler.internal.Generators;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,21 +35,23 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Generators generators;
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
+    private final Class<? extends List> listType;
 
     @Inject
-    public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel) {
+    public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends List> listType) {
         super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
         this.namer = namer;
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
+        this.listType = listType;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass arrayListType = generationUtil.ref(ArrayList.class);
+        JClass arrayListType = generationUtil.ref(listType);
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
