@@ -83,15 +83,17 @@ types:
  * +String+
  * +IBinder+
  * +Bundle+
- * +SparseArray+ of any of the mapped types
+ * +SparseArray+ of any of the mapped types*
  * +SparseBooleanArray+
- * +List+ of any of the mapped types
- * +Map+ of any of the mapped types
- * +Set+ of any of the mapped types
+ * +List+ of any of the mapped types*
+ * +Map+ of any of the mapped types*
+ * +Set+ of any of the mapped types*
  * +Parcelable+
  * +Serializable+
  * Array of any of the mapped types
  * Any other class annotated with +@Parcel+
+
+*Parcel will error if the generic parameter is not mapped.
 
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
 In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.

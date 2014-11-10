@@ -48,6 +48,7 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
+import org.parceler.internal.matcher.GenericCollectionMatcher;
 import org.parceler.internal.matcher.ParcelMatcher;
 
 import javax.annotation.processing.Filer;
@@ -223,12 +224,12 @@ public class ParcelerModule {
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, analysis, generator, namer));
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(List.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(ArrayList.class)).ignoreGenerics().build(), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(Map.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(HashMap.class)).ignoreGenerics().build(), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(Set.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(Matchers.type(astClassFactory.getType(HashSet.class)).ignoreGenerics().build(), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(ArrayList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(Map.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(HashMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(Set.class), generators, 1), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(HashSet.class), generators, 1), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new InheritsMatcher(astClassFactory.getType(Serializable.class)), serializableReadWriteGenerator);
 
         return generators;
