@@ -191,7 +191,7 @@ public class ParcelableAnalysis {
                                     constructorReference.putConverter(parameterEntry.getValue().getReference(), parameterEntry.getValue().getConverter());
                                 }
                                 else {
-                                    validateType(parameterEntry.getValue().getReference().getASTType(), parameterEntry.getValue().getReference());
+                                    validateType(parameterEntry.getValue().getReference().getASTType(), parameterEntry.getValue().getReference(), parameterEntry.getValue().getReference().toString());
                                 }
                             }
                         }
@@ -206,7 +206,7 @@ public class ParcelableAnalysis {
                         validateReadReference(readReferences, methodReference.getMethod(), propertyName);
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
                         if(propertyConverter == null){
-                            validateType(methodReference.getType(), methodReference.getMethod());
+                            validateType(methodReference.getType(), methodReference.getMethod(), methodReference.getOwner().getName() + "#" + methodReference.getName());
                         }
                         parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(propertyName, methodReference, readReferences.get(propertyName), propertyConverter));
                     }
@@ -222,7 +222,7 @@ public class ParcelableAnalysis {
                         validateReadReference(readReferences, fieldReference.getField(), propertyName);
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
                         if(propertyConverter == null){
-                            validateType(fieldReference.getType(), fieldReference.getField());
+                            validateType(fieldReference.getType(), fieldReference.getField(), fieldReference.getOwner().getName() + "." + fieldReference.getName());
                         }
                         parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(propertyName, fieldReference, readReferences.get(propertyName), propertyConverter));
                     }
@@ -269,7 +269,8 @@ public class ParcelableAnalysis {
         Map<String, List<ASTReference<ASTMethod>>> writeMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
 
         for (ASTMethod astMethod : astType.getMethods()) {
-            if(!astMethod.isAnnotated(Transient.class) &&
+            if(!astMethod.isStatic() &&
+                    !astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
                     (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) &&
                     isSetter(astMethod, declaredProperty))){
@@ -289,7 +290,8 @@ public class ParcelableAnalysis {
         Map<String, List<ASTReference<ASTMethod>>> writeMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
 
         for (ASTMethod astMethod : astType.getMethods()) {
-            if(!astMethod.isAnnotated(Transient.class) &&
+            if(!astMethod.isStatic() &&
+                    !astMethod.isAnnotated(Transient.class) &&
                     !definedMethods.contains(new MethodSignature(astMethod)) &&
                     (declaredProperty == astMethod.isAnnotated(ParcelProperty.class) && isGetter(astMethod, declaredProperty))){
                 String propertyName = getPropertyName(astMethod);
@@ -308,7 +310,8 @@ public class ParcelableAnalysis {
         Map<String, List<ASTReference<ASTField>>> fields = new HashMap<String, List<ASTReference<ASTField>>>();
 
         for (ASTField astField : astType.getFields()) {
-            if(!astField.isAnnotated(Transient.class) &&
+            if(!astField.isStatic() &&
+                    !astField.isAnnotated(Transient.class) &&
                     !astField.isTransient() &&
                     (declaredProperty == astField.isAnnotated(ParcelProperty.class))){
                 String name = astField.getName();
@@ -474,9 +477,9 @@ public class ParcelableAnalysis {
         }
     }
 
-    private void validateType(ASTType type, ASTBase mutator){
+    private void validateType(ASTType type, ASTBase mutator, String where){
         if(!generatorsProvider.get().matches(type)){
-            validator.error("Unable to find read/write generator for type " + type)
+            validator.error("Unable to find read/write generator for type " + type + " for " + where)
                     .element(mutator)
                     .build();
         }

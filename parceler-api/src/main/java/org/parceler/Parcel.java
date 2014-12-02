@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * no `ParcelConverter` value is specified.  If a ParcelConverter is specified it will be used instead.
  *
  * The following types are available as property types, which correspond to the types accepted by the Android Bundle:
- * 
+ *
  * - `byte`
  * - `byte[]`
  * - `double`
