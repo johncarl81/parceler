@@ -28,6 +28,7 @@ import org.parceler.*;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import org.parceler.Parcel.Serialization;
 
 import static org.junit.Assert.*;
 
@@ -104,6 +105,48 @@ public class ParcelableAnalysisTest {
         assertNotNull(analysis.getConstructorPair());
         assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         assertFalse(fieldsContain(analysis, "value"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    public static class StaticFieldExcluded {
+        static String staticField = "value";
+    }
+
+    @Parcel(Serialization.METHOD)
+    public static class StaticMethodsExcluded {
+        public static String getStatic() {
+            return "value";
+        }
+
+        public static void setStatic(String value) {
+        }
+    }
+
+    @Test
+    public void testStaticFieldExclusion() {
+        ASTType fieldType = astClassFactory.getType(StaticFieldExcluded.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(fieldsContain(analysis, "staticField"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Test
+    public void testStaticMethodExclusion() {
+        ASTType methodType = astClassFactory.getType(StaticMethodsExcluded.class);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(methodType, null);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
