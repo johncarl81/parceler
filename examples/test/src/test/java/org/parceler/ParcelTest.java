@@ -100,7 +100,7 @@ public class ParcelTest {
         assertArrayEquals(new int[]{1, 2, 3, 4, 5}, unwrapped.getArr());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class IntArrayClass {
 
         int[] arr;
@@ -130,7 +130,7 @@ public class ParcelTest {
         assertArrayEquals(new int[]{1, 2, 3, 4, 5}, unwrapped.getArr());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class IntArrayFactory {
 
         int[] arr;

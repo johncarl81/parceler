@@ -22,7 +22,7 @@ import org.parceler.Parcel;
 /**
  * @author John Ericksen
  */
-@Parcel(Parcel.Serialization.METHOD)
+@Parcel(Parcel.Serialization.BEAN)
 public class ParcelTarget {
     private String stringValue;
     private Double doubleValue;

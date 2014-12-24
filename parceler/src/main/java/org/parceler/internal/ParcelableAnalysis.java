@@ -116,7 +116,7 @@ public class ParcelableAnalysis {
                 Map<String, List<ASTReference<ASTMethod>>> defaultReadMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
                 Map<String, List<ASTReference<ASTField>>> defaultFields = new HashMap<String, List<ASTReference<ASTField>>>();
 
-                if(Parcel.Serialization.METHOD.equals(serialization)){
+                if(Parcel.Serialization.BEAN.equals(serialization) || Parcel.Serialization.METHOD.equals(serialization)){
                     defaultWriteMethods.putAll(findWriteMethods(hierarchyLoop, definedMethods, false));
                     defaultReadMethods.putAll(findReadMethods(hierarchyLoop, definedMethods, false));
                 }

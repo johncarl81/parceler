@@ -18,7 +18,7 @@ package org.parceler;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@Parcel(Parcel.Serialization.METHOD)
+@Parcel(Parcel.Serialization.BEAN)
 public class MethodModifiers {
 
     private static final String[] IGNORE_FIELDS = {"two", "three", "four"};

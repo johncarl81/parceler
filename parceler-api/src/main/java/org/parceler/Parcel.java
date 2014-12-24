@@ -68,7 +68,12 @@ public @interface Parcel {
 
     enum Serialization {
         FIELD,
-        METHOD
+        /**
+         * Deprecated, use BEAN instead
+         */
+        @Deprecated
+        METHOD,
+        BEAN
     }
 
     /**

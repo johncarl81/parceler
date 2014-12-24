@@ -20,7 +20,7 @@ import org.parceler.sub.SuperClass;
 /**
  * @author John Ericksen
  */
-@Parcel(Parcel.Serialization.METHOD)
+@Parcel(Parcel.Serialization.BEAN)
 public class MethodSubClass extends SuperClass {
 
     private String one;

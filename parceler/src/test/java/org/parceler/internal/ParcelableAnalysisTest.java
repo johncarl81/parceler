@@ -112,7 +112,7 @@ public class ParcelableAnalysisTest {
         static String staticField = "value";
     }
 
-    @Parcel(Serialization.METHOD)
+    @Parcel(Serialization.BEAN)
     public static class StaticMethodsExcluded {
         public static String getStatic() {
             return "value";
@@ -197,7 +197,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class ConstructorMethod {
         String value;
 
@@ -225,7 +225,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class ConstructorProtectedMethod {
         String value;
 
@@ -244,7 +244,7 @@ public class ParcelableAnalysisTest {
         errors(ConstructorProtectedMethod.class);
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class ConstructorAnnotatedPrivateMethod {
         String value;
 
@@ -274,7 +274,7 @@ public class ParcelableAnalysisTest {
     }
 
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class Basic {
         String stringValue;
         int intValue;
@@ -312,7 +312,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class Modifiers {
         String one;
         String two;
@@ -367,7 +367,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class MissingSetter {
         String stringValue;
         int intValue;
@@ -401,7 +401,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class MissingGetter {
         String stringValue;
         int intValue;
@@ -460,7 +460,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     public static class MethodTransient {
         String stringValue;
         int intValue;
@@ -853,7 +853,7 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
-    @Parcel(Parcel.Serialization.METHOD)
+    @Parcel(Parcel.Serialization.BEAN)
     static class MethodSubClass extends SuperClass{
         String value;
 

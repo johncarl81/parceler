@@ -18,7 +18,7 @@ package org.parceler;
 /**
  * @author John Ericksen
  */
-@Parcel(Parcel.Serialization.METHOD)
+@Parcel(Parcel.Serialization.BEAN)
 public class SubParcel {
 
     private String name;

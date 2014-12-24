@@ -99,11 +99,11 @@ Parceler may be configured to serialize using getter and setter methods and a no
 In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.
 This supports a number of bean strategies including immutability and traditional getter/setter beans.
 
-To configure default method serialization, simply configure the +@Parcel+ annotation with +Serialization.METHOD+:
+To configure default method serialization, simply configure the +@Parcel+ annotation with +Serialization.BEAN+:
 
 [source,java]
 ----
-@Parcel(Serialization.METHOD)
+@Parcel(Serialization.BEAN)
 public class Example {
     private String name;
     private int age;
@@ -120,7 +120,7 @@ To use a constructor with serialization, annotate the desired constructor with t
 
 [source,java]
 ----
-@Parcel(Serialization.METHOD)
+@Parcel(Serialization.BEAN)
 public class Example {
     private final String name;
     private final int age;
