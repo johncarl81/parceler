@@ -15,6 +15,8 @@
  */
 package org.parceler.internal;
 
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.validation.Validator;
@@ -32,7 +34,6 @@ import java.util.*;
 public class ParcelableAnalysis {
 
     private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
-    private static final ASTType OBJECT_TYPE = new ASTStringType(Object.class.getName());
     private static final String GET = "get";
     private static final String IS = "is";
     private static final String SET = "set";
@@ -66,6 +67,7 @@ public class ParcelableAnalysis {
         Parcel.Serialization serialization = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("value", Parcel.Serialization.class) : null;
         boolean parcelsIndex = parcelASTAnnotation == null || defaultValue(parcelASTAnnotation.getProperty("parcelsIndex", boolean.class), true);
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
+        ASTType[] analyze = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("analyze", ASTType[].class) : new ASTType[0];
 
         ParcelableDescriptor parcelableDescriptor;
 
@@ -111,7 +113,19 @@ public class ParcelableAnalysis {
                 validator.error("Too many @ParcelConstructor annotated constructors found.").element(astType).build();
             }
 
-            for(ASTType hierarchyLoop = astType; hierarchyLoop != null && !hierarchyLoop.equals(OBJECT_TYPE); hierarchyLoop = hierarchyLoop.getSuperClass()){
+            ImmutableSet<ASTType> analyzeSet;
+            if(analyze == null){
+                analyzeSet = ImmutableSet.of();
+            }
+            else{
+                analyzeSet = FluentIterable.of(analyze).toSet();
+            }
+
+
+            Iterator<ASTType> typeIterator = new ASTTypeHierarchyIterator(astType, analyzeSet);
+
+            while(typeIterator.hasNext()){
+                ASTType hierarchyLoop = typeIterator.next();
                 Map<String, List<ASTReference<ASTMethod>>> defaultWriteMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
                 Map<String, List<ASTReference<ASTMethod>>> defaultReadMethods = new HashMap<String, List<ASTReference<ASTMethod>>>();
                 Map<String, List<ASTReference<ASTField>>> defaultFields = new HashMap<String, List<ASTReference<ASTField>>>();
