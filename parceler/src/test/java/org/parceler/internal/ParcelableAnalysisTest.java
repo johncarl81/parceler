@@ -21,7 +21,6 @@ import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.parceler.*;
 import org.parceler.Parcel.Serialization;
@@ -994,7 +993,6 @@ public class ParcelableAnalysisTest {
     }
 
     @Test
-    @Ignore // todo: add factory and constructor validation
     public void testFactoryMethodAndConstructor() {
         errors(FactoryMethodAndConstructor.class);
     }
@@ -1015,7 +1013,6 @@ public class ParcelableAnalysisTest {
     }
 
     @Test
-    @Ignore // todo: add static method validation
     public void testNonStaticFactoryMethod() {
         errors(NonStaticFactoryMethod.class);
     }

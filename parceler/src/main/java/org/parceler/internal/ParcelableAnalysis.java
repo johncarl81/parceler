@@ -77,14 +77,23 @@ public class ParcelableAnalysis {
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
             Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
 
-            Set<ASTConstructor> constructors = findConstructors(astType);
+            Set<ASTConstructor> constructors = findConstructors(astType, true);
             Set<ASTMethod> factoryMethods = findFactoryMethods(astType);
             ConstructorReference constructorReference = null;
-            if(factoryMethods.size() == 1){
-                writeParameters.putAll(findMethodParameters(factoryMethods.iterator().next()));
-                constructorReference = new ConstructorReference(factoryMethods.iterator().next());
+            if(!factoryMethods.isEmpty() && !findConstructors(astType, false).isEmpty()) {
+                validator.error("Both @ParcelConstructor and @ParcelFactory may not be annotated on the same class.").element(astType).build();
+            }
+            else if(factoryMethods.size() == 1){
+                ASTMethod factoryMethod = factoryMethods.iterator().next();
+                if(!factoryMethod.isStatic()) {
+                    validator.error("@ParcelFactory method must be static").element(factoryMethod).build();
+                }
+                else {
+                    writeParameters.putAll(findMethodParameters(factoryMethod));
+                    constructorReference = new ConstructorReference(factoryMethods.iterator().next());
 
-                parcelableDescriptor.setConstructorPair(constructorReference);
+                    parcelableDescriptor.setConstructorPair(constructorReference);
+                }
             }
             else if(factoryMethods.size() > 1){
                 validator.error("Too many @ParcelFactory annotated factory methods.").element(astType).build();
@@ -333,27 +342,22 @@ public class ParcelableAnalysis {
         return fields;
     }
 
-    public Set<ASTConstructor> findConstructors(ASTType astType){
+    public Set<ASTConstructor> findConstructors(ASTType astType, boolean includeEmptyBeanConstructor){
         Set<ASTConstructor> constructorResult = new HashSet<ASTConstructor>();
-        ASTConstructor emptyBeanConstructor = null;
-        for(ASTConstructor constructor : astType.getConstructors()){
-            if(constructor.getParameters().isEmpty()){
-                emptyBeanConstructor = constructor;
-            }
-        }
         for(ASTConstructor constructor : astType.getConstructors()){
             if(constructor.isAnnotated(ParcelConstructor.class)){
                 constructorResult.add(constructor);
             }
         }
-        if(!constructorResult.isEmpty()){
-            return constructorResult;
-        }
         //if none are found, then try to find empty bean constructor
-        if(emptyBeanConstructor != null){
-            return Collections.singleton(emptyBeanConstructor);
+        if(includeEmptyBeanConstructor && constructorResult.isEmpty()){
+            for(ASTConstructor constructor : astType.getConstructors()){
+                if(constructor.getParameters().isEmpty()){
+                    constructorResult.add(constructor);
+                }
+            }
         }
-        return Collections.emptySet();
+        return constructorResult;
     }
 
     private static final class ASTReference<T extends ASTBase>{
