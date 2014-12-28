@@ -31,11 +31,13 @@ import java.util.*;
 @Singleton
 public class ParcelableAnalysis {
 
+    private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
     private static final ASTType OBJECT_TYPE = new ASTStringType(Object.class.getName());
     private static final String GET = "get";
     private static final String IS = "is";
     private static final String SET = "set";
     private static final String[] PREPENDS = {GET, IS, SET};
+
     private final Map<ASTType, ParcelableDescriptor> parcelableCache = new HashMap<ASTType, ParcelableDescriptor>();
     private final Validator validator;
     private final Provider<Generators> generatorsProvider;
@@ -46,34 +48,33 @@ public class ParcelableAnalysis {
         this.generatorsProvider = generatorsProvider;
     }
 
-    public ParcelableDescriptor analyze(ASTType astType, ASTType converter) {
-        return analyze(astType, converter, true);
+    public ParcelableDescriptor analyze(ASTType astType) {
+        return analyze(astType, null, null);
     }
 
-    public ParcelableDescriptor analyze(ASTType astType, ASTType converter, boolean parcelsIndex) {
+    public ParcelableDescriptor analyze(ASTType astType, Parcel parcelAnnotation, ASTAnnotation parcelASTAnnotation) {
         if (!parcelableCache.containsKey(astType)) {
-            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, converter, parcelsIndex);
+            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, parcelAnnotation, parcelASTAnnotation);
             parcelableCache.put(astType, parcelableDescriptor);
         }
         return parcelableCache.get(astType);
     }
 
-    private ParcelableDescriptor innerAnalyze(ASTType astType, ASTType converter, boolean parcelsIndex) {
+    private ParcelableDescriptor innerAnalyze(ASTType astType, Parcel parcelAnnotation, ASTAnnotation parcelASTAnnotation) {
 
-        Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
+        ASTType converter = getConverterType(parcelASTAnnotation);
         Parcel.Serialization serialization = parcelAnnotation != null ? parcelAnnotation.value() : null;
-        ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
-        boolean localParcelsIndex = parcelAnnotation != null ? parcelAnnotation.parcelsIndex() : parcelsIndex;
+        boolean parcelsIndex = parcelAnnotation == null || parcelAnnotation.parcelsIndex();
 
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
 
         ParcelableDescriptor parcelableDescriptor;
 
         if (converter != null) {
-            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter, localParcelsIndex);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter, parcelsIndex);
         }
         else {
-            parcelableDescriptor = new ParcelableDescriptor(interfaces, localParcelsIndex);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, parcelsIndex);
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
             Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
 
@@ -520,6 +521,16 @@ public class ParcelableAnalysis {
     private ASTType getConverter(ASTMethod astMethod) {
         if(astMethod.isAnnotated(ParcelProperty.class) && astMethod.isAnnotated(ParcelPropertyConverter.class)){
             return astMethod.getASTAnnotation(ParcelPropertyConverter.class).getProperty("value", ASTType.class);
+        }
+        return null;
+    }
+
+    private ASTType getConverterType(ASTAnnotation astAnnotation) {
+        if(astAnnotation != null){
+            ASTType converterType = astAnnotation.getProperty("converter", ASTType.class);
+            if(!EMPTY_CONVERTER_TYPE.equals(converterType)){
+                return converterType;
+            }
         }
         return null;
     }

@@ -71,8 +71,8 @@ public class ParcelableIntegrationTest {
         ASTType mockParcelASTType = astClassFactory.getType(ParcelTarget.class);
         ASTType mockParcelTwoASTType = astClassFactory.getType(ParcelSecondTarget.class);
 
-        ParcelableDescriptor parcelableDescriptor = parcelableAnalysis.analyze(mockParcelASTType, null);
-        ParcelableDescriptor parcelableTwoDescriptor = parcelableAnalysis.analyze(mockParcelTwoASTType, null);
+        ParcelableDescriptor parcelableDescriptor = parcelableAnalysis.analyze(mockParcelASTType);
+        ParcelableDescriptor parcelableTwoDescriptor = parcelableAnalysis.analyze(mockParcelTwoASTType);
 
         JDefinedClass parcelableDefinedClass = parcelableGenerator.generateParcelable(mockParcelASTType, parcelableDescriptor);
         JDefinedClass parcelableTwoDefinedClass = parcelableGenerator.generateParcelable(mockParcelTwoASTType, parcelableTwoDescriptor);

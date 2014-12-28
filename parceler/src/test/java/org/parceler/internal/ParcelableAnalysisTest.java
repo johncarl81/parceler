@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTParameter;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
@@ -75,8 +76,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testFieldSerialization(){
 
-        ASTType fieldType = astClassFactory.getType(FieldSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(FieldSerialization.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(1, analysis.getFieldPairs().size());
@@ -95,8 +95,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testTransientFieldSerialization(){
 
-        ASTType fieldType = astClassFactory.getType(TransientFieldSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(TransientFieldSerialization.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -124,8 +123,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testStaticFieldExclusion() {
-        ASTType fieldType = astClassFactory.getType(StaticFieldExcluded.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(StaticFieldExcluded.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -138,8 +136,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testStaticMethodExclusion() {
-        ASTType methodType = astClassFactory.getType(StaticMethodsExcluded.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(methodType, null);
+        ParcelableDescriptor analysis = analyze(StaticMethodsExcluded.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -162,8 +159,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructor(){
 
-        ASTType fieldType = astClassFactory.getType(ConstructorSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(ConstructorSerialization.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -186,8 +182,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testUnnamedConstructorSerialization() {
 
-        ASTType fieldType = astClassFactory.getType(UnnamedConstructorSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(UnnamedConstructorSerialization.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -214,8 +209,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructorMethod() {
 
-        ASTType fieldType = astClassFactory.getType(ConstructorMethod.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(ConstructorMethod.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -262,8 +256,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructorAnnotatedPrivateMethod() {
 
-        ASTType fieldType = astClassFactory.getType(ConstructorAnnotatedPrivateMethod.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldType, null);
+        ParcelableDescriptor analysis = analyze(ConstructorAnnotatedPrivateMethod.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -298,9 +291,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testBasic() {
-
-        ASTType basicAst = astClassFactory.getType(Basic.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(Basic.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -355,8 +346,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testMethodModifers() {
 
-        ASTType basicAst = astClassFactory.getType(Modifiers.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(Modifiers.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -388,8 +378,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testMissingSetter() {
 
-        ASTType basicAst = astClassFactory.getType(MissingSetter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(MissingSetter.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -422,8 +411,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testMissingGetter() {
 
-        ASTType basicAst = astClassFactory.getType(MissingGetter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(MissingGetter.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -453,8 +441,10 @@ public class ParcelableAnalysisTest {
     public void testParcelConverter() {
 
         ASTType targetAst = astClassFactory.getType(Target.class);
+        Parcel parcelAnnotation = targetAst.getAnnotation(Parcel.class);
+        ASTAnnotation parcelASTAnnotaiton = targetAst.getASTAnnotation(Parcel.class);
         ASTType parcelConverterAst = astClassFactory.getType(Converter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, parcelConverterAst);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, parcelAnnotation, parcelASTAnnotaiton);
 
         assertEquals(parcelConverterAst, analysis.getParcelConverterType());
         assertFalse(messager.getMessage(), messager.isErrored());
@@ -486,9 +476,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testTransient() {
-
-        ASTType basicAst = astClassFactory.getType(MethodTransient.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(MethodTransient.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -509,8 +497,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testFieldTransientTransient() {
 
-        ASTType basicAst = astClassFactory.getType(FieldTransient.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(FieldTransient.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -574,8 +561,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testDefaultConstructor(){
-        ASTType basicAst = astClassFactory.getType(DefaultConstructor.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(basicAst, null);
+        ParcelableDescriptor analysis = analyze(DefaultConstructor.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -604,8 +590,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testFieldMethodProperty() {
 
-        ASTType fieldMethodType = astClassFactory.getType(FieldMethodProperty.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(fieldMethodType, null);
+        ParcelableDescriptor analysis = analyze(FieldMethodProperty.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(1, analysis.getFieldPairs().size());
@@ -636,8 +621,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testCollidingConstructorProperty() {
 
-        ASTType collidingType = astClassFactory.getType(CollidingConstructorProperty.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(collidingType, null);
+        ParcelableDescriptor analysis = analyze(CollidingConstructorProperty.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -664,8 +648,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testCollidingMethodProperty() {
 
-        ASTType collidingType = astClassFactory.getType(CollidingMethodProperty.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(collidingType, null);
+        ParcelableDescriptor analysis = analyze(CollidingMethodProperty.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -687,8 +670,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testParcelPropertyConverter() {
 
-        ASTType targetAst = astClassFactory.getType(PropertyConverterParcel.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(PropertyConverterParcel.class);
 
         assertEquals(1, analysis.getFieldPairs().size());
         assertEquals(converterAst, analysis.getFieldPairs().get(0).getConverter());
@@ -709,8 +691,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testMethodPropertyConverter() {
 
-        ASTType targetAst = astClassFactory.getType(MethodPropertyConverter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(MethodPropertyConverter.class);
 
         assertEquals(1, analysis.getMethodPairs().size());
         assertEquals(converterAst, analysis.getMethodPairs().get(0).getConverter());
@@ -730,8 +711,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructorConverterSerialization() {
 
-        ASTType targetAst = astClassFactory.getType(ConstructorConverterSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(ConstructorConverterSerialization.class);
 
         ASTParameter parameter = analysis.getConstructorPair().getConstructor().getParameters().get(0);
         Map<ASTParameter,ASTType> converters = analysis.getConstructorPair().getConverters();
@@ -754,8 +734,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testUnnamedConstructorConverterSerialization() {
 
-        ASTType targetAst = astClassFactory.getType(UnnamedConstructorConverterSerialization.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(UnnamedConstructorConverterSerialization.class);
 
         ASTParameter parameter = analysis.getConstructorPair().getConstructor().getParameters().get(0);
         Map<ASTParameter,ASTType> converters = analysis.getConstructorPair().getConverters();
@@ -841,8 +820,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testFieldInheritance() {
 
-        ASTType targetAst = astClassFactory.getType(FieldSubClass.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(FieldSubClass.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(2, analysis.getFieldPairs().size());
@@ -869,8 +847,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testMethodOverrideInheritance() {
 
-        ASTType targetAst = astClassFactory.getType(MethodSubClass.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(MethodSubClass.class);
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
@@ -893,14 +870,12 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConstructorWithSuperClassParameter() {
 
-        ASTType targetAst = astClassFactory.getType(ConstructorSubclass.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(ConstructorSubclass.class);
 
         assertNull(analysis.getParcelConverterType());
         assertNotNull(analysis.getConstructorPair());
         assertEquals(0, analysis.getFieldPairs().size());
         assertEquals(0, analysis.getMethodPairs().size());
-
         assertEquals(1, analysis.getConstructorPair().getWriteReferences().size());
         constructorContains(analysis, "value");
     }
@@ -914,14 +889,12 @@ public class ParcelableAnalysisTest {
     @Test
     public void testDefaultToEmptyBeanConstructor() {
 
-        ASTType targetAst = astClassFactory.getType(DefaultToEmptyBeanConstructor.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(DefaultToEmptyBeanConstructor.class);
 
         assertNull(analysis.getParcelConverterType());
         assertNotNull(analysis.getConstructorPair());
         assertEquals(0, analysis.getFieldPairs().size());
         assertEquals(0, analysis.getMethodPairs().size());
-
         assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         constructorContains(analysis, "value");
     }
@@ -939,8 +912,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testConstructorAmbiguousReaderSubclass() {
-        parcelableAnalysis.analyze(astClassFactory.getType(ConstructorAmbiguousReaderSubclass.class), null);
-        assertTrue(messager.isErrored());
+        errors(ConstructorAmbiguousReaderSubclass.class);
     }
 
     @Parcel
@@ -962,7 +934,7 @@ public class ParcelableAnalysisTest {
     public void testFactoryMethod() {
 
         ASTType targetAst = astClassFactory.getType(FactoryMethod.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst);
 
         assertNull(analysis.getParcelConverterType());
 
@@ -1026,8 +998,7 @@ public class ParcelableAnalysisTest {
     @Test
     public void testConverterSubType() {
 
-        ASTType targetAst = astClassFactory.getType(ConverterSubType.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, null);
+        ParcelableDescriptor analysis = analyze(ConverterSubType.class);
 
         assertNull(analysis.getParcelConverterType());
         assertNotNull(analysis.getConstructorPair());
@@ -1101,9 +1072,7 @@ public class ParcelableAnalysisTest {
     }
 
     private void errors(Class clazz){
-        ASTType targetAst = astClassFactory.getType(clazz);
-        parcelableAnalysis.analyze(targetAst, null);
-
+        analyze(clazz);
         assertTrue(messager.isErrored());
     }
 
@@ -1135,5 +1104,12 @@ public class ParcelableAnalysisTest {
             }
         }
         return false;
+    }
+
+    private ParcelableDescriptor analyze(Class type) {
+        ASTType astType = astClassFactory.getType(type);
+        Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
+        ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
+        return parcelableAnalysis.analyze(astType, parcelAnnotation, parcelASTAnnotation);
     }
 }

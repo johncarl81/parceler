@@ -30,7 +30,5 @@ public @interface ParcelClass {
 
     Class value();
 
-    boolean parcelsIndex() default true;
-
-    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
+    Parcel annotation() default @Parcel;
 }

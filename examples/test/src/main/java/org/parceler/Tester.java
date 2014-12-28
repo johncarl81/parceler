@@ -22,7 +22,9 @@ import android.os.Parcelable;
  */
 @ParcelClasses({
     @ParcelClass(ExternalParcel.class),
-    @ParcelClass(value = ManuallyRegistered.class, converter = ManuallyRegisteredConverter.class)
+    @ParcelClass(
+            annotation = @Parcel(converter = ManuallyRegisteredConverter.class),
+            value = ManuallyRegistered.class)
 })
 public class Tester {
 

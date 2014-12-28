@@ -59,7 +59,7 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             readMethod = parcelableClass.method(JMod.PRIVATE, generationUtil.ref(type), readMethodName);
             JVar parcelParam = readMethod.param(parcelType, variableNamer.generateName(parcelType));
             JVar readWrapped = readMethod.body().decl(inputType, variableNamer.generateName(type));
-            ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type, null);
+            ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
             generator.get().buildParcelRead(parcelDescriptor, parcelableClass, readWrapped, type, inputType, parcelParam, readMethod.body());
             readMethod.body()._return(readWrapped);
         }
@@ -84,7 +84,7 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             JVar writeInputVar = writeMethod.param(inputType, variableNamer.generateName(inputType));
             JVar parcelParam = writeMethod.param(parcelType, variableNamer.generateName(parcelType));
             JVar flagsParam = writeMethod.param(int.class, variableNamer.generateName("flags"));
-            ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type, null);
+            ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
             generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, writeMethod.body());
         }
 
