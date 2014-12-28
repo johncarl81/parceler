@@ -1070,6 +1070,29 @@ public class ParcelableAnalysisTest {
         errors(NonMappedGenericsListCollection.class);
     }
 
+    @Parcel(configuration =
+        @ParcelConfiguration(
+                constructor = @ParcelConfigurationConstructor(String.class)
+        ))
+    static class ConstructorConfiguration {
+        String value;
+        public ConstructorConfiguration(String value){
+            this.value = value;
+        }
+    }
+
+    @Test
+    public void testConstructorConfiguration() {
+        ParcelableDescriptor analysis = analyze(ConstructorConfiguration.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(converterAst, analysis.getFieldPairs().get(0).getConverter());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
     private void errors(Class clazz){
         analyze(clazz);
         assertTrue(messager.isErrored());

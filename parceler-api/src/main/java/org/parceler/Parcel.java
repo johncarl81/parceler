@@ -80,4 +80,6 @@ public @interface Parcel {
      * Optional Converter class.
      */
     Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
+
+    ParcelConfiguration configuration() default @ParcelConfiguration;
 }
