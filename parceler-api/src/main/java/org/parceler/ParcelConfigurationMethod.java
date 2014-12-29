@@ -25,6 +25,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ParcelConfigurationMethod {
 
+    Class type();
+
     String name();
 
     Class[] parameters() default {};

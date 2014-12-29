@@ -25,6 +25,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ParcelConfigurationField {
 
+    Class type();
+
     String name();
 
     boolean transientParameter() default false;
