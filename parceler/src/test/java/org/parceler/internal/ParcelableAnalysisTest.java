@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 John Ericksen
+ * Copyright 2013-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.parceler.*;
+import org.parceler.Parcel.Serialization;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
-import org.parceler.Parcel.Serialization;
 
 import static org.junit.Assert.*;
 

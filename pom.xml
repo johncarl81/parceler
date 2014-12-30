@@ -63,7 +63,8 @@
                         <exclude>**/AndroidManifest.xml</exclude>
                     </excludes>
                     <properties>
-                        <year>2013</year>
+                        <startYear>2011</startYear>
+                        <currentYear>2015</currentYear>
                         <name>John Ericksen</name>
                     </properties>
                     <useDefaultExcludes>true</useDefaultExcludes>

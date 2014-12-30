@@ -251,7 +251,7 @@ Or from http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.parceler%22[Maven 
 
 == License
 ----
-Copyright 2013 John Ericksen
+Copyright 2011-2015 John Ericksen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
