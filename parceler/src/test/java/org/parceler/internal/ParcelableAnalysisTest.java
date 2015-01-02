@@ -1143,6 +1143,49 @@ public class ParcelableAnalysisTest {
 
     @Parcel(configuration =
     @ParcelConfiguration(
+            fields = {
+                    @ParcelConfigurationField(type = TransientFieldConfiguration.class, name = "value", transientParameter = true)
+            }
+    ))
+    static class TransientFieldConfiguration {
+        String value;
+    }
+
+    @Test
+    public void testTransientFieldConfiguration() {
+        ParcelableDescriptor analysis = analyze(TransientFieldConfiguration.class);
+
+        assertFalse(messager.getMessage(), messager.isErrored());
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertFalse(fieldsContain(analysis, "value"));
+    }
+
+    @Parcel(value = Serialization.METHOD,
+    configuration = @ParcelConfiguration(
+            methods = @ParcelConfigurationMethod(type = TransientMethodConfiguration.class, name = "getValue", transientParameter = true)
+    ))
+    static class TransientMethodConfiguration {
+        public String getValue(){return null;}
+        public void setValue(String value){}
+    }
+
+    @Test
+    public void testTransientMethodConfiguration() {
+        ParcelableDescriptor analysis = analyze(TransientMethodConfiguration.class);
+
+        assertFalse(messager.getMessage(), messager.isErrored());
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertFalse(methodsContain(analysis, "value"));
+    }
+
+    @Parcel(configuration =
+    @ParcelConfiguration(
             constructor = @ParcelConfigurationConstructor({String.class, String.class})
     ))
     static class ConstructorParametersMisreferencedConfiguration {
