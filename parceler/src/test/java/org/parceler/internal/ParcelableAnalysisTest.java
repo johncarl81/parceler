@@ -441,10 +441,9 @@ public class ParcelableAnalysisTest {
     public void testParcelConverter() {
 
         ASTType targetAst = astClassFactory.getType(Target.class);
-        Parcel parcelAnnotation = targetAst.getAnnotation(Parcel.class);
         ASTAnnotation parcelASTAnnotaiton = targetAst.getASTAnnotation(Parcel.class);
         ASTType parcelConverterAst = astClassFactory.getType(Converter.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, parcelAnnotation, parcelASTAnnotaiton);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst, parcelASTAnnotaiton);
 
         assertEquals(parcelConverterAst, analysis.getParcelConverterType());
         assertFalse(messager.getMessage(), messager.isErrored());
@@ -1108,8 +1107,7 @@ public class ParcelableAnalysisTest {
 
     private ParcelableDescriptor analyze(Class type) {
         ASTType astType = astClassFactory.getType(type);
-        Parcel parcelAnnotation = astType.getAnnotation(Parcel.class);
         ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
-        return parcelableAnalysis.analyze(astType, parcelAnnotation, parcelASTAnnotation);
+        return parcelableAnalysis.analyze(astType, parcelASTAnnotation);
     }
 }

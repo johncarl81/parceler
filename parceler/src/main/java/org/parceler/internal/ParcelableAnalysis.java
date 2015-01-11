@@ -49,23 +49,22 @@ public class ParcelableAnalysis {
     }
 
     public ParcelableDescriptor analyze(ASTType astType) {
-        return analyze(astType, null, null);
+        return analyze(astType, null);
     }
 
-    public ParcelableDescriptor analyze(ASTType astType, Parcel parcelAnnotation, ASTAnnotation parcelASTAnnotation) {
+    public ParcelableDescriptor analyze(ASTType astType, ASTAnnotation parcelASTAnnotation) {
         if (!parcelableCache.containsKey(astType)) {
-            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, parcelAnnotation, parcelASTAnnotation);
+            ParcelableDescriptor parcelableDescriptor = innerAnalyze(astType, parcelASTAnnotation);
             parcelableCache.put(astType, parcelableDescriptor);
         }
         return parcelableCache.get(astType);
     }
 
-    private ParcelableDescriptor innerAnalyze(ASTType astType, Parcel parcelAnnotation, ASTAnnotation parcelASTAnnotation) {
+    private ParcelableDescriptor innerAnalyze(ASTType astType, ASTAnnotation parcelASTAnnotation) {
 
         ASTType converter = getConverterType(parcelASTAnnotation);
-        Parcel.Serialization serialization = parcelAnnotation != null ? parcelAnnotation.value() : null;
-        boolean parcelsIndex = parcelAnnotation == null || parcelAnnotation.parcelsIndex();
-
+        Parcel.Serialization serialization = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("value", Parcel.Serialization.class) : null;
+        boolean parcelsIndex = parcelASTAnnotation == null || defaultValue(parcelASTAnnotation.getProperty("parcelsIndex", boolean.class), true);
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
 
         ParcelableDescriptor parcelableDescriptor;
@@ -549,5 +548,12 @@ public class ParcelableAnalysis {
             }
         }
         return result;
+    }
+
+    private <T> T defaultValue(T value, T defaultValue){
+        if(value == null){
+            return defaultValue;
+        }
+        return value;
     }
 }

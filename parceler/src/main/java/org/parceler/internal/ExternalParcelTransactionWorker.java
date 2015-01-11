@@ -68,9 +68,11 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
     private void analyze(ASTAnnotation astAnnotation, Map<Provider<ASTType>, ParcelImplementations> generatedSource){
         ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
-        Parcel parcelAnnotation = astAnnotation.getProperty("annotation", Parcel.class);
         ASTAnnotation parcelASTAnnotation = astAnnotation.getProperty("annotation", ASTAnnotation.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, parcelAnnotation, parcelASTAnnotation);
+        if(parcelASTAnnotation == null){
+            parcelASTAnnotation = parcelType.getASTAnnotation(Parcel.class);
+        }
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, parcelASTAnnotation);
         generatedSource.put(new ASTTypeProvider(parcelType), new ParcelImplementations(parcelableGenerator.generateParcelable(parcelType, analysis), analysis.isParcelsIndex()));
     }
 

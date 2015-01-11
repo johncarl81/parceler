@@ -47,7 +47,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         Parcel parcelAnnotation = value.getAnnotation(Parcel.class);
         ASTAnnotation parcelASTAnnotation = value.getASTAnnotation(Parcel.class);
 
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, parcelAnnotation, parcelASTAnnotation);
+        ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, parcelASTAnnotation);
 
         if(analysis != null) {
             JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
