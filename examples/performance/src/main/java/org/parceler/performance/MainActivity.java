@@ -160,7 +160,7 @@ public class MainActivity extends Activity {
                 new ParcelExperiment(MainActivity.this, "Immutable Parcel", new ParcelMutator() {
                     @Override
                     public void write(Parcel parcel) {
-                        parcel.writeParcelable(new ImmutableDeveloper$$Parcelable(inputDeveloper), 0);
+                        parcel.writeParcelable(Parcels.wrap(ImmutableDeveloper.class, inputDeveloper), 0);
                     }
 
                     @Override
@@ -227,7 +227,7 @@ public class MainActivity extends Activity {
     }
 
     private ImmutableDeveloper buildImmutableDeveloper(){
-        return ImmutableDeveloper.build("test", 42, /*buildSkillSet(),*/ 32.32f);
+        return ImmutableDeveloper.build("test", 42, buildSkillSet(), 32.32f);
     }
 
     private List<ImmutableDeveloper.Skill> buildSkillSet(){
@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
     }
 
     private ImmutableAutoParcelDeveloper buildImmutableAutoParcelDeveloper(){
-        return ImmutableAutoParcelDeveloper.build("test", 42, /*buildAutoParcelSkillSet(),*/ 32.32f);
+        return ImmutableAutoParcelDeveloper.build("test", 42, buildAutoParcelSkillSet(), 32.32f);
     }
 
     private List<ImmutableAutoParcelDeveloper.AutoParcelSkill> buildAutoParcelSkillSet(){

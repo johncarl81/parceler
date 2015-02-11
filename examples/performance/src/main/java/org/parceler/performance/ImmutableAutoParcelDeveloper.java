@@ -3,6 +3,8 @@ package org.parceler.performance;
 import android.os.Parcelable;
 import auto.parcel.AutoParcel;
 
+import java.util.List;
+
 /**
  * @author John Ericksen
  */
@@ -11,15 +13,15 @@ public abstract class ImmutableAutoParcelDeveloper implements Parcelable {
 
     public abstract String name();
     public abstract int yearsOfExperience();
-    //public abstract List<AutoParcelSkill> skillSet();
+    public abstract List<AutoParcelSkill> skillSet();
     public abstract float favoriteFloat();
 
-    public static ImmutableAutoParcelDeveloper build(String name, int yearsOfExperience, /*List<AutoParcelSkill> skillSet, */float favoriteFloat){
-        return new AutoParcel_ImmutableAutoParcelDeveloper(name, yearsOfExperience, favoriteFloat);
+    public static ImmutableAutoParcelDeveloper build(String name, int yearsOfExperience, List<AutoParcelSkill> skillSet, float favoriteFloat){
+        return new AutoParcel_ImmutableAutoParcelDeveloper(name, yearsOfExperience, skillSet, favoriteFloat);
     }
 
     @AutoParcel
-    public static abstract class AutoParcelSkill {
+    public static abstract class AutoParcelSkill implements Parcelable {
         public abstract String name();
         public abstract boolean programmingRelated();
 

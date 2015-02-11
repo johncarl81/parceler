@@ -5,6 +5,8 @@ import org.parceler.Parcel;
 import org.parceler.ParcelFactory;
 import org.parceler.ParcelProperty;
 
+import java.util.List;
+
 /**
  * @author John Ericksen
  */
@@ -16,14 +18,14 @@ public abstract class ImmutableDeveloper {
     public abstract String name();
     @ParcelProperty("yearsOfExperience")
     public abstract int yearsOfExperience();
-    //@ParcelProperty("skillSet")
-    //public abstract List<Skill> skillSet();
+    @ParcelProperty("skillSet")
+    public abstract List<Skill> skillSet();
     @ParcelProperty("favoriteFloat")
     public abstract float favoriteFloat();
 
     @ParcelFactory
-    public static ImmutableDeveloper build(String name, int yearsOfExperience,/* List<Skill> skillSet,*/ float favoriteFloat){
-        return new AutoValue_ImmutableDeveloper(name, yearsOfExperience,  /*skillSet, */favoriteFloat);
+    public static ImmutableDeveloper build(String name, int yearsOfExperience, List<Skill> skillSet, float favoriteFloat){
+        return new AutoValue_ImmutableDeveloper(name, yearsOfExperience,  skillSet, favoriteFloat);
     }
 
     @Parcel
