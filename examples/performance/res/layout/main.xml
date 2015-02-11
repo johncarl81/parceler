@@ -51,4 +51,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/submit"/>
+
+    <Button
+            android:id="@+id/run6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"/>
+
+    <Button
+            android:id="@+id/run7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"/>
 </LinearLayout>

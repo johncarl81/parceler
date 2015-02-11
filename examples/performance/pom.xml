@@ -37,6 +37,22 @@
             <artifactId>gson</artifactId>
             <version>2.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.frankiesardo</groupId>
+            <artifactId>auto-parcel-processor</artifactId>
+            <version>0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.frankiesardo</groupId>
+            <artifactId>auto-parcel</artifactId>
+            <version>0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auto.value</groupId>
+            <artifactId>auto-value</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

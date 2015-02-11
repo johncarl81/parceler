@@ -148,6 +148,50 @@ public class MainActivity extends Activity {
                 }).run();
             }
         });
+
+        Button submitView6 = (Button) findViewById(R.id.run6);
+        submitView6.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final ImmutableDeveloper inputDeveloper = buildImmutableDeveloper();
+                final ClassLoader classLoader = Developer.class.getClassLoader();
+
+                new ParcelExperiment(MainActivity.this, "Immutable Parcel", new ParcelMutator() {
+                    @Override
+                    public void write(Parcel parcel) {
+                        parcel.writeParcelable(new ImmutableDeveloper$$Parcelable(inputDeveloper), 0);
+                    }
+
+                    @Override
+                    public void read(Parcel parcel) {
+                        Parcels.unwrap(parcel.readParcelable(classLoader));
+                    }
+                }).run();
+            }
+        });
+
+        Button submitView7 = (Button) findViewById(R.id.run7);
+        submitView7.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final ImmutableAutoParcelDeveloper inputDeveloper = buildImmutableAutoParcelDeveloper();
+                final ClassLoader classLoader = Developer.class.getClassLoader();
+
+                new ParcelExperiment(MainActivity.this, "AutoParcel", new ParcelMutator() {
+                    @Override
+                    public void write(Parcel parcel) {
+                        parcel.writeParcelable(inputDeveloper, 0);
+                    }
+
+                    @Override
+                    public void read(Parcel parcel) {
+                        parcel.readParcelable(classLoader);
+                    }
+                }).run();
+            }
+        });
     }
 
     private Developer buildDeveloper(){
@@ -180,5 +224,29 @@ public class MainActivity extends Activity {
         }
         developer.skillSet = skills;
         return developer;
+    }
+
+    private ImmutableDeveloper buildImmutableDeveloper(){
+        return ImmutableDeveloper.build("test", 42, /*buildSkillSet(),*/ 32.32f);
+    }
+
+    private List<ImmutableDeveloper.Skill> buildSkillSet(){
+        List<ImmutableDeveloper.Skill> skills = new ArrayList<ImmutableDeveloper.Skill>();
+        for(int i = 0; i < SKILL_SIZE; i++){
+            skills.add(ImmutableDeveloper.Skill.build("skill", true));
+        }
+        return skills;
+    }
+
+    private ImmutableAutoParcelDeveloper buildImmutableAutoParcelDeveloper(){
+        return ImmutableAutoParcelDeveloper.build("test", 42, /*buildAutoParcelSkillSet(),*/ 32.32f);
+    }
+
+    private List<ImmutableAutoParcelDeveloper.AutoParcelSkill> buildAutoParcelSkillSet(){
+        List<ImmutableAutoParcelDeveloper.AutoParcelSkill> skills = new ArrayList<ImmutableAutoParcelDeveloper.AutoParcelSkill>();
+        for(int i = 0; i < SKILL_SIZE; i++){
+            skills.add(ImmutableAutoParcelDeveloper.AutoParcelSkill.build("skill", true));
+        }
+        return skills;
     }
 }
