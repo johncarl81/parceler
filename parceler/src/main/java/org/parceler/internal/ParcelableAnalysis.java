@@ -491,14 +491,17 @@ public class ParcelableAnalysis {
 
     private boolean isGetter(ASTMethod astMethod, boolean ignoreModifier) {
         return astMethod.getParameters().size() == 0 &&
+                (ignoreModifier ||
                 (astMethod.getName().startsWith(GET) || astMethod.getName().startsWith(IS)) &&
-                (ignoreModifier || astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
+                        astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
     private boolean isSetter(ASTMethod astMethod, boolean ignoreModifier) {
-        return astMethod.getParameters().size() == 1 && astMethod.getName().startsWith(SET) &&
+        return astMethod.getParameters().size() == 1 &&
                 astMethod.getReturnType().equals(ASTVoidType.VOID) &&
-                (ignoreModifier || astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
+                (ignoreModifier ||
+                        (astMethod.getName().startsWith(SET) &&
+                                astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC)));
     }
 
     private String getPropertyName(ASTMethod astMethod) {

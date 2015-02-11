@@ -184,7 +184,7 @@ public abstract class AutoValueParcel {
     @ParcelProperty("value") public abstract String value();
 
     @ParcelFactory
-    public static AutoValueParcel create(@ParcelProperty("value") String value) {
+    public static AutoValueParcel create(String value) {
         return new AutoValue_AutoValueParcel(value);
     }
 }

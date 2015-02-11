@@ -240,15 +240,19 @@ public class ParcelableGenerator {
         List<JExpression> inputExpression = new ArrayList<JExpression>();
         Map<ASTParameter, ASTType> converters = propertyAccessor.getConverters();
 
+        //todo: write invocation builder for static method
+        JInvocation invocation = generationUtil.ref(wrappedType).staticInvoke(factoryMethod.getName());
+
         for (ASTParameter parameter : factoryMethod.getParameters()) {
             ASTType converter = converters.containsKey(parameter) ? converters.get(parameter) : null;
             JVar var = parcelConstructorBody.decl(generationUtil.ref(parameter.getASTType()),
                     variableNamer.generateName(parameter.getASTType()),
                     buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
             inputExpression.add(var);
+            invocation.arg(var);
         }
 
-        parcelConstructorBody.assign(wrapped, invocationBuilder.buildMethodCall(new ASTJDefinedClassType(parcelableClass), new ASTJDefinedClassType(parcelableClass), factoryMethod, inputExpression, new TypedExpression(wrappedType, wrapped)));
+        parcelConstructorBody.assign(wrapped, invocation);
     }
 
     private void buildReadFromParcelConstructor(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JVar wrapped, ConstructorReference propertyAccessor, ASTType wrappedType, JVar parcelParam){
