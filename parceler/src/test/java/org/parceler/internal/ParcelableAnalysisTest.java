@@ -602,6 +602,36 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
+    public static class NonBeanMethodProperty {
+        String one;
+
+        @ParcelProperty("one")
+        public String someValue() {
+            return one;
+        }
+
+        @ParcelProperty("one")
+        public void someValue(String one) {
+            this.one = one;
+        }
+    }
+
+    @Test
+    public void testNonBeanMethodProperty() {
+
+        ParcelableDescriptor analysis = analyze(NonBeanMethodProperty.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(fieldsContain(analysis, "one"));
+        assertTrue(methodsContain(analysis, "one"));
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
     public static class CollidingConstructorProperty {
         @ParcelProperty("value")
         String value;
