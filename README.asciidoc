@@ -70,6 +70,7 @@ And dereferenced in the +onCreate()+ method:
 Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
 ----
 
+=== Parcel attribute types
 Only a select number of types may be used as attributes of a +@Parcel+ class.  The following list includes the mapped
 types:
 
@@ -95,6 +96,39 @@ types:
 
 *Parcel will error if the generic parameter is not mapped.
 
+==== Polymorphism
+Note that Parceler does not unwrap inheritance hierarchies, so any polymorphic
+fields will be unwrapped as instances of the base class. This is because Parceler
+opts for performance rather than checking `.getClass()` for every piece of data.
+[source,java]
+----
+@Parcel
+public class Example {
+    public Parent p;
+    Example(Parent p) { this.p = p; }
+}
+
+@Parcel public class Parent {}
+@Parcel public class Child extends Parent {}
+----
+
+[source,java]
+----
+Example example = new Example(new Child());
+System.out.println("%b", example.p instanceof Child); // true
+example = Parcels.unwrap(Parcels.wrap(example));
+System.out.println("%b", example.p instanceof Child); // false
+----
+
+Refer to the <<custom-serialization,Custom Serialization>> section for an example of working with
+polymorphic fields.
+
+=== Serialization techniques
+
+Parceler offers several choices for how to serialize and deserialize an object
+in addition to the field-based serialization seen above.
+
+==== Getter/setter serialization
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
 In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.
 This supports a number of bean strategies including immutability and traditional getter/setter beans.
@@ -139,6 +173,7 @@ public class Example {
 
 If an empty constructor is present, Parceler will use that constructor unless another constructor is annotated.
 
+==== Mixing getters/setters and fields
 You may also mix and match serialization techniques using the +@ParcelParameter+ annotation.
 In the following example, +firstName+ and +lastName+ are written to the bean using the constructor while +firstName+
 is read from the bean using the field and +lastName+ is read using the +getLastName()+ method.  The parameters +firstName+
@@ -171,6 +206,7 @@ Parceler supports many different styles centering around the POJO.  This allows 
 POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://bitbucket.org/qbusict/cupboard[Cupboard],
 and http://simple.sourceforge.net/[Simple XML] to name a few.
 
+==== AutoValue annotations
 Additionally, Parceler supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor
 / code generation library for generating immutable beans.  Parceler interfaces with AutoValue via the +@ParcelFactory+ annotation,
 which maps a static factory method into the annotated +@Parcel+ serialization:
@@ -203,10 +239,52 @@ And to deserialize:
 AuthValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
 ----
 
+==== Custom serialization
 +@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
 serialization is necessary.  This provides a still cleaner option for using Parcelable classes than implementing them by
 hand.
 
+The following code demonstrates using a +ParcelConverter+ to unwrap the inheritance
+hierarchy during deserialization.
+
+[source,java]
+----
+@Parcel
+public class Item {
+    @ParcelConverter(ItemListParcelConverter.class)
+    public List<Item> itemList;
+}
+@Parcel public class SubItem1 extends Item {}
+@Parcel public class SubItem2 extends Item {}
+
+public class ItemListParcelConverter implements ParcelConverter<List<Item>> {
+    @Override
+    public void toParcel(List<Item> input, Parcel parcel) {
+        if (input == null) {
+            parcel.writeInt(-1);
+        }
+        else {
+            parcel.writeInt(input.size());
+            for (Item item : input) {
+                parcel.writeParcelable(Parcels.wrap(item), 0);
+            }
+        }
+    }
+
+    @Override
+    public List<Item> fromParcel(Parcel parcel) {
+        int size = parcel.readInt();
+        if (size < 0) return null;
+        List<Item> items = new ArrayList<Item>();
+        for (int i = 0; i < size; ++i) {
+            items.add((Item) Parcels.unwrap(parcel.readParcelable(Item.class.getClassLoader())));
+        }
+        return items;
+    }
+}
+----
+
+=== Classes without Java source
 For classes whose corresponding Java source is not available, one may include the class as a Parcel by using the
 +@ParcelClass+ annotation.  This annotation may be declared anywhere in the compiled source that is convenient.  For
 instance, one could include the +@ParcelClass+ along with the Android Application:
