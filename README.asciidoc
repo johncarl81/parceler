@@ -251,7 +251,7 @@ hierarchy during deserialization.
 ----
 @Parcel
 public class Item {
-    @ParcelConverter(ItemListParcelConverter.class)
+    @ParcelPropertyConverter(ItemListParcelConverter.class)
     public List<Item> itemList;
 }
 @Parcel public class SubItem1 extends Item {}
