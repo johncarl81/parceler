@@ -19,7 +19,7 @@ package org.parceler;
  * @author John Ericksen
  */
 @Parcel(Parcel.Serialization.BEAN)
-public class SubParcel {
+public class SubParcel implements Comparable<SubParcel> {
 
     private String name;
 
@@ -57,5 +57,11 @@ public class SubParcel {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+
+    @Override
+    public int compareTo(SubParcel that) {
+        return name.compareTo(that.name);
     }
 }

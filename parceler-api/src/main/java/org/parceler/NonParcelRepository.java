@@ -475,16 +475,16 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         @SuppressWarnings("UnusedDeclaration")
         public static final TreeMapParcelableCreator CREATOR = new TreeMapParcelableCreator();
 
-        private static final class TreeMapParcelableCreator implements Creator<MapParcelable> {
+        private static final class TreeMapParcelableCreator implements Creator<TreeMapParcelable> {
 
             @Override
-            public MapParcelable createFromParcel(android.os.Parcel parcel$$17) {
-                return new MapParcelable(parcel$$17);
+            public TreeMapParcelable createFromParcel(android.os.Parcel parcel$$17) {
+                return new TreeMapParcelable(parcel$$17);
             }
 
             @Override
-            public MapParcelable[] newArray(int size) {
-                return new MapParcelable[size];
+            public TreeMapParcelable[] newArray(int size) {
+                return new TreeMapParcelable[size];
             }
 
         }
@@ -536,7 +536,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
             @Override
             public Object itemFromParcel(Parcel parcel) {
-                return Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader()));
+                return Parcels.unwrap(parcel.readParcelable(TreeSetParcelable.class.getClassLoader()));
             }
 
             @Override
@@ -556,16 +556,16 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         @SuppressWarnings("UnusedDeclaration")
         public static final TreeSetParcelableCreator CREATOR = new TreeSetParcelableCreator();
 
-        private static final class TreeSetParcelableCreator implements Creator<SetParcelable> {
+        private static final class TreeSetParcelableCreator implements Creator<TreeSetParcelable> {
 
             @Override
-            public SetParcelable createFromParcel(android.os.Parcel parcel) {
-                return new SetParcelable(parcel);
+            public TreeSetParcelable createFromParcel(android.os.Parcel parcel) {
+                return new TreeSetParcelable(parcel);
             }
 
             @Override
-            public SetParcelable[] newArray(int size) {
-                return new SetParcelable[size];
+            public TreeSetParcelable[] newArray(int size) {
+                return new TreeSetParcelable[size];
             }
         }
     }
@@ -576,7 +576,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
             @Override
             public Object itemFromParcel(Parcel parcel) {
-                return Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader()));
+                return Parcels.unwrap(parcel.readParcelable(LinkedHashSetParcelable.class.getClassLoader()));
             }
 
             @Override

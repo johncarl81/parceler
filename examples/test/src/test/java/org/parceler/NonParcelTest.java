@@ -33,6 +33,44 @@ import static org.junit.Assert.*;
 public class NonParcelTest {
 
     @Test
+    public void testCharacter(){
+        Character input = 'A';
+        Character output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(input, output);
+    }
+
+    @Test
+    public void testBoolean(){
+        Boolean input = true;
+        Boolean output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(input, output);
+    }
+
+    @Test
+    public void testByteArray(){
+        byte[] input = "test".getBytes();
+        byte[] output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertArrayEquals(input, output);
+    }
+
+    @Test
+    public void testCharArray(){
+        char[] input = "test".toCharArray();
+        char[] output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertArrayEquals(input, output);
+    }
+
+    @Test
+    public void testBooleanArray(){
+        boolean[] input = new boolean[]{true, false, false, true};
+        boolean[] output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(input.length, output.length);
+        for(int i = 0; i < input.length; i++){
+            assertEquals(input[i], output[i]);
+        }
+    }
+
+    @Test
     public void testUnmodifiableList(){
         List<SubParcel> input = new ArrayList<SubParcel>();
 
@@ -55,7 +93,7 @@ public class NonParcelTest {
         input.add(new SubParcel("three"));
         input.add(null);
 
-        List<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(List.class, input.subList(0,2)));
+        List<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(List.class, input.subList(0, 2)));
         assertEquals(2, output.size());
 
         assertEquals("one", output.get(0).getName());
@@ -69,7 +107,21 @@ public class NonParcelTest {
         input.add(new SubParcel("name"));
         input.add(null);
 
-        List<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        ArrayList<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(2, output.size());
+
+        assertEquals("name", output.get(0).getName());
+        assertNull(output.get(1));
+    }
+
+    @Test
+    public void testLinkedList(){
+        List<SubParcel> input = new LinkedList<SubParcel>();
+
+        input.add(new SubParcel("name"));
+        input.add(null);
+
+        LinkedList<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
         assertEquals(2, output.size());
 
         assertEquals("name", output.get(0).getName());
@@ -85,7 +137,59 @@ public class NonParcelTest {
         input.add(subParcel);
         input.add(null);
 
-        Set<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        HashSet<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(2, output.size());
+
+        assertTrue(output.contains(subParcel));
+        assertTrue(output.contains(null));
+    }
+
+    @Test
+    public void testTreeSet(){
+
+        Set<SubParcel> input = new TreeSet<SubParcel>();
+
+
+        input.add(new SubParcel("one"));
+        input.add(new SubParcel("two"));
+        input.add(new SubParcel("three"));
+
+        TreeSet<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(3, output.size());
+
+        assertTrue(output.contains(new SubParcel("one")));
+        assertTrue(output.contains(new SubParcel("two")));
+        assertTrue(output.contains(new SubParcel("three")));
+    }
+
+    @Test
+    public void testSortedSet(){
+
+        SortedSet<SubParcel> input = new TreeSet<SubParcel>();
+
+
+        input.add(new SubParcel("one"));
+        input.add(new SubParcel("two"));
+        input.add(new SubParcel("three"));
+
+        SortedSet<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(SortedSet.class, input));
+        assertEquals(3, output.size());
+
+        assertTrue(output.contains(new SubParcel("one")));
+        assertTrue(output.contains(new SubParcel("two")));
+        assertTrue(output.contains(new SubParcel("three")));
+    }
+
+    @Test
+    public void testLinkedHashSet(){
+
+        Set<SubParcel> input = new LinkedHashSet<SubParcel>();
+
+        SubParcel subParcel = new SubParcel("name");
+        input.add(subParcel);
+        input.add(null);
+
+        LinkedHashSet<SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
         assertEquals(2, output.size());
 
         assertTrue(output.contains(subParcel));
@@ -112,6 +216,42 @@ public class NonParcelTest {
     }
 
     @Test
+    public void testLinkedHashMap(){
+
+        Map<SubParcel, SubParcel> input = new LinkedHashMap<SubParcel, SubParcel>();
+
+        SubParcel key1 = new SubParcel("key");
+        SubParcel key2 = new SubParcel("key2");
+        input.put(key1, new SubParcel("name"));
+        input.put(null, new SubParcel("null"));
+        input.put(key2, null);
+
+        LinkedHashMap<SubParcel, SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        assertEquals(3, output.size());
+
+        assertEquals("name", output.get(key1).getName());
+        assertEquals("null", output.get(null).getName());
+        assertNull(output.get(key2));
+    }
+
+    @Test
+    public void testSortedMap(){
+
+        SortedMap<String, SubParcel> input = new TreeMap<String, SubParcel>();
+
+        input.put("1", new SubParcel("name"));
+        input.put("2", new SubParcel("null"));
+        input.put("3", null);
+
+        SortedMap<String, SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(SortedMap.class, input));
+        assertEquals(3, output.size());
+
+        assertEquals("name", output.get("1").getName());
+        assertEquals("null", output.get("2").getName());
+        assertNull(output.get("3"));
+    }
+
+    @Test
     public void testPrimitiveKeyMap(){
 
         Map<Integer, SubParcel> input = new HashMap<Integer, SubParcel>();
@@ -122,7 +262,7 @@ public class NonParcelTest {
         input.put(null, new SubParcel("null"));
         input.put(key2, null);
 
-        Map<Integer, SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
+        HashMap<Integer, SubParcel> output = Parcels.unwrap(ParcelsTestUtil.wrap(input));
         assertEquals(3, output.size());
 
         assertEquals("name", output.get(key1).getName());
