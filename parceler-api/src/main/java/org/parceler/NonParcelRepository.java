@@ -15,8 +15,13 @@
  */
 package org.parceler;
 
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
+import org.parceler.converter.*;
 
 import java.util.*;
 
@@ -31,15 +36,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         parcelableCollectionFactories.put(ArrayList.class, new ListParcelableFactory());
         parcelableCollectionFactories.put(Set.class, new SetParcelableFactory());
         parcelableCollectionFactories.put(HashSet.class, new SetParcelableFactory());
+        parcelableCollectionFactories.put(TreeSet.class, new TreeSetParcelableFactory());
         parcelableCollectionFactories.put(SparseArray.class, new SparseArrayParcelableFactory());
         parcelableCollectionFactories.put(Map.class, new MapParcelableFactory());
         parcelableCollectionFactories.put(HashMap.class, new MapParcelableFactory());
+        parcelableCollectionFactories.put(TreeMap.class, new TreeMapParcelableFactory());
         parcelableCollectionFactories.put(Integer.class, new IntegerParcelableFactory());
         parcelableCollectionFactories.put(Long.class, new LongParcelableFactory());
         parcelableCollectionFactories.put(Double.class, new DoubleParcelableFactory());
         parcelableCollectionFactories.put(Float.class, new FloatParcelableFactory());
         parcelableCollectionFactories.put(Byte.class, new ByteParcelableFactory());
         parcelableCollectionFactories.put(String.class, new StringParcelableFactory());
+        parcelableCollectionFactories.put(Character.class, new CharacterParcelableFactory());
+        parcelableCollectionFactories.put(Boolean.class, new BooleanParcelableFactory());
+        parcelableCollectionFactories.put(byte[].class, new ByteArrayParcelableFactory());
+        parcelableCollectionFactories.put(char[].class, new CharArrayParcelableFactory());
+        parcelableCollectionFactories.put(boolean[].class, new BooleanArrayParcelableFactory());
+        parcelableCollectionFactories.put(IBinder.class, new IBinderParcelableFactory());
+        parcelableCollectionFactories.put(Bundle.class, new BundleParcelableFactory());
+        parcelableCollectionFactories.put(SparseBooleanArray.class, new SparseBooleanArrayParcelableFactory());
+        parcelableCollectionFactories.put(LinkedList.class, new LinkedListParcelableFactory());
+        parcelableCollectionFactories.put(LinkedHashMap.class, new LinkedHashMapParcelableFactory());
+        parcelableCollectionFactories.put(SortedMap.class, new TreeMapParcelableFactory());
+        parcelableCollectionFactories.put(SortedSet.class, new TreeSetParcelableFactory());
+        parcelableCollectionFactories.put(LinkedHashSet.class, new LinkedHashSetParcelableFactory());
+
     }
 
     public static NonParcelRepository getInstance() {
@@ -59,6 +80,94 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
+    private static class CharacterParcelableFactory implements Parcels.ParcelableFactory<Character> {
+
+        @Override
+        public Parcelable buildParcelable(Character input) {
+            return new CharacterParcelable(input);
+        }
+    }
+
+    private static class BooleanParcelableFactory implements Parcels.ParcelableFactory<Boolean> {
+
+        @Override
+        public Parcelable buildParcelable(Boolean input) {
+            return new BooleanParcelable(input);
+        }
+    }
+
+    private static class ByteArrayParcelableFactory implements Parcels.ParcelableFactory<byte[]> {
+
+        @Override
+        public Parcelable buildParcelable(byte[] input) {
+            return new ByteArrayParcelable(input);
+        }
+    }
+
+    private static class CharArrayParcelableFactory implements Parcels.ParcelableFactory<char[]> {
+
+        @Override
+        public Parcelable buildParcelable(char[] input) {
+            return new CharArrayParcelable(input);
+        }
+    }
+
+    private static class BooleanArrayParcelableFactory implements Parcels.ParcelableFactory<boolean[]> {
+
+        @Override
+        public Parcelable buildParcelable(boolean[] input) {
+            return new BooleanArrayParcelable(input);
+        }
+    }
+
+    private static class IBinderParcelableFactory implements Parcels.ParcelableFactory<IBinder> {
+
+        @Override
+        public Parcelable buildParcelable(IBinder input) {
+            return new IBinderParcelable(input);
+        }
+    }
+
+    private static class BundleParcelableFactory implements Parcels.ParcelableFactory<Bundle> {
+
+        @Override
+        public Parcelable buildParcelable(Bundle input) {
+            return input;
+        }
+    }
+
+    private static class SparseBooleanArrayParcelableFactory implements Parcels.ParcelableFactory<SparseBooleanArray> {
+
+        @Override
+        public Parcelable buildParcelable(SparseBooleanArray input) {
+            return new SparseBooleanArrayParcelable(input);
+        }
+    }
+
+    private static class LinkedListParcelableFactory implements Parcels.ParcelableFactory<LinkedList> {
+
+        @Override
+        public Parcelable buildParcelable(LinkedList input) {
+            return new LinkedListParcelable(input);
+        }
+    }
+
+    private static class LinkedHashMapParcelableFactory implements Parcels.ParcelableFactory<LinkedHashMap> {
+
+        @Override
+        public Parcelable buildParcelable(LinkedHashMap input) {
+            return new LinkedHashMapParcelable(input);
+        }
+    }
+
+    private static class LinkedHashSetParcelableFactory implements Parcels.ParcelableFactory<LinkedHashSet> {
+
+        @Override
+        public Parcelable buildParcelable(LinkedHashSet input) {
+            return new LinkedHashSetParcelable(input);
+        }
+    }
+
     private static class SetParcelableFactory implements Parcels.ParcelableFactory<Set> {
 
         @Override
@@ -67,11 +176,27 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
+    private static class TreeSetParcelableFactory implements Parcels.ParcelableFactory<Set> {
+
+        @Override
+        public Parcelable buildParcelable(Set input) {
+            return new TreeSetParcelable(input);
+        }
+    }
+
     private static class MapParcelableFactory implements Parcels.ParcelableFactory<Map> {
 
         @Override
         public Parcelable buildParcelable(Map input) {
             return new MapParcelable(input);
+        }
+    }
+
+    private static class TreeMapParcelableFactory implements Parcels.ParcelableFactory<Map> {
+
+        @Override
+        public Parcelable buildParcelable(Map input) {
+            return new TreeMapParcelable(input);
         }
     }
 
@@ -132,51 +257,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
     }
 
 
-    public static final class ListParcelable implements Parcelable, ParcelWrapper<List> {
+    public static final class ListParcelable extends ConverterParcelable<List>{
 
-        private List contents;
+        private static final ArrayListParcelConverter CONVERTER = new ArrayListParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(ListParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public ListParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public ListParcelable(List value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final ListParcelableCreator CREATOR = new ListParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private ListParcelable(android.os.Parcel parcel) {
-            int size = parcel.readInt();
-            if (size < 0) {
-                contents = null;
-            } else {
-                contents = new ArrayList<String>();
-                for (int i = 0; (i < size); i++) {
-                    contents.add(Parcels.unwrap(parcel.readParcelable(SparseArrayParcelableFactory.class.getClassLoader())));
-                }
-            }
-        }
-
-        private ListParcelable(List contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel$$16, int flags) {
-            if (contents == null) {
-                parcel$$16.writeInt(-1);
-            } else {
-                parcel$$16.writeInt(contents.size());
-                for (Object c : contents) {
-                    parcel$$16.writeParcelable(Parcels.wrap(c), flags);
-                }
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public List getParcel() {
-            return contents;
-        }
 
         private static final class ListParcelableCreator implements Creator<ListParcelable> {
 
@@ -192,56 +297,83 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class MapParcelable implements android.os.Parcelable, ParcelWrapper<Map> {
+    public static final class LinkedListParcelable extends ConverterParcelable<LinkedList>{
 
-        private Map<Object, Object> contents;
+        private static final LinkedListParcelConverter CONVERTER = new LinkedListParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(LinkedListParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public LinkedListParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public LinkedListParcelable(LinkedList value) {
+            super(value, CONVERTER);
+        }
+
         @SuppressWarnings("UnusedDeclaration")
-        public static final MapParcelable.MapParcelableCreator CREATOR = new MapParcelable.MapParcelableCreator();
+        public static final LinkedListParcelableCreator CREATOR = new LinkedListParcelableCreator();
 
-        private MapParcelable(android.os.Parcel parcel) {
-            int size = parcel.readInt();
-            if (size < 0) {
-                contents = null;
-            } else {
-                contents = new HashMap<Object, Object>();
-                for (int i = 0; (i < size); i++) {
-                    Parcelable key = parcel.readParcelable(MapParcelable.class.getClassLoader());
-                    Parcelable value = parcel.readParcelable(MapParcelable.class.getClassLoader());
-                    contents.put(Parcels.unwrap(key), Parcels.unwrap(value));
-                }
+        private static final class LinkedListParcelableCreator implements Creator<LinkedListParcelable> {
+
+            @Override
+            public LinkedListParcelable createFromParcel(android.os.Parcel parcel) {
+                return new LinkedListParcelable(parcel);
+            }
+
+            @Override
+            public LinkedListParcelable[] newArray(int size) {
+                return new LinkedListParcelable[size];
             }
         }
+    }
 
-        @SuppressWarnings("unchecked")
-        private MapParcelable(Map contents) {
-            this.contents = contents;
-        }
+    public static final class MapParcelable extends ConverterParcelable<Map> {
 
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if (contents == null) {
-                parcel.writeInt(-1);
-            } else {
-                parcel.writeInt(contents.size());
-                for (Map.Entry<Object, Object> entry : contents.entrySet()) {
-                    parcel.writeParcelable(Parcels.wrap(entry.getKey()), flags);
-                    parcel.writeParcelable(Parcels.wrap(entry.getValue()), flags);
-                }
+        private static final HashMapParcelConverter CONVERTER = new HashMapParcelConverter() {
+
+            @Override
+            public void mapKeyToParcel(Object key, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(key), 0);
             }
+
+            @Override
+            public void mapValueToParcel(Object value, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(value), 0);
+            }
+
+            @Override
+            public Object mapKeyFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public Object mapValueFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+        };
+
+        public MapParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
         }
 
-        @Override
-        public int describeContents() {
-            return 0;
+        public MapParcelable(Map value) {
+            super(value, CONVERTER);
         }
 
-        @Override
-        public Map getParcel() {
-            return contents;
-        }
+        @SuppressWarnings("UnusedDeclaration")
+        public static final MapParcelableCreator CREATOR = new MapParcelableCreator();
 
         private static final class MapParcelableCreator implements Creator<MapParcelable> {
-
 
             @Override
             public MapParcelable createFromParcel(android.os.Parcel parcel$$17) {
@@ -256,51 +388,133 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class SetParcelable implements Parcelable, ParcelWrapper<Set> {
+    public static final class LinkedHashMapParcelable extends ConverterParcelable<LinkedHashMap> {
 
-        private Set contents;
+        private static final LinkedHashMapParcelConverter CONVERTER = new LinkedHashMapParcelConverter() {
+
+            @Override
+            public void mapKeyToParcel(Object key, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(key), 0);
+            }
+
+            @Override
+            public void mapValueToParcel(Object value, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(value), 0);
+            }
+
+            @Override
+            public Object mapKeyFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public Object mapValueFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+        };
+
+        public LinkedHashMapParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public LinkedHashMapParcelable(LinkedHashMap value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final LinkedHashMapParcelableCreator CREATOR = new LinkedHashMapParcelableCreator();
+
+        private static final class LinkedHashMapParcelableCreator implements Creator<LinkedHashMapParcelable> {
+
+            @Override
+            public LinkedHashMapParcelable createFromParcel(android.os.Parcel parcel$$17) {
+                return new LinkedHashMapParcelable(parcel$$17);
+            }
+
+            @Override
+            public LinkedHashMapParcelable[] newArray(int size) {
+                return new LinkedHashMapParcelable[size];
+            }
+
+        }
+    }
+
+    public static final class TreeMapParcelable extends ConverterParcelable<Map> {
+
+        private static final TreeMapParcelConverter CONVERTER = new TreeMapParcelConverter() {
+
+            @Override
+            public void mapKeyToParcel(Object key, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(key), 0);
+            }
+
+            @Override
+            public void mapValueToParcel(Object value, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(value), 0);
+            }
+
+            @Override
+            public Object mapKeyFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public Object mapValueFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(MapParcelable.class.getClassLoader()));
+            }
+        };
+
+        public TreeMapParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public TreeMapParcelable(Map value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final TreeMapParcelableCreator CREATOR = new TreeMapParcelableCreator();
+
+        private static final class TreeMapParcelableCreator implements Creator<MapParcelable> {
+
+            @Override
+            public MapParcelable createFromParcel(android.os.Parcel parcel$$17) {
+                return new MapParcelable(parcel$$17);
+            }
+
+            @Override
+            public MapParcelable[] newArray(int size) {
+                return new MapParcelable[size];
+            }
+
+        }
+    }
+
+    public static final class SetParcelable extends ConverterParcelable<Set> {
+
+        private static final HashSetParcelConverter CONVERTER = new HashSetParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public SetParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public SetParcelable(Set value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final SetParcelableCreator CREATOR = new SetParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private SetParcelable(android.os.Parcel parcel) {
-            int size = parcel.readInt();
-            if (size < 0) {
-                contents = null;
-            } else {
-                contents = new HashSet<String>();
-                for (int i = 0; (i < size); i++) {
-                    contents.add(Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader())));
-                }
-            }
-        }
-
-        private SetParcelable(Set contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel$$16, int flags) {
-            if (contents == null) {
-                parcel$$16.writeInt(-1);
-            } else {
-                parcel$$16.writeInt(contents.size());
-                for (Object c : contents) {
-                    parcel$$16.writeParcelable(Parcels.wrap(c), flags);
-                }
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Set getParcel() {
-            return contents;
-        }
 
         private static final class SetParcelableCreator implements Creator<SetParcelable> {
 
@@ -313,57 +527,114 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             public SetParcelable[] newArray(int size) {
                 return new SetParcelable[size];
             }
-
         }
-
     }
 
-    public static final class SparseArrayParcelable implements android.os.Parcelable, ParcelWrapper<SparseArray> {
+    public static final class TreeSetParcelable extends ConverterParcelable<Set> {
 
-        private SparseArray contents;
+        private static final TreeSetParcelConverter CONVERTER = new TreeSetParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public TreeSetParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public TreeSetParcelable(Set value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final TreeSetParcelableCreator CREATOR = new TreeSetParcelableCreator();
+
+        private static final class TreeSetParcelableCreator implements Creator<SetParcelable> {
+
+            @Override
+            public SetParcelable createFromParcel(android.os.Parcel parcel) {
+                return new SetParcelable(parcel);
+            }
+
+            @Override
+            public SetParcelable[] newArray(int size) {
+                return new SetParcelable[size];
+            }
+        }
+    }
+
+    public static final class LinkedHashSetParcelable extends ConverterParcelable<LinkedHashSet> {
+
+        private static final LinkedHashSetParcelConverter CONVERTER = new LinkedHashSetParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(SetParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public LinkedHashSetParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public LinkedHashSetParcelable(LinkedHashSet value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final LinkedHashSetParcelableCreator CREATOR = new LinkedHashSetParcelableCreator();
+
+        private static final class LinkedHashSetParcelableCreator implements Creator<LinkedHashSetParcelable> {
+
+            @Override
+            public LinkedHashSetParcelable createFromParcel(android.os.Parcel parcel) {
+                return new LinkedHashSetParcelable(parcel);
+            }
+
+            @Override
+            public LinkedHashSetParcelable[] newArray(int size) {
+                return new LinkedHashSetParcelable[size];
+            }
+        }
+    }
+
+    public static final class SparseArrayParcelable extends ConverterParcelable<SparseArray> {
+
+        private static final SparseArrayParcelConverter CONVERTER = new SparseArrayParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(SparseArrayParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public SparseArrayParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public SparseArrayParcelable(SparseArray value) {
+            super(value, CONVERTER);
+        }
+
         @SuppressWarnings("UnusedDeclaration")
         public static final SparseArrayCreator CREATOR = new SparseArrayCreator();
-
-        @SuppressWarnings("unchecked")
-        private SparseArrayParcelable(android.os.Parcel parcel) {
-            int size = parcel.readInt();
-            if (size < 0) {
-                contents = null;
-            } else {
-                contents = new android.util.SparseArray<android.os.Parcelable>(size);
-                for (int i = 0; (i < size); i++) {
-                    int key = parcel.readInt();
-                    contents.append(key, Parcels.unwrap(parcel.readParcelable(SparseArrayParcelable.class.getClassLoader())));
-                }
-            }
-        }
-
-        private SparseArrayParcelable(SparseArray contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if (contents == null) {
-                parcel.writeInt(-1);
-            } else {
-                parcel.writeInt(contents.size());
-                for (int i = 0; (i < contents.size()); i++) {
-                    parcel.writeInt(contents.keyAt(i));
-                    parcel.writeParcelable(Parcels.wrap(contents.valueAt(i)), flags);
-                }
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public SparseArray getParcel() {
-            return contents;
-        }
 
         private static final class SparseArrayCreator implements Creator<SparseArrayParcelable> {
 
@@ -379,47 +650,71 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class IntegerParcelable implements Parcelable, ParcelWrapper<Integer> {
+    public static final class SparseBooleanArrayParcelable extends ConverterParcelable<SparseBooleanArray> {
 
-        private Integer contents;
+        private static final NullableParcelConverter<SparseBooleanArray> CONVERTER = new NullableParcelConverter<SparseBooleanArray>() {
+
+            @Override
+            public SparseBooleanArray nullSafeFromParcel(Parcel parcel) {
+                return parcel.readSparseBooleanArray();
+            }
+
+            @Override
+            public void nullSafeToParcel(SparseBooleanArray input, Parcel parcel) {
+                parcel.writeSparseBooleanArray(input);
+            }
+        };
+
+        public SparseBooleanArrayParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public SparseBooleanArrayParcelable(SparseBooleanArray value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final SparseBooleanArrayCreator CREATOR = new SparseBooleanArrayCreator();
+
+        private static final class SparseBooleanArrayCreator implements Creator<SparseBooleanArrayParcelable> {
+
+            @Override
+            public SparseBooleanArrayParcelable createFromParcel(android.os.Parcel parcel) {
+                return new SparseBooleanArrayParcelable(parcel);
+            }
+
+            @Override
+            public SparseBooleanArrayParcelable[] newArray(int size) {
+                return new SparseBooleanArrayParcelable[size];
+            }
+        }
+    }
+
+    public static final class IntegerParcelable extends ConverterParcelable<Integer> {
+
+        private static final NullableParcelConverter<Integer> CONVERTER = new NullableParcelConverter<Integer>() {
+
+            @Override
+            public Integer nullSafeFromParcel(Parcel parcel) {
+                return parcel.readInt();
+            }
+
+            @Override
+            public void nullSafeToParcel(Integer input, Parcel parcel) {
+                parcel.writeInt(input);
+            }
+        };
+
+        public IntegerParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public IntegerParcelable(Integer value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final IntegerParcelableCreator CREATOR = new IntegerParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private IntegerParcelable(android.os.Parcel parcel) {
-            if(parcel.readInt() == 1){
-                contents = parcel.readInt();
-            }
-            else{
-                contents = null;
-            }
-        }
-
-        private IntegerParcelable(Integer contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if(contents == null){
-                parcel.writeInt(-1);
-            }
-            else{
-                parcel.writeInt(1);
-                parcel.writeInt(contents);
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Integer getParcel() {
-            return contents;
-        }
 
         private static final class IntegerParcelableCreator implements Creator<IntegerParcelable> {
 
@@ -435,47 +730,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class LongParcelable implements Parcelable, ParcelWrapper<Long> {
+    public static final class LongParcelable  extends ConverterParcelable<Long> {
 
-        private Long contents;
+        private static final NullableParcelConverter<Long> CONVERTER = new NullableParcelConverter<Long>() {
+
+            @Override
+            public Long nullSafeFromParcel(Parcel parcel) {
+                return parcel.readLong();
+            }
+
+            @Override
+            public void nullSafeToParcel(Long input, Parcel parcel) {
+                parcel.writeLong(input);
+            }
+        };
+
+        public LongParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public LongParcelable(Long value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final LongParcelableCreator CREATOR = new LongParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private LongParcelable(android.os.Parcel parcel) {
-            if(parcel.readInt() == 1){
-                contents = parcel.readLong();
-            }
-            else{
-                contents = null;
-            }
-        }
-
-        private LongParcelable(Long contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if(contents == null){
-                parcel.writeInt(-1);
-            }
-            else{
-                parcel.writeInt(1);
-                parcel.writeLong(contents);
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Long getParcel() {
-            return contents;
-        }
 
         private static final class LongParcelableCreator implements Creator<LongParcelable> {
 
@@ -491,47 +770,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class DoubleParcelable implements Parcelable, ParcelWrapper<Double> {
+    public static final class DoubleParcelable  extends ConverterParcelable<Double> {
 
-        private Double contents;
+        private static final NullableParcelConverter<Double> CONVERTER = new NullableParcelConverter<Double>() {
+
+            @Override
+            public Double nullSafeFromParcel(Parcel parcel) {
+                return parcel.readDouble();
+            }
+
+            @Override
+            public void nullSafeToParcel(Double input, Parcel parcel) {
+                parcel.writeDouble(input);
+            }
+        };
+
+        public DoubleParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public DoubleParcelable(Double value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final DoubleParcelableCreator CREATOR = new DoubleParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private DoubleParcelable(android.os.Parcel parcel) {
-            if(parcel.readInt() == 1){
-                contents = parcel.readDouble();
-            }
-            else{
-                contents = null;
-            }
-        }
-
-        private DoubleParcelable(Double contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if(contents == null){
-                parcel.writeInt(-1);
-            }
-            else{
-                parcel.writeInt(1);
-                parcel.writeDouble(contents);
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Double getParcel() {
-            return contents;
-        }
 
         private static final class DoubleParcelableCreator implements Creator<DoubleParcelable> {
 
@@ -547,47 +810,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class FloatParcelable implements Parcelable, ParcelWrapper<Float> {
+    public static final class FloatParcelable  extends ConverterParcelable<Float> {
 
-        private Float contents;
+        private static final NullableParcelConverter<Float> CONVERTER = new NullableParcelConverter<Float>() {
+
+            @Override
+            public Float nullSafeFromParcel(Parcel parcel) {
+                return parcel.readFloat();
+            }
+
+            @Override
+            public void nullSafeToParcel(Float input, Parcel parcel) {
+                parcel.writeFloat(input);
+            }
+        };
+
+        public FloatParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public FloatParcelable(Float value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final FloatParcelableCreator CREATOR = new FloatParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private FloatParcelable(android.os.Parcel parcel) {
-            if(parcel.readInt() == 1){
-                contents = parcel.readFloat();
-            }
-            else{
-                contents = null;
-            }
-        }
-
-        private FloatParcelable(Float contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if(contents == null){
-                parcel.writeInt(-1);
-            }
-            else{
-                parcel.writeInt(1);
-                parcel.writeFloat(contents);
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Float getParcel() {
-            return contents;
-        }
 
         private static final class FloatParcelableCreator implements Creator<FloatParcelable> {
 
@@ -603,47 +850,31 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
-    public static final class ByteParcelable implements Parcelable, ParcelWrapper<Byte> {
+    public static final class ByteParcelable extends ConverterParcelable<Byte> {
 
-        private Byte contents;
+        private static final NullableParcelConverter<Byte> CONVERTER = new NullableParcelConverter<Byte>() {
+
+            @Override
+            public Byte nullSafeFromParcel(Parcel parcel) {
+                return parcel.readByte();
+            }
+
+            @Override
+            public void nullSafeToParcel(Byte input, Parcel parcel) {
+                parcel.writeByte(input);
+            }
+        };
+
+        public ByteParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public ByteParcelable(Byte value) {
+            super(value, CONVERTER);
+        }
 
         @SuppressWarnings("UnusedDeclaration")
         public static final ByteParcelableCreator CREATOR = new ByteParcelableCreator();
-
-        @SuppressWarnings("unchecked")
-        private ByteParcelable(android.os.Parcel parcel) {
-            if(parcel.readInt() == 1){
-                contents = parcel.readByte();
-            }
-            else{
-                contents = null;
-            }
-        }
-
-        private ByteParcelable(Byte contents) {
-            this.contents = contents;
-        }
-
-        @Override
-        public void writeToParcel(android.os.Parcel parcel, int flags) {
-            if(contents == null){
-                parcel.writeInt(-1);
-            }
-            else{
-                parcel.writeInt(1);
-                parcel.writeByte(contents);
-            }
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public Byte getParcel() {
-            return contents;
-        }
 
         private static final class ByteParcelableCreator implements Creator<ByteParcelable> {
 
@@ -655,6 +886,224 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             @Override
             public ByteParcelable[] newArray(int size) {
                 return new ByteParcelable[size];
+            }
+        }
+    }
+
+    public static final class IBinderParcelable extends ConverterParcelable<IBinder> {
+
+        private static final NullableParcelConverter<IBinder> CONVERTER = new NullableParcelConverter<IBinder>() {
+
+            @Override
+            public IBinder nullSafeFromParcel(Parcel parcel) {
+                return parcel.readStrongBinder();
+            }
+
+            @Override
+            public void nullSafeToParcel(IBinder input, Parcel parcel) {
+                parcel.writeStrongBinder(input);
+            }
+        };
+
+        public IBinderParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public IBinderParcelable(IBinder value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final IBinderParcelableCreator CREATOR = new IBinderParcelableCreator();
+
+        private static final class IBinderParcelableCreator implements Creator<IBinderParcelable> {
+
+            @Override
+            public IBinderParcelable createFromParcel(android.os.Parcel parcel) {
+                return new IBinderParcelable(parcel);
+            }
+
+            @Override
+            public IBinderParcelable[] newArray(int size) {
+                return new IBinderParcelable[size];
+            }
+        }
+    }
+
+    public static final class ByteArrayParcelable extends ConverterParcelable<byte[]> {
+
+        private static final NullableParcelConverter<byte[]> CONVERTER = new NullableParcelConverter<byte[]>() {
+
+            @Override
+            public byte[] nullSafeFromParcel(Parcel parcel) {
+                return parcel.createByteArray();
+            }
+
+            @Override
+            public void nullSafeToParcel(byte[] input, Parcel parcel) {
+                parcel.writeByteArray(input);
+            }
+        };
+
+        public ByteArrayParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public ByteArrayParcelable(byte[] value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final ByteArrayParcelableCreator CREATOR = new ByteArrayParcelableCreator();
+
+        private static final class ByteArrayParcelableCreator implements Creator<ByteArrayParcelable> {
+
+            @Override
+            public ByteArrayParcelable createFromParcel(android.os.Parcel parcel) {
+                return new ByteArrayParcelable(parcel);
+            }
+
+            @Override
+            public ByteArrayParcelable[] newArray(int size) {
+                return new ByteArrayParcelable[size];
+            }
+        }
+    }
+
+    public static final class BooleanArrayParcelable extends ConverterParcelable<boolean[]> {
+
+        private static final BooleanArrayParcelConverter CONVERTER = new BooleanArrayParcelConverter();
+
+        public BooleanArrayParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public BooleanArrayParcelable(boolean[] value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final BooleanArrayParcelableCreator CREATOR = new BooleanArrayParcelableCreator();
+
+        private static final class BooleanArrayParcelableCreator implements Creator<BooleanArrayParcelable> {
+
+            @Override
+            public BooleanArrayParcelable createFromParcel(android.os.Parcel parcel) {
+                return new BooleanArrayParcelable(parcel);
+            }
+
+            @Override
+            public BooleanArrayParcelable[] newArray(int size) {
+                return new BooleanArrayParcelable[size];
+            }
+        }
+    }
+
+    public static final class BooleanParcelable extends ConverterParcelable<Boolean> {
+
+        private static final NullableParcelConverter<Boolean> CONVERTER = new NullableParcelConverter<Boolean>() {
+
+            @Override
+            public Boolean nullSafeFromParcel(Parcel parcel) {
+                return parcel.createBooleanArray()[0];
+            }
+
+            @Override
+            public void nullSafeToParcel(Boolean input, Parcel parcel) {
+                parcel.writeBooleanArray(new boolean[]{input});
+            }
+        };
+
+        public BooleanParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public BooleanParcelable(boolean value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final BooleanParcelableCreator CREATOR = new BooleanParcelableCreator();
+
+        private static final class BooleanParcelableCreator implements Creator<BooleanParcelable> {
+
+            @Override
+            public BooleanParcelable createFromParcel(android.os.Parcel parcel) {
+                return new BooleanParcelable(parcel);
+            }
+
+            @Override
+            public BooleanParcelable[] newArray(int size) {
+                return new BooleanParcelable[size];
+            }
+        }
+    }
+
+    public static final class CharArrayParcelable extends ConverterParcelable<char[]> {
+
+        private static final CharArrayParcelConverter CONVERTER = new CharArrayParcelConverter();
+
+        public CharArrayParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public CharArrayParcelable(char[] value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final CharArrayParcelableCreator CREATOR = new CharArrayParcelableCreator();
+
+        private static final class CharArrayParcelableCreator implements Creator<CharArrayParcelable> {
+
+            @Override
+            public CharArrayParcelable createFromParcel(android.os.Parcel parcel) {
+                return new CharArrayParcelable(parcel);
+            }
+
+            @Override
+            public CharArrayParcelable[] newArray(int size) {
+                return new CharArrayParcelable[size];
+            }
+        }
+    }
+
+    public static final class CharacterParcelable extends ConverterParcelable<Character> {
+
+        private static final NullableParcelConverter<Character> CONVERTER = new NullableParcelConverter<Character>() {
+
+            @Override
+            public Character nullSafeFromParcel(Parcel parcel) {
+                return parcel.createCharArray()[0];
+            }
+
+            @Override
+            public void nullSafeToParcel(Character input, Parcel parcel) {
+                parcel.writeCharArray(new char[]{input});
+            }
+        };
+
+        public CharacterParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public CharacterParcelable(Character value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final CharacterParcelableCreator CREATOR = new CharacterParcelableCreator();
+
+        private static final class CharacterParcelableCreator implements Creator<CharacterParcelable> {
+
+            @Override
+            public CharacterParcelable createFromParcel(android.os.Parcel parcel) {
+                return new CharacterParcelable(parcel);
+            }
+
+            @Override
+            public CharacterParcelable[] newArray(int size) {
+                return new CharacterParcelable[size];
             }
         }
     }
@@ -701,6 +1150,37 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             public StringParcelable[] newArray(int size) {
                 return new StringParcelable[size];
             }
+        }
+    }
+
+    private static class ConverterParcelable<T> implements Parcelable, ParcelWrapper<T> {
+
+        private final T value;
+        private final ParcelConverter<T> converter;
+
+        @SuppressWarnings("unchecked")
+        private ConverterParcelable(android.os.Parcel parcel, ParcelConverter<T> converter) {
+            this(converter.fromParcel(parcel), converter);
+        }
+
+        private ConverterParcelable(T value, ParcelConverter<T> converter) {
+            this.converter = converter;
+            this.value = value;
+        }
+
+        @Override
+        public void writeToParcel(android.os.Parcel parcel, int flags) {
+            converter.toParcel(value, parcel);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public T getParcel() {
+            return value;
         }
     }
 }

@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.parceler;
+package org.parceler.converter;
 
 import android.os.Parcel;
+import org.parceler.ParcelConverter;
 
 /**
  * Convenience class to handle nullable objects.
@@ -37,8 +38,6 @@ public abstract class NullableParcelConverter<T> implements ParcelConverter<T> {
         }
     }
 
-    public abstract void nullSafeToParcel(T input, Parcel parcel);
-
     @Override
     public T fromParcel(Parcel parcel) {
         T result;
@@ -50,5 +49,6 @@ public abstract class NullableParcelConverter<T> implements ParcelConverter<T> {
         return result;
     }
 
+    public abstract void nullSafeToParcel(T input, Parcel parcel);
     public abstract T nullSafeFromParcel(Parcel parcel);
 }

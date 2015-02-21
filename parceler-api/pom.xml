@@ -77,7 +77,7 @@
                     <docletArtifact>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoclet</artifactId>
-                        <version>1.5.2-SNAPSHOT</version>
+                        <version>1.5.2</version>
                     </docletArtifact>
                     <linksource>true</linksource>
                 </configuration>
