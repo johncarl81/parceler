@@ -4,15 +4,15 @@ image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status"
 image:https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api/badge.svg["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api"]
 
 In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
-http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization, Parcelables take on the
-order of 10x less time to both serialize and deserialize.  There is a major flaw with Parcelables, however.
+http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization, Parcelables take on the order of 10x less time to both serialize and deserialize.
+There is a major flaw with Parcelables, however.
 Parcelables contain a ton of boilerplate code.
-To implement a Parcelable, you must mirror the +writeToParcel()+ and +createFromParcel()+ methods such that they read and write to the Parcel in the same order.
-Also, a Parcelable must define a +public final static Parcelable.Creator CREATOR+ in order for the Android infrastructure to be able to leverage the serialization code.
+To implement a Parcelable, you must mirror the `writeToParcel()` and `createFromParcel()` methods such that they read and write to the Parcel in the same order.
+Also, a Parcelable must define a `public final static Parcelable.Creator CREATOR` in order for the Android infrastructure to be able to leverage the serialization code.
 
 Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
-No longer do you have to implement the Parcelable interface, the +writeToParcel()+ or +createFromParcel()+ or the +public static final CREATOR+.
-You simply annotate a POJO with +@Parcel+ and Parceler does the rest.
+No longer do you have to implement the Parcelable interface, the `writeToParcel()` or `createFromParcel()` or the `public static final CREATOR`.
+You simply annotate a POJO with `@Parcel` and Parceler does the rest.
 Because Parceler uses the Java JSR-269 Annotation Processor, there is no need to run a tool manually to generate the Parcelable code.
 Just annotate your Java Bean, compile and you are finished.
 By default, Parceler will serialize the fields of your instance directly:
@@ -39,14 +39,14 @@ public class Example {
 
 Be careful not to use private fields when using the default field serialization strategy as it will incur a performance penalty due to reflection.
 
-To use the generated code, you may reference the generated class directly, or via the +Parcels+ utility class:
+To use the generated code, you may reference the generated class directly, or via the `Parcels` utility class:
 
 [source,java]
 ----
 Parcelable wrapped = Parcels.wrap(new Example("Andy", 42);
 ----
 
-To dereference the +@Parcel+, just call the +Parcels.unwrap()+ method:
+To dereference the `@Parcel`, just call the `Parcels.unwrap()` method:
 
 [source,java]
 ----
@@ -63,7 +63,7 @@ Bundle bundle = new Bundle();
 bundle.putParcelable("example", Parcels.wrap(example));
 ----
 
-And dereferenced in the +onCreate()+ method:
+And dereferenced in the `onCreate()` method:
 
 [source,java]
 ----
@@ -71,35 +71,35 @@ Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
 ----
 
 === Parcel attribute types
-Only a select number of types may be used as attributes of a +@Parcel+ class.  The following list includes the mapped
+Only a select number of types may be used as attributes of a `@Parcel` class.  The following list includes the mapped
 types:
 
- * +byte+
- * +double+
- * +float+
- * +int+
- * +long+
- * +char+
- * +boolean+
- * +String+
- * +IBinder+
- * +Bundle+
- * +SparseArray+ of any of the mapped types*
- * +SparseBooleanArray+
- * +List+ of any of the mapped types*
- * +Map+ of any of the mapped types*
- * +Set+ of any of the mapped types*
- * +Parcelable+
- * +Serializable+
+ * `byte`
+ * `double`
+ * `float`
+ * `int`
+ * `long`
+ * `char`
+ * `boolean`
+ * `String`
+ * `IBinder`
+ * `Bundle`
+ * `SparseArray` of any of the mapped types*
+ * `SparseBooleanArray`
+ * `List` of any of the mapped types*
+ * `Map` of any of the mapped types*
+ * `Set` of any of the mapped types*
+ * `Parcelable`
+ * `Serializable`
  * Array of any of the mapped types
- * Any other class annotated with +@Parcel+
+ * Any other class annotated with `@Parcel`
 
 *Parcel will error if the generic parameter is not mapped.
 
 ==== Polymorphism
-Note that Parceler does not unwrap inheritance hierarchies, so any polymorphic
-fields will be unwrapped as instances of the base class. This is because Parceler
-opts for performance rather than checking `.getClass()` for every piece of data.
+Note that Parceler does not unwrap inheritance hierarchies, so any polymorphic fields will be unwrapped as instances of the base class.
+This is because Parceler opts for performance rather than checking `.getClass()` for every piece of data.
+
 [source,java]
 ----
 @Parcel
@@ -120,8 +120,7 @@ example = Parcels.unwrap(Parcels.wrap(example));
 System.out.println("%b", example.p instanceof Child); // false
 ----
 
-Refer to the <<custom-serialization,Custom Serialization>> section for an example of working with
-polymorphic fields.
+Refer to the <<custom-serialization,Custom Serialization>> section for an example of working with polymorphic fields.
 
 === Serialization techniques
 
@@ -130,10 +129,10 @@ in addition to the field-based serialization seen above.
 
 ==== Getter/setter serialization
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
-In addition, fields, methods and constructor parameters may be associated using the +@ParcelParameter+ annotation.
+In addition, fields, methods and constructor parameters may be associated using the `@ParcelParameter` annotation.
 This supports a number of bean strategies including immutability and traditional getter/setter beans.
 
-To configure default method serialization, simply configure the +@Parcel+ annotation with +Serialization.BEAN+:
+To configure default method serialization, simply configure the `@Parcel` annotation with `Serialization.BEAN`:
 
 [source,java]
 ----
@@ -150,7 +149,7 @@ public class Example {
 }
 ----
 
-To use a constructor with serialization, annotate the desired constructor with the +@ParcelConstructor+ annotation:
+To use a constructor with serialization, annotate the desired constructor with the `@ParcelConstructor` annotation:
 
 [source,java]
 ----
@@ -174,10 +173,9 @@ public class Example {
 If an empty constructor is present, Parceler will use that constructor unless another constructor is annotated.
 
 ==== Mixing getters/setters and fields
-You may also mix and match serialization techniques using the +@ParcelParameter+ annotation.
-In the following example, +firstName+ and +lastName+ are written to the bean using the constructor while +firstName+
-is read from the bean using the field and +lastName+ is read using the +getLastName()+ method.  The parameters +firstName+
-and +lastName+ are coordinated by the parameter names +"first"+ and +"last"+ respectfully.
+You may also mix and match serialization techniques using the `@ParcelParameter` annotation.
+In the following example, `firstName` and `lastName` are written to the bean using the constructor while `firstName` is read from the bean using the field and `lastName` is read using the `getLastName()` method.
+The parameters `firstName` and `lastName` are coordinated by the parameter names `"first"` and `"last"` respectfully.
 
 [source,java]
 ----
@@ -200,16 +198,14 @@ public class Example {
 }
 ----
 
-For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by +@Transient+.
+For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by `@Transient`.
 
-Parceler supports many different styles centering around the POJO.  This allows +@Parcel+ annotated classes to be used with other
-POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://bitbucket.org/qbusict/cupboard[Cupboard],
-and http://simple.sourceforge.net/[Simple XML] to name a few.
+Parceler supports many different styles centering around the POJO.
+This allows `@Parcel` annotated classes to be used with other POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://bitbucket.org/qbusict/cupboard[Cupboard], and http://simple.sourceforge.net/[Simple XML] to name a few.
 
 ==== AutoValue annotations
-Additionally, Parceler supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor
-/ code generation library for generating immutable beans.  Parceler interfaces with AutoValue via the +@ParcelFactory+ annotation,
-which maps a static factory method into the annotated +@Parcel+ serialization:
+Additionally, Parceler supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor / code generation library for generating immutable beans.
+Parceler interfaces with AutoValue via the `@ParcelFactory` annotation, which maps a static factory method into the annotated `@Parcel` serialization:
 
 [source,java]
 ----
@@ -226,8 +222,7 @@ public abstract class AutoValueParcel {
 }
 ----
 
-AutoValue generates a different class than the annotated +@Parcel+, therefore, you need to specify which class
-Parceler should build in the +Parcels+ utility class:
+AutoValue generates a different class than the annotated `@Parcel`, therefore, you need to specify which class Parceler should build in the `Parcels` utility class:
 
 [source,java]
 ----
@@ -240,12 +235,10 @@ AuthValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
 ----
 
 ==== Custom serialization
-+@Parcel+ includes an optional parameter to include a manual serializer +ParcelConverter+ for the case where special
-serialization is necessary.  This provides a still cleaner option for using Parcelable classes than implementing them by
-hand.
+`@Parcel` includes an optional parameter to include a manual serializer `ParcelConverter` for the case where special serialization is necessary.
+This provides a still cleaner option for using Parcelable classes than implementing them by hand.
 
-The following code demonstrates using a +ParcelConverter+ to unwrap the inheritance
-hierarchy during deserialization.
+The following code demonstrates using a `ParcelConverter` to unwrap the inheritance hierarchy during deserialization.
 
 [source,java]
 ----
@@ -285,9 +278,9 @@ public class ItemListParcelConverter implements ParcelConverter<List<Item>> {
 ----
 
 === Classes without Java source
-For classes whose corresponding Java source is not available, one may include the class as a Parcel by using the
-+@ParcelClass+ annotation.  This annotation may be declared anywhere in the compiled source that is convenient.  For
-instance, one could include the +@ParcelClass+ along with the Android Application:
+For classes whose corresponding Java source is not available, one may include the class as a Parcel by using the `@ParcelClass` annotation.
+This annotation may be declared anywhere in the compiled source that is convenient.
+For instance, one could include the `@ParcelClass` along with the Android Application:
 
 [source,java]
 ----
@@ -297,7 +290,7 @@ public class AndroidApplication extends Application{
 }
 ----
 
-Multiple +@ParcelClass+ annotations may be declared using the +@ParcelClasses+ annotation.
+Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
 
 == Getting Parceler
 
