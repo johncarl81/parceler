@@ -32,6 +32,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
     private NonParcelRepository() {
         //private singleton constructor
+        parcelableCollectionFactories.put(Collection.class, new CollectionParcelableFactory());
         parcelableCollectionFactories.put(List.class, new ListParcelableFactory());
         parcelableCollectionFactories.put(ArrayList.class, new ListParcelableFactory());
         parcelableCollectionFactories.put(Set.class, new SetParcelableFactory());
@@ -197,6 +198,14 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         @Override
         public Parcelable buildParcelable(Map input) {
             return new TreeMapParcelable(input);
+        }
+    }
+
+    private static class CollectionParcelableFactory implements Parcels.ParcelableFactory<Collection> {
+
+        @Override
+        public Parcelable buildParcelable(Collection input) {
+            return new CollectionParcelable(input);
         }
     }
 
@@ -606,6 +615,46 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             @Override
             public LinkedHashSetParcelable[] newArray(int size) {
                 return new LinkedHashSetParcelable[size];
+            }
+        }
+    }
+
+    public static final class CollectionParcelable extends ConverterParcelable<Collection> {
+
+        private static final CollectionParcelConverter CONVERTER = new ArrayListParcelConverter() {
+
+            @Override
+            public Object itemFromParcel(Parcel parcel) {
+                return Parcels.unwrap(parcel.readParcelable(CollectionParcelable.class.getClassLoader()));
+            }
+
+            @Override
+            public void itemToParcel(Object input, Parcel parcel) {
+                parcel.writeParcelable(Parcels.wrap(input), 0);
+            }
+        };
+
+        public CollectionParcelable(Parcel parcel) {
+            super(parcel, CONVERTER);
+        }
+
+        public CollectionParcelable(Collection value) {
+            super(value, CONVERTER);
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final CollectionParcelableCreator CREATOR = new CollectionParcelableCreator();
+
+        private static final class CollectionParcelableCreator implements Creator<CollectionParcelable> {
+
+            @Override
+            public CollectionParcelable createFromParcel(android.os.Parcel parcel) {
+                return new CollectionParcelable(parcel);
+            }
+
+            @Override
+            public CollectionParcelable[] newArray(int size) {
+                return new CollectionParcelable[size];
             }
         }
     }
