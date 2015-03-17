@@ -66,6 +66,10 @@ public @interface Parcel {
 
     boolean parcelsIndex() default true;
 
+    Class[] analyze() default {};
+
+    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
+
     enum Serialization {
         FIELD,
         /**
@@ -75,9 +79,4 @@ public @interface Parcel {
         METHOD,
         BEAN
     }
-
-    /**
-     * Optional Converter class.
-     */
-    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 }

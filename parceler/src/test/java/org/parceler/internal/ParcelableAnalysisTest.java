@@ -961,9 +961,7 @@ public class ParcelableAnalysisTest {
 
     @Test
     public void testFactoryMethod() {
-
-        ASTType targetAst = astClassFactory.getType(FactoryMethod.class);
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(targetAst);
+        ParcelableDescriptor analysis = analyze(FactoryMethod.class);
 
         assertNull(analysis.getParcelConverterType());
 
@@ -1033,7 +1031,6 @@ public class ParcelableAnalysisTest {
         assertNotNull(analysis.getConstructorPair());
         assertEquals(1, analysis.getFieldPairs().size());
         assertEquals(0, analysis.getMethodPairs().size());
-        assertEquals(converterAst, analysis.getFieldPairs().get(0).getConverter());
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
@@ -1099,6 +1096,53 @@ public class ParcelableAnalysisTest {
     public void testNonMappedGenericsListCollection(){
         errors(NonMappedGenericsListCollection.class);
     }
+
+    static class BaseNonParcel {
+        String notAnalyzed;
+    }
+
+    @Parcel(analyze = ParcelExtension.class)
+    static class ParcelExtension extends BaseNonParcel {
+        String value;
+    }
+
+    @Test
+    public void testAnalysisLimit() {
+        ParcelableDescriptor analysis = analyze(ParcelExtension.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    static class A{
+        String a;
+    }
+
+    static class B extends A{
+        String b;
+    }
+
+    @Parcel(analyze = {A.class, C.class})
+    static class C extends B{
+        String c;
+    }
+
+    @Test
+    public void testSkipAnalysis() {
+        ParcelableDescriptor analysis = analyze(C.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(2, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
 
     private void errors(Class clazz){
         analyze(clazz);
