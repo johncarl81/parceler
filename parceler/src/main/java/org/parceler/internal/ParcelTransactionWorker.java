@@ -44,7 +44,6 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
     public ParcelImplementations innerRun(Provider<ASTType> valueProvider) {
 
         ASTType value = valueProvider.get();
-        Parcel parcelAnnotation = value.getAnnotation(Parcel.class);
         ASTAnnotation parcelASTAnnotation = value.getASTAnnotation(Parcel.class);
 
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, parcelASTAnnotation);
