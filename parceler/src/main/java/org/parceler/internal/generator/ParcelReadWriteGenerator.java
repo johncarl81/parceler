@@ -60,7 +60,9 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             JVar parcelParam = readMethod.param(parcelType, variableNamer.generateName(parcelType));
             JVar readWrapped = readMethod.body().decl(inputType, variableNamer.generateName(type));
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
-            generator.get().buildParcelRead(parcelDescriptor, parcelableClass, readWrapped, type, inputType, parcelParam, readMethod.body());
+            if(parcelDescriptor != null) {
+                generator.get().buildParcelRead(parcelDescriptor, parcelableClass, readWrapped, type, inputType, parcelParam, readMethod.body());
+            }
             readMethod.body()._return(readWrapped);
         }
 
@@ -85,7 +87,9 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             JVar parcelParam = writeMethod.param(parcelType, variableNamer.generateName(parcelType));
             JVar flagsParam = writeMethod.param(int.class, variableNamer.generateName("flags"));
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
-            generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, writeMethod.body());
+            if(parcelDescriptor != null) {
+                generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, writeMethod.body());
+            }
         }
 
         JConditional nullCondition = body._if(getExpression.eq(JExpr._null()));
