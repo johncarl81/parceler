@@ -292,6 +292,23 @@ public class AndroidApplication extends Application{
 
 Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
 
+== Configuring Proguard
+
+Add next lines to your proguard configuration file:
+
+----
+# Parcelable
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+# Parceler
+-keep interface org.parceler.Parcel
+-keep @org.parceler.Parcel class * { *; }
+-keep class **$$Parcelable { *; }
+-keep class org.parceler.Parceler$$Parcels
+----
+
 == Getting Parceler
 
 You may download Parceler as a Maven dependency:
