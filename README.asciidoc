@@ -194,7 +194,7 @@ public class Example {
     public String getFirstName() { return firstName; }
 
     @ParcelParameter("last");
-    public int getLastName() { return lastName; }
+    public String getLastName() { return lastName; }
 }
 ----
 
