@@ -43,7 +43,7 @@ To use the generated code, you may reference the generated class directly, or vi
 
 [source,java]
 ----
-Parcelable wrapped = Parcels.wrap(new Example("Andy", 42);
+Parcelable wrapped = Parcels.wrap(new Example("Andy", 42));
 ----
 
 To dereference the `@Parcel`, just call the `Parcels.unwrap()` method:
