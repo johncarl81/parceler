@@ -27,5 +27,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({FIELD, METHOD, PARAMETER})
 @Retention(RUNTIME)
 public @interface ParcelPropertyConverter {
-    Class<? extends ParcelConverter> value();
+    Class<? extends TypeRangeParcelConverter> value();
 }

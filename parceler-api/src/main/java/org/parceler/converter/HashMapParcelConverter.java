@@ -17,16 +17,15 @@
 package org.parceler.converter;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author u61173
  */
-public abstract class HashMapParcelConverter<K, V> extends MapParcelConverter<K, V> {
+public abstract class HashMapParcelConverter<K, V> extends MapParcelConverter<K, V, HashMap<K, V>> {
 
     @Override
-    public Map<K, V> createMap() {
+    public HashMap<K, V> createMap() {
         return new HashMap<K, V>();
     }
 }

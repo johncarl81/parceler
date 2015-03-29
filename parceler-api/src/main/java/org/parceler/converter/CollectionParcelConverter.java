@@ -17,7 +17,7 @@
 package org.parceler.converter;
 
 import android.os.Parcel;
-import org.parceler.ParcelConverter;
+import org.parceler.TypeRangeParcelConverter;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ import java.util.Collection;
  *
  * @author u61173
  */
-public abstract class CollectionParcelConverter<T> implements ParcelConverter<Collection<T>> {
+public abstract class CollectionParcelConverter<T, C extends Collection<T>> implements TypeRangeParcelConverter<Collection<T>, C> {
 
     private static final int NULL = -1;
 
@@ -42,8 +42,8 @@ public abstract class CollectionParcelConverter<T> implements ParcelConverter<Co
     }
 
     @Override
-    public Collection<T> fromParcel(Parcel parcel) {
-        Collection<T> list;
+    public C fromParcel(Parcel parcel) {
+        C list;
         int size = parcel.readInt();
         if (size == NULL) {
             list = null;
@@ -58,5 +58,5 @@ public abstract class CollectionParcelConverter<T> implements ParcelConverter<Co
 
     public abstract void itemToParcel(T input, Parcel parcel);
     public abstract T itemFromParcel(Parcel parcel);
-    public abstract Collection<T> createCollection();
+    public abstract C createCollection();
 }

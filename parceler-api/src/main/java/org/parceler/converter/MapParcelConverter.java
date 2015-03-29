@@ -17,7 +17,7 @@
 package org.parceler.converter;
 
 import android.os.Parcel;
-import org.parceler.ParcelConverter;
+import org.parceler.TypeRangeParcelConverter;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * @author u61173
  */
-public abstract class MapParcelConverter<K, V> implements ParcelConverter<Map<K, V>> {
+public abstract class MapParcelConverter<K, V, M extends Map<K, V>> implements TypeRangeParcelConverter<Map<K, V>, M> {
 
     private static final int NULL = -1;
     
@@ -43,8 +43,8 @@ public abstract class MapParcelConverter<K, V> implements ParcelConverter<Map<K,
     }
 
     @Override
-    public Map<K, V> fromParcel(Parcel parcel) {
-        Map<K, V> map;
+    public M fromParcel(Parcel parcel) {
+        M map;
         int size = parcel.readInt();
         if (size == NULL) {
             map = null;
@@ -59,7 +59,7 @@ public abstract class MapParcelConverter<K, V> implements ParcelConverter<Map<K,
         return map;
     }
 
-    public abstract Map<K, V> createMap();
+    public abstract M createMap();
 
     public abstract void mapKeyToParcel(K key, Parcel parcel);
     public abstract void mapValueToParcel(V value, Parcel parcel);

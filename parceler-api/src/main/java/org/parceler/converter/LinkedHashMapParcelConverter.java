@@ -17,16 +17,15 @@
 package org.parceler.converter;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  *
  * @author u61173
  */
-public abstract class LinkedHashMapParcelConverter<K, V> extends MapParcelConverter<K, V> {
+public abstract class LinkedHashMapParcelConverter<K, V> extends MapParcelConverter<K, V, LinkedHashMap<K, V>> {
 
     @Override
-    public Map<K, V> createMap() {
+    public LinkedHashMap<K, V> createMap() {
         return new LinkedHashMap<K, V>();
     }
 }

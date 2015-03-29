@@ -16,17 +16,16 @@
 
 package org.parceler.converter;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
  *
  * @author u61173
  */
-public abstract class TreeMapParcelConverter<K, V> extends MapParcelConverter<K, V> {
+public abstract class TreeMapParcelConverter<K, V> extends MapParcelConverter<K, V, TreeMap<K, V>> {
 
     @Override
-    public Map<K, V> createMap() {
+    public TreeMap<K, V> createMap() {
         return new TreeMap<K, V>();
     }
 }

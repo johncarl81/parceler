@@ -1,14 +1,13 @@
 package org.parceler.converter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author John Ericksen
  */
-public abstract class ArrayListParcelConverter<T> extends CollectionParcelConverter<T> {
+public abstract class ArrayListParcelConverter<T> extends CollectionParcelConverter<T, ArrayList<T>> {
     @Override
-    public Collection<T> createCollection() {
+    public ArrayList<T> createCollection() {
         return new ArrayList<T>();
     }
 }

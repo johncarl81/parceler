@@ -20,26 +20,10 @@ package org.parceler;
  *
  * @author John Ericksen
  */
-public interface ParcelConverter<T> {
+public interface ParcelConverter<T> extends TypeRangeParcelConverter<T, T> {
 
     String CONVERT_TO_PARCEL = "toParcel";
     String CONVERT_FROM_PARCEL = "fromParcel";
-
-    /**
-     * Write the given input parameter to the destinationParcel.
-     *
-     * @param input T instance
-     * @param parcel Parcel to write to
-     */
-    void toParcel(T input, android.os.Parcel parcel);
-
-    /**
-     * Generates an instance from the values provided in the given parcel.
-     *
-     * @param parcel Parcel to read from
-     * @return instance of the mapped class.
-     */
-    T fromParcel(android.os.Parcel parcel);
 
     /**
      * Noop ParcelConverter used as a empty placeholder for the Parcel.value annotation parameter.  Performs no mapping
