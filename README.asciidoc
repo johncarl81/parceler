@@ -55,7 +55,7 @@ example.getName(); // Andy
 example.getAge(); // 42
 ----
 
-Of course, the ParcelWrapper can be added to an Android Bundle to transfer from Activity to Activity:
+Of course, the wrapped `Parcelable` can be added to an Android Bundle to transfer from Activity to Activity:
 
 [source,java]
 ----
@@ -86,9 +86,9 @@ types:
  * `Bundle`
  * `SparseArray` of any of the mapped types*
  * `SparseBooleanArray`
- * `List` of any of the mapped types*
- * `Map` of any of the mapped types*
- * `Set` of any of the mapped types*
+ * `List`, `ArrayList` and `LinkedList` of any of the mapped types*
+ * `Map`, `HashMap`, `LinkedHashMap`, `SortedMap`, and `TreeMap` of any of the mapped types*
+ * `Set`, `HashSet`, `SortedSet`, `TreeSet`, `LinkedHashSet` of any of the mapped types*
  * `Parcelable`
  * `Serializable`
  * Array of any of the mapped types
@@ -124,8 +124,7 @@ Refer to the <<custom-serialization,Custom Serialization>> section for an exampl
 
 === Serialization techniques
 
-Parceler offers several choices for how to serialize and deserialize an object
-in addition to the field-based serialization seen above.
+Parceler offers several choices for how to serialize and deserialize an object in addition to the field-based serialization seen above.
 
 ==== Getter/setter serialization
 Parceler may be configured to serialize using getter and setter methods and a non-empty constructor.
@@ -203,8 +202,9 @@ For attributes that should not be serialized with Parceler, the attribute field,
 Parceler supports many different styles centering around the POJO.
 This allows `@Parcel` annotated classes to be used with other POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://bitbucket.org/qbusict/cupboard[Cupboard], and http://simple.sourceforge.net/[Simple XML] to name a few.
 
-==== AutoValue annotations
-Additionally, Parceler supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor / code generation library for generating immutable beans.
+==== Static Factory support
+As an alternative to using a constructor directly, Pareler supports using an annotated Static Factory to build an instance of the given class.
+This style supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor / code generation library for generating immutable beans.
 Parceler interfaces with AutoValue via the `@ParcelFactory` annotation, which maps a static factory method into the annotated `@Parcel` serialization:
 
 [source,java]
@@ -231,7 +231,7 @@ Parcelable wrappedAutoValue = Parcels.wrap(AutoValueParcel.class, AutoValueParce
 And to deserialize:
 [source,java]
 ----
-AuthValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
+AutoValueParcel autoValueParcel = Parcels.unwrap(wrappedAutoValue);
 ----
 
 ==== Custom serialization
@@ -291,6 +291,71 @@ public class AndroidApplication extends Application{
 ----
 
 Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
+
+=== Advanced configuration
+
+==== Skipping analysis
+It is a common practice for some libraries to require a bean to extend a base class.
+Although it is not the most optimal case, Parceler supports this practice by allowing the configuration of what classes in the inheritance hierarchy to analyze via the analyze parameter:
+
+[source, java]
+----
+@Parcel(analyze = {One.class, Three.class})
+class One extends Two {}
+class Two extends Three {}
+class Three extends BaseClass {}
+----
+
+In this example, only fields of the `One` and `Three` classes will be serialized, avoiding both the `BaseClass` and `Two` class parameters.
+
+==== Specific wrapping
+
+The Parcels utility class looks up the given class for wrapping by class.
+For performance reasons this ignores inheritance, both super and base classes.
+There are two solutions to this problem.
+First, one may specify additional types to associate to the given type via the `implementations` parameter:
+
+[source, java]
+----
+class ExampleProxy etends Example {}
+@Parcel(implementations = {ExampleProxy.class})
+class Example {}
+
+ExampleProxy proxy = new ExampleProxy();
+Parcels.wrap(proxy);  // ExampleProxy will be serialized as a Example
+----
+
+Second, one may also specify the class type when using the `Parcels.wrap()` method:
+
+[source, java]
+----
+ExampleProxy proxy = new ExampleProxy();
+Parcels.wrap(Example.class, proxy);
+----
+
+==== Avoiding Parcels indexing
+
+Using Parceler in libraries can be challenging because Parceler writes a single mapping class `Parceler$$Parcels` to associate a given type with a `Parcelable`.
+This mapping class can collide giving the following error during compilation:
+
+[source, bash]
+----
+Error Code:
+    2
+Output:
+    UNEXPECTED TOP-LEVEL EXCEPTION:
+    com.android.dex.DexException: Multiple dex files define Lorg/parceler/Parceler$$Parcels$1;
+        at com.android.dx.merge.DexMerger.readSortableTypes(DexMerger.java:594)
+        at com.android.dx.merge.DexMerger.getSortedTypes(DexMerger.java:552)
+        at com.android.dx.merge.DexMerger.mergeClassDefs(DexMerger.java:533)
+        ....
+----
+
+To avoid writing this common mapping class, set `parcelsIndex = false` to each of the library classes.
+Parceler will not write a `Parceler$$Parcels` mapping class if no indexable classes exist and the Parcels utiltiy class will fallback to looking up the generated class by name.
+
+Alternatively, using `@ParcelClass` in the root project, instead of annotating classes directly in the library can avoid this issue.
+
 
 == Getting Parceler
 
