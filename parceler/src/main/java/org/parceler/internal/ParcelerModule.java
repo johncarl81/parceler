@@ -73,6 +73,8 @@ import java.util.*;
 @Namespace("Parceler")
 public class ParcelerModule {
 
+    public static final String STACKTRACE = "parcelerStacktrace";
+
     @Provides
     public ClassGenerationStrategy getClassGenerationStrategy(){
         return new ClassGenerationStrategy(Generated.class, ParcelAnnotationProcessor.class.getName());
@@ -121,12 +123,23 @@ public class ParcelerModule {
     }
 
     @Provides
+    @Named(STACKTRACE)
+    public boolean getStacktraceParameter(ProcessingEnvironment processingEnvironment){
+        if(processingEnvironment.getOptions().containsKey(STACKTRACE)){
+            return Boolean.parseBoolean(processingEnvironment.getOptions().get(STACKTRACE));
+        }
+        return false;
+    }
+
+    @Provides
     public ParcelProcessor getParcelProcessor(Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
                                               Provider<ParcelsGenerator> parcelsTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                                               Provider<PackageHelperGeneratorAdapter> packageHelperGeneratorAdapterProvider,
-                                              ScopedTransactionBuilder scopedTransactionBuilder) {
+                                              ScopedTransactionBuilder scopedTransactionBuilder,
+                                              Logger logger,
+                                              @Named(STACKTRACE) boolean stacktrace) {
 
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
@@ -171,7 +184,7 @@ public class ParcelerModule {
         TransactionProcessor processorChain = new TransactionProcessorChain(processor,
                         new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider))));
 
-        return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder);
+        return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder, logger, stacktrace);
     }
 
     @Provides

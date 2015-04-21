@@ -78,8 +78,7 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
         parcelProcessor.execute();
 
         if (roundEnvironment.processingOver()) {
-            // Throws an exception if errors still exist.
-            parcelProcessor.checkForErrors();
+            parcelProcessor.logErrors();
         }
 
         return true;
