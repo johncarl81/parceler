@@ -74,6 +74,7 @@ import java.util.*;
 public class ParcelerModule {
 
     public static final String STACKTRACE = "parcelerStacktrace";
+    public static final String DEBUG = "parcelerDebugLogging";
 
     @Provides
     public ClassGenerationStrategy getClassGenerationStrategy(){
@@ -100,8 +101,8 @@ public class ParcelerModule {
 
     @Provides
     @Singleton
-    public Logger getLogger(ProcessingEnvironment processingEnvironment){
-        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager());
+    public Logger getLogger(ProcessingEnvironment processingEnvironment, @Named(DEBUG) boolean debug){
+        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager(), debug);
     }
 
     @Provides
@@ -125,10 +126,13 @@ public class ParcelerModule {
     @Provides
     @Named(STACKTRACE)
     public boolean getStacktraceParameter(ProcessingEnvironment processingEnvironment){
-        if(processingEnvironment.getOptions().containsKey(STACKTRACE)){
-            return Boolean.parseBoolean(processingEnvironment.getOptions().get(STACKTRACE));
-        }
-        return false;
+        return processingEnvironment.getOptions().containsKey(STACKTRACE);
+    }
+
+    @Provides
+    @Named(DEBUG)
+    public boolean getDebugOption(ProcessingEnvironment processingEnvironment){
+        return processingEnvironment.getOptions().containsKey(DEBUG);
     }
 
     @Provides

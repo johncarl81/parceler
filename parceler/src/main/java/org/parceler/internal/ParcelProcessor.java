@@ -92,7 +92,7 @@ public class ParcelProcessor {
                 }
             }
             else{
-                logger.error("Code generation did not complete successfully.  For more details add the compiler argument parcelerStacktrace=true");
+                logger.error("Code generation did not complete successfully.  For more details add the compiler argument -AparcelerStacktrace");
             }
         }
     }
