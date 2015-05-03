@@ -30,6 +30,8 @@ import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrategy;
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
+import org.androidtransfuse.util.Logger;
+import org.androidtransfuse.util.MessagerLogger;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
@@ -38,6 +40,7 @@ import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -77,6 +80,11 @@ public class TestParcelerModule {
     @Provides
     public Messager getMessager(ErrorCheckingMessager messager){
         return messager;
+    }
+
+    @Provides
+    public Logger getLogger(){
+        return new JavaUtilLogger(this, false);
     }
 
     @Provides
