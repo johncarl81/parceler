@@ -16,8 +16,9 @@
     </parent>
 
     <modules>
-        <!--<module>app</module>-->
+        <module>app</module>
         <module>test</module>
+        <module>performance</module>
     </modules>
 
     <build>
