@@ -31,18 +31,16 @@ import org.androidtransfuse.gen.invocationBuilder.DefaultInvocationBuilderStrate
 import org.androidtransfuse.gen.invocationBuilder.InvocationBuilderStrategy;
 import org.androidtransfuse.gen.variableDecorator.VariableExpressionBuilderFactory;
 import org.androidtransfuse.util.Logger;
-import org.androidtransfuse.util.MessagerLogger;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.NullCheckFactory;
+import org.parceler.internal.generator.ParcelReadWriteGenerator;
 import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.lang.model.util.Elements;
 
@@ -101,9 +99,8 @@ public class TestParcelerModule {
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
                                     NullCheckFactory nullCheckFactory,
-                                    ParcelableAnalysis analysis,
-                                    Provider<ParcelableGenerator> generatorProvider){
+                                    ParcelReadWriteGenerator parcelReadWriteGenerator){
 
-        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, analysis, generatorProvider);
+        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator);
     }
 }
