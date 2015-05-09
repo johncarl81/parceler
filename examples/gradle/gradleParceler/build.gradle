@@ -16,13 +16,13 @@ repositories {
 }
 
 dependencies {
-    compile 'org.parceler:parceler-api:0.2.14-SNAPSHOT'
-    provided 'org.parceler:parceler:0.2.14-SNAPSHOT'
+    compile 'org.parceler:parceler-api:0.2.17-SNAPSHOT'
+    provided 'org.parceler:parceler:0.2.17-SNAPSHOT'
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.1'
+    buildToolsVersion '19.1'
 
     defaultConfig {
         minSdkVersion 7
