@@ -22,37 +22,46 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Identifies a class to be wrapped by a `Parcelable` wrapper.  This wrapper will serialize an instance of the current
- * class to and from a Parcelable representation based on the public Java-Bean standard property Getters and Setters if
- * no `ParcelConverter` value is specified.  If a ParcelConverter is specified it will be used instead.
+ * Identifies a class to be wrapped by a `Parcelable` wrapper.
+ * This wrapper will serialize an instance of the current class to and from a Parcelable representation based on the serialization technique `value` if no `ParcelConverter` value is specified.
+ * If a ParcelConverter is specified it will be used instead.
  *
- * The following types are available as property types, which correspond to the types accepted by the Android Bundle:
+ * Only a select number of types may be used as attributes of a `@Parcel` class.
+ * The following list includes the mapped types:
  *
  * - `byte`
- * - `byte[]`
  * - `double`
- * - `double[]`
  * - `float`
- * - `float[]`
  * - `int`
- * - `int[]`
  * - `long`
- * - `long[]`
+ * - `char`
+ * - `boolean`
  * - `String`
- * - `String[]`
  * - `IBinder`
  * - `Bundle`
- * - `Object[]`
- * - `SparseArray`
+ * - `SparseArray` of any of the mapped types*
  * - `SparseBooleanArray`
- * - `Exception`
- * - Other classes annotated with `@Parcel`
+ * - `List`, `ArrayList` and `LinkedList` of any of the mapped types*
+ * - `Map`, `HashMap`, `LinkedHashMap`, `SortedMap`, and `TreeMap` of any of the mapped types*
+ * - `Set`, `HashSet`, `SortedSet`, `TreeSet`, `LinkedHashSet` of any of the mapped types*
+ * - `Parcelable`
+ * - `Serializable`
+ * - Array of any of the mapped types
+ * - Any other class annotated with `@Parcel`
  *
- * Instances annotated with `@Parcel` may be used as extras when passing values between Components.  Parceler
- * will automatically wrap and unwrap the given instance with the generated wrapper.
+ * Parcel will error if the generic parameter is not mapped.
  *
- * Properties that should not be serialized can be annotated with the `@Transient` annotation on either the getter
- * or setter.  Parceler will ignore `@Transient` annotated properties during Parcelable serialization.
+ * Parceler also supports any of the above types directly.
+ * This is especially useful when dealing with collections of classes annotated with `@Parcel`:
+ *
+ * [source,java]
+ * ----
+ * Parcelable listParcelable = Parcels.wrap(new ArrayList<Example>());
+ * Parcelable mapParcelable = Parcels.wrap(new HashMap<String, Example>());
+ * ----
+ *
+ * Properties that should not be serialized can be annotated with the `@Transient` annotation on either the getter or setter.
+ * Parceler will ignore `@Transient` annotated properties during Parcelable serialization.
  *
  * @author John Ericksen
  */
@@ -60,23 +69,46 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Parcel {
 
+    /**
+     * Specifies the technique for which Parceler will serialize.
+     */
     Serialization value() default Serialization.FIELD;
 
+    /**
+     * The concrete implementations that should be mapped to this class for use with the Parcels utility class.
+     */
     Class[] implementations() default {};
 
+    /**
+     * Should the current class be included in the generated Parcels dictionary class.
+     */
     boolean parcelsIndex() default true;
 
+    /**
+     * Identifies the types to include in analysis.
+     * Parceler will walk to inheritance extension hierarchy only including the classes specified, if the list of classes is non-empty.
+     */
     Class[] analyze() default {};
 
+    /**
+     * `ParcelConverter` to use when serializing this class.
+     * Parceler will attempt to generate serialization specifics if this converter is not specified.
+     */
     Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 
     enum Serialization {
+        /**
+         * Read and write fields directly.
+         */
         FIELD,
         /**
          * Deprecated, use BEAN instead
          */
         @Deprecated
         METHOD,
+        /**
+         * Read and write via the Bean standard, public matching getter and setters.
+         */
         BEAN
     }
 }
