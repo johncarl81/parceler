@@ -50,7 +50,8 @@ public class ParcelableAnalysis {
     }
 
     public ParcelableDescriptor analyze(ASTType astType) {
-        return analyze(astType, null);
+        ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
+        return analyze(astType, parcelASTAnnotation);
     }
 
     public ParcelableDescriptor analyze(ASTType astType, ASTAnnotation parcelASTAnnotation) {
