@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1205,14 +1205,14 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
     private static class ConverterParcelable<T> implements Parcelable, ParcelWrapper<T> {
 
         private final T value;
-        private final ParcelConverter<T> converter;
+        private final TypeRangeParcelConverter<T, T> converter;
 
         @SuppressWarnings("unchecked")
-        private ConverterParcelable(android.os.Parcel parcel, ParcelConverter<T> converter) {
+        private ConverterParcelable(android.os.Parcel parcel, TypeRangeParcelConverter<T, T> converter) {
             this(converter.fromParcel(parcel), converter);
         }
 
-        private ConverterParcelable(T value, ParcelConverter<T> converter) {
+        private ConverterParcelable(T value, TypeRangeParcelConverter<T, T> converter) {
             this.converter = converter;
             this.value = value;
         }

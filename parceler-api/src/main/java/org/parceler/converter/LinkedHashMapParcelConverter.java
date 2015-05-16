@@ -1,11 +1,11 @@
-/*
- * Copyright 2015 u61173.
+/**
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.parceler.converter;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  *
  * @author u61173
  */
-public abstract class LinkedHashMapParcelConverter<K, V> extends MapParcelConverter<K, V> {
+public abstract class LinkedHashMapParcelConverter<K, V> extends MapParcelConverter<K, V, LinkedHashMap<K, V>> {
 
     @Override
-    public Map<K, V> createMap() {
+    public LinkedHashMap<K, V> createMap() {
         return new LinkedHashMap<K, V>();
     }
 }

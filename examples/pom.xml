@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parceler-examples</artifactId>
-    <version>0.2.17-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Parceler Project Examples</name>
@@ -11,13 +11,14 @@
     <parent>
         <groupId>org.parceler</groupId>
         <artifactId>parceler-project</artifactId>
-        <version>0.2.17-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modules>
-        <!--<module>app</module>-->
+        <module>app</module>
         <module>test</module>
+        <module>performance</module>
     </modules>
 
     <build>

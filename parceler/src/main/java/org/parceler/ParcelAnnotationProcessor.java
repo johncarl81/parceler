@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,7 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
         parcelProcessor.execute();
 
         if (roundEnvironment.processingOver()) {
-            // Throws an exception if errors still exist.
-            parcelProcessor.checkForErrors();
+            parcelProcessor.logErrors();
         }
 
         return true;

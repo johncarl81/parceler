@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ public class ParcelableAnalysis {
     }
 
     public ParcelableDescriptor analyze(ASTType astType) {
-        return analyze(astType, null);
+        ASTAnnotation parcelASTAnnotation = astType.getASTAnnotation(Parcel.class);
+        return analyze(astType, parcelASTAnnotation);
     }
 
     public ParcelableDescriptor analyze(ASTType astType, ASTAnnotation parcelASTAnnotation) {

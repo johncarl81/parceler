@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,5 +27,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({FIELD, METHOD, PARAMETER})
 @Retention(RUNTIME)
 public @interface ParcelPropertyConverter {
-    Class<? extends ParcelConverter> value();
+    Class<? extends TypeRangeParcelConverter> value();
 }

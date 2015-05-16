@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.parceler.internal.ParcelableAnalysis;
 import org.parceler.internal.ParcelableDescriptor;
 import org.parceler.internal.ParcelableGenerator;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
@@ -39,6 +40,7 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Provider<ParcelableGenerator> generator;
     private final UniqueVariableNamer variableNamer;
 
+    @Inject
     public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, ParcelableAnalysis analysis, Provider<ParcelableGenerator> generator, UniqueVariableNamer variableNamer) {
         super("readParcelable", new String[]{ClassLoader.class.getName()}, "writeParcelable", new String[]{"android.os.Parcelable", int.class.getName()});
         this.generationUtil = generationUtil;

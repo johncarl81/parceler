@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,9 @@ import java.util.*;
 @Namespace("Parceler")
 public class ParcelerModule {
 
+    public static final String STACKTRACE = "parcelerStacktrace";
+    public static final String DEBUG = "parcelerDebugLogging";
+
     @Provides
     public ClassGenerationStrategy getClassGenerationStrategy(){
         return new ClassGenerationStrategy(Generated.class, ParcelAnnotationProcessor.class.getName());
@@ -98,8 +101,8 @@ public class ParcelerModule {
 
     @Provides
     @Singleton
-    public Logger getLogger(ProcessingEnvironment processingEnvironment){
-        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager());
+    public Logger getLogger(ProcessingEnvironment processingEnvironment, @Named(DEBUG) boolean debug){
+        return new MessagerLogger(getLogPreprend(), processingEnvironment.getMessager(), debug);
     }
 
     @Provides
@@ -121,12 +124,26 @@ public class ParcelerModule {
     }
 
     @Provides
+    @Named(STACKTRACE)
+    public boolean getStacktraceParameter(ProcessingEnvironment processingEnvironment){
+        return processingEnvironment.getOptions().containsKey(STACKTRACE);
+    }
+
+    @Provides
+    @Named(DEBUG)
+    public boolean getDebugOption(ProcessingEnvironment processingEnvironment){
+        return processingEnvironment.getOptions().containsKey(DEBUG);
+    }
+
+    @Provides
     public ParcelProcessor getParcelProcessor(Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
                                               Provider<ParcelsGenerator> parcelsTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                                               Provider<PackageHelperGeneratorAdapter> packageHelperGeneratorAdapterProvider,
-                                              ScopedTransactionBuilder scopedTransactionBuilder) {
+                                              ScopedTransactionBuilder scopedTransactionBuilder,
+                                              Logger logger,
+                                              @Named(STACKTRACE) boolean stacktrace) {
 
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
@@ -171,7 +188,7 @@ public class ParcelerModule {
         TransactionProcessor processorChain = new TransactionProcessorChain(processor,
                         new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider))));
 
-        return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder);
+        return new ParcelProcessor(processorChain, externalParcelRepositoryProcessor, externalParcelProcessor, parcelProcessor, externalParcelRepositoryTransactionWorkerProvider, externalParcelTransactionWorkerProvider, parcelTransactionWorkerProvider, scopedTransactionBuilder, logger, stacktrace);
     }
 
     @Provides
@@ -182,10 +199,9 @@ public class ParcelerModule {
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
                                     NullCheckFactory nullCheckFactory,
-                                    ParcelableAnalysis analysis,
-                                    Provider<ParcelableGenerator> generator){
+                                    ParcelReadWriteGenerator parcelReadWriteGenerator){
 
-        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, analysis, generator);
+        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator);
     }
     
     public static Generators addGenerators(Generators generators,
@@ -196,8 +212,7 @@ public class ParcelerModule {
                                            JCodeModel codeModel,
                                            SerializableReadWriteGenerator serializableReadWriteGenerator,
                                            NullCheckFactory nullCheckFactory,
-                                           ParcelableAnalysis analysis,
-                                           Provider<ParcelableGenerator> generator){
+                                           ParcelReadWriteGenerator parcelReadWriteGenerator){
 
         generators.addPair(byte.class, "readByte", "writeByte");
         generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));
@@ -222,7 +237,7 @@ public class ParcelerModule {
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
-        generators.add(new ParcelMatcher(externalParcelRepository), new ParcelReadWriteGenerator(generationUtil, analysis, generator, namer));
+        generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(ArrayList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class));

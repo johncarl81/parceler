@@ -1,11 +1,11 @@
-/*
- * Copyright 2015 u61173.
+/**
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.parceler.converter;
 
 import android.os.Parcel;
-import org.parceler.ParcelConverter;
+import org.parceler.TypeRangeParcelConverter;
 
 import java.util.Collection;
 
@@ -25,7 +24,7 @@ import java.util.Collection;
  *
  * @author u61173
  */
-public abstract class CollectionParcelConverter<T> implements ParcelConverter<Collection<T>> {
+public abstract class CollectionParcelConverter<T, C extends Collection<T>> implements TypeRangeParcelConverter<Collection<T>, C> {
 
     private static final int NULL = -1;
 
@@ -42,8 +41,8 @@ public abstract class CollectionParcelConverter<T> implements ParcelConverter<Co
     }
 
     @Override
-    public Collection<T> fromParcel(Parcel parcel) {
-        Collection<T> list;
+    public C fromParcel(Parcel parcel) {
+        C list;
         int size = parcel.readInt();
         if (size == NULL) {
             list = null;
@@ -58,5 +57,5 @@ public abstract class CollectionParcelConverter<T> implements ParcelConverter<Co
 
     public abstract void itemToParcel(T input, Parcel parcel);
     public abstract T itemFromParcel(Parcel parcel);
-    public abstract Collection<T> createCollection();
+    public abstract C createCollection();
 }

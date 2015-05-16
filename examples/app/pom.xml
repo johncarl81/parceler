@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.parceler</groupId>
         <artifactId>parceler-examples</artifactId>
-        <version>0.2.16-SNAPSHOT</version>
+        <version>0.2.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -43,13 +43,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>4.1.1</version>
                 <extensions>true</extensions>
                 <configuration>
                     <sdk>
-                        <platform>10</platform>
+                        <platform>16</platform>
                     </sdk>
                 </configuration>
             </plugin>

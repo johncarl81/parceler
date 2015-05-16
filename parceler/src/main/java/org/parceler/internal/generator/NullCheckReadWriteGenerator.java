@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,22 @@ import com.sun.codemodel.*;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.UniqueVariableNamer;
-import org.parceler.internal.Generators;
 
 /**
 * @author John Ericksen
 */
-public class NullCheckReadWriteGenerator implements ReadWriteGenerator {
+public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator {
 
     private final JCodeModel codeModel;
     private final ClassGenerationUtil generationUtil;
     private final UniqueVariableNamer namer;
     private final ASTType boxedType;
-    private ASTType unboxedType;
-    private Generators generators;
-    private ReadWriteGenerator generator;
 
-    public NullCheckReadWriteGenerator(ASTType boxedType, ASTType unboxedType, JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators) {
-        this.boxedType = boxedType;
-        this.unboxedType = unboxedType;
-        this.codeModel = codeModel;
-        this.generationUtil = generationUtil;
-        this.namer = namer;
-        this.generators = generators;
-    }
-
-    public NullCheckReadWriteGenerator(ASTType boxedType, ReadWriteGenerator generator, JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer) {
+    public NullCheckReadWriteGenerator(ASTType boxedType, JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer) {
         this.boxedType = boxedType;
         this.codeModel = codeModel;
         this.generationUtil = generationUtil;
         this.namer = namer;
-        this.generator = generator;
     }
 
     @Override
@@ -83,10 +69,5 @@ public class NullCheckReadWriteGenerator implements ReadWriteGenerator {
         getGenerator().generateWriter(writeBody, parcel, flags, type, getExpression, parcelableClass);
     }
 
-    private ReadWriteGenerator getGenerator(){
-        if(generator != null){
-            return generator;
-        }
-        return generators.getGenerator(unboxedType);
-    }
+    protected abstract ReadWriteGenerator getGenerator();
 }

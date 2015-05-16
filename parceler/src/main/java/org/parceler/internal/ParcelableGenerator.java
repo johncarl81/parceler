@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-2015 John Ericksen
+ * Copyright 2011-2015 John Ericksen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
 import org.parceler.Parcels;
 import org.parceler.internal.generator.ConverterWrapperReadWriteGenerator;
+import org.parceler.internal.generator.ParcelReadWriteGenerator;
 import org.parceler.internal.generator.ReadWriteGenerator;
 
 import javax.inject.Inject;
@@ -54,6 +55,7 @@ public class ParcelableGenerator {
     private final WriteReferenceVisitor writeToParcelVisitor;
     private final InvocationBuilder invocationBuilder;
     private final Generators generators;
+    private final ParcelReadWriteGenerator parcelReadWriteGenerator;
 
 
     @Inject
@@ -64,7 +66,8 @@ public class ParcelableGenerator {
                                ReadReferenceVisitor readFromParcelVisitor,
                                WriteReferenceVisitor writeToParcelVisitor,
                                InvocationBuilder invocationBuilder,
-                               Generators generators) {
+                               Generators generators,
+                               ParcelReadWriteGenerator parcelReadWriteGenerator) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
         this.classNamer = classNamer;
@@ -73,9 +76,10 @@ public class ParcelableGenerator {
         this.writeToParcelVisitor = writeToParcelVisitor;
         this.invocationBuilder = invocationBuilder;
         this.generators = generators;
+        this.parcelReadWriteGenerator = parcelReadWriteGenerator;
     }
 
-    public JDefinedClass generateParcelable(ASTType type, ParcelableDescriptor parcelableDescriptor) {
+    public JDefinedClass generateParcelable(final ASTType type, ParcelableDescriptor parcelableDescriptor) {
         try {
             JType inputType = generationUtil.ref(type);
 
@@ -97,8 +101,9 @@ public class ParcelableGenerator {
             JVar wtParcelParam = writeToParcelMethod.param(generationUtil.ref("android.os.Parcel"), variableNamer.generateName("android.os.Parcel"));
             JVar flags = writeToParcelMethod.param(codeModel.INT, "flags");
 
-            buildParcelRead(parcelableDescriptor, parcelableClass, wrapped, type, inputType, parcelParam, parcelConstructorBody);
-            buildParcelWrite(parcelableDescriptor, parcelableClass, wrapped, type, wtParcelParam, flags, writeToParcelMethod.body());
+            JBlock writeToParcelMethodBody = writeToParcelMethod.body();
+            parcelConstructorBody.assign(wrapped, buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), parcelReadWriteGenerator).getExpression());
+            buildWriteToParcelExpression(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), parcelReadWriteGenerator);
 
             //@Parcel input
             JMethod inputConstructor = parcelableClass.constructor(JMod.PUBLIC);
@@ -216,16 +221,7 @@ public class ParcelableGenerator {
         }
     }
 
-    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JVar wrapped, MethodReference propertyAccessor, JVar parcelParam, ASTType converter) {
-        //invocation
-        propertyAccessor.accept(readFromParcelVisitor,
-                new ReadContext(new ASTJDefinedClassType(parcelableClass),
-                        parcelConstructorBody,
-                        new TypedExpression(type, wrapped),
-                        buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, propertyAccessor.getType(), converter)));
-    }
-
-    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JVar wrapped, FieldReference propertyAccessor, JVar parcelParam, ASTType converter) {
+    private void buildReadFromParcel(JDefinedClass parcelableClass, JBlock parcelConstructorBody, ASTType type, JVar wrapped, AccessibleReference propertyAccessor, JVar parcelParam, ASTType converter) {
         //invocation
         propertyAccessor.accept(readFromParcelVisitor,
                 new ReadContext(new ASTJDefinedClassType(parcelableClass),
@@ -237,10 +233,8 @@ public class ParcelableGenerator {
     private void buildReadFromParcelFactoryMethod(JDefinedClass parcelableClass, JBlock parcelConstructorBody, JVar wrapped, ConstructorReference propertyAccessor, ASTType wrappedType, JVar parcelParam){
 
         ASTMethod factoryMethod = propertyAccessor.getFactoryMethod();
-        List<JExpression> inputExpression = new ArrayList<JExpression>();
         Map<ASTParameter, ASTType> converters = propertyAccessor.getConverters();
 
-        //todo: write invocation builder for static method
         JInvocation invocation = generationUtil.ref(wrappedType).staticInvoke(factoryMethod.getName());
 
         for (ASTParameter parameter : factoryMethod.getParameters()) {
@@ -248,7 +242,6 @@ public class ParcelableGenerator {
             JVar var = parcelConstructorBody.decl(generationUtil.ref(parameter.getASTType()),
                     variableNamer.generateName(parameter.getASTType()),
                     buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, parameter.getASTType(), converter).getExpression());
-            inputExpression.add(var);
             invocation.arg(var);
         }
 
@@ -273,11 +266,18 @@ public class ParcelableGenerator {
     }
 
     private TypedExpression buildReadFromParcelExpression(JBlock body, JVar parcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter){
+        return buildReadFromParcelExpression(body, parcelParam, parcelableClass, type, converter, null);
+    }
+
+    private TypedExpression buildReadFromParcelExpression(JBlock body, JVar parcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter, ReadWriteGenerator overrideGenerator){
         JClass returnJClassRef = generationUtil.ref(type);
 
         ReadWriteGenerator generator;
         if(converter != null){
             generator = new ConverterWrapperReadWriteGenerator(generationUtil.ref(converter));
+        }
+        else if(overrideGenerator != null) {
+            generator = overrideGenerator;
         }
         else{
             generator = generators.getGenerator(type);
@@ -290,14 +290,22 @@ public class ParcelableGenerator {
         ASTType type = reference.getType();
         JExpression getExpression = reference.accept(writeToParcelVisitor, new WriteContext(new ASTJDefinedClassType(parcelableClass), new TypedExpression(wrappedType, wrapped)));
 
+        buildWriteToParcelExpression(parcelableClass, body, parcel, flags, type, getExpression, converter, null);
+    }
+
+    private void buildWriteToParcelExpression(JDefinedClass parcelableClass, JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression targetExpression, ASTType converter, ReadWriteGenerator overrideGenerator) {
+
         ReadWriteGenerator generator;
         if(converter != null){
             generator = new ConverterWrapperReadWriteGenerator(generationUtil.ref(converter));
+        }
+        else if(overrideGenerator != null) {
+            generator = overrideGenerator;
         }
         else{
             generator = generators.getGenerator(type);
         }
 
-        generator.generateWriter(body, parcel, flags, type, getExpression, parcelableClass);
+        generator.generateWriter(body, parcel, flags, type, targetExpression, parcelableClass);
     }
 }
