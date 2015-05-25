@@ -70,9 +70,16 @@ And dereferenced in the `onCreate()` method:
 Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
 ----
 
+This wrapping and unwrapping technique plays well with the Intent Factory pattern.
+In addition, Parceler is supported by the following libraries:
+
+ * http://androidtransfuse.org/documentation.html#parcel[Transfuse] - Allows `@Parcel` annotated beans to be used with the `@Extra` injection.
+ * https://github.com/sockeqwe/fragmentargs#argsbundler[FragmentArgs] - Uses the `ParcelerArgsBundler` adapter to wrap and unwrap `@Parcel` annotated beans with fragment parameters.
+ * https://github.com/f2prateek/dart[Dart] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@InjectExtra`.
+
 === Parcel attribute types
-Only a select number of types may be used as attributes of a `@Parcel` class.  The following list includes the mapped
-types:
+Only a select number of types may be used as attributes of a `@Parcel` class.
+The following list includes the mapped types:
 
  * `byte`
  * `double`
