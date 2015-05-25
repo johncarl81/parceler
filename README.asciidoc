@@ -373,6 +373,23 @@ Parceler will not write a `Parceler$$Parcels` mapping class if no indexable clas
 Alternatively, using `@ParcelClass` in the root project, instead of annotating classes directly in the library can avoid this issue.
 
 
+== Configuring Proguard
+
+Add next lines to your proguard configuration file:
+
+----
+# Parcelable
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+# Parceler
+-keep interface org.parceler.Parcel
+-keep @org.parceler.Parcel class * { *; }
+-keep class **$$Parcelable { *; }
+-keep class org.parceler.Parceler$$Parcels
+----
+
 == Getting Parceler
 
 You may download Parceler as a Maven dependency:
