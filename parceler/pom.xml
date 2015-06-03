@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parceler</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>aar</packaging>
 
     <name>Parceler</name>
 
@@ -130,8 +132,11 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <annotationProcessors>
-                        <annotationProcessor>org.androidtransfuse.bootstrap.BootstrapProcessor</annotationProcessor>
-                        <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor</annotationProcessor>
+                        <annotationProcessor>org.androidtransfuse.bootstrap.BootstrapProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>
+                            com.google.auto.service.processor.AutoServiceProcessor
+                        </annotationProcessor>
                     </annotationProcessors>
                 </configuration>
             </plugin>
@@ -169,6 +174,12 @@
                     </docletArtifact>
                     <linksource>true</linksource>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.simpligility.maven.plugins</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>4.2.1</version>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>
