@@ -26,6 +26,7 @@
             <groupId>org.parceler</groupId>
             <artifactId>parceler-api</artifactId>
             <version>${project.version}</version>
+            <type>aar</type>
         </dependency>
         <dependency>
             <groupId>com.google.auto.value</groupId>
