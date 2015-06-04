@@ -374,12 +374,14 @@ Alternatively, using `@ParcelClass` in the root project, instead of annotating c
 
 == Configuring Proguard
 
-Add next lines to your proguard configuration file:
+If you use gradle or maven then you **don't need** to specify anything in your proguard configuration file.
+
+If you're not sure that you use latest android tools then add next lines to your configuration file:
 
 ----
 # Parcel library
 -keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
+  *;
 }
 
 -keep class org.parceler.Parceler$$Parcels
