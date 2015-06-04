@@ -6,7 +6,7 @@
 
     <artifactId>parceler</artifactId>
     <version>1.0.1-SNAPSHOT</version>
-    <packaging>aar</packaging>
+    <packaging>jar</packaging>
 
     <name>Parceler</name>
 
@@ -174,12 +174,6 @@
                     </docletArtifact>
                     <linksource>true</linksource>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.simpligility.maven.plugins</groupId>
-                <artifactId>android-maven-plugin</artifactId>
-                <version>4.2.1</version>
-                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>
