@@ -49,6 +49,7 @@
                 <version>4.2.1</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <proguardSkip>false</proguardSkip>
                     <sdk>
                         <platform>16</platform>
                     </sdk>
