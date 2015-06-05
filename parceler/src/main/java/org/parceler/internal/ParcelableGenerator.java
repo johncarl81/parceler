@@ -86,7 +86,6 @@ public class ParcelableGenerator {
             JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(Parcels.IMPL_EXT).build());
             parcelableClass._implements(generationUtil.ref("android.os.Parcelable"))
                     ._implements(generationUtil.ref(ParcelWrapper.class).narrow(inputType));
-            parcelableClass.annotate(SuppressWarnings.class).param("value", "unchecked");
 
             //wrapped @Parcel
             JFieldVar wrapped = parcelableClass.field(JMod.PRIVATE, inputType, variableNamer.generateName(type));
