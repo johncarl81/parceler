@@ -374,7 +374,7 @@ Alternatively, using `@ParcelClass` in the root project, instead of annotating c
 
 ==== Configuring Proguard
 
-To configure Proguard, add the following lines to your proguard configuration file.  These will keep files related to the `Parcels` utilty class:
+To configure Proguard, add the following lines to your proguard configuration file.  These will keep files related to the `Parcels` utilty class and the `Parcelable` `CREATOR` instance:
 
 ----
 # Parcel library
