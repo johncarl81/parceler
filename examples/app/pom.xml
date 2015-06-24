@@ -50,6 +50,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <proguardSkip>false</proguardSkip>
+                    <proguardJarPath>${env.ANDROID_HOME}\tools\proguard\lib\proguard.jar</proguardJarPath>
                     <sdk>
                         <platform>16</platform>
                     </sdk>
