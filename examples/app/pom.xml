@@ -49,8 +49,10 @@
                 <version>4.2.1</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <proguardSkip>false</proguardSkip>
-                    <proguardJarPath>${env.ANDROID_HOME}\tools\proguard\lib\proguard.jar</proguardJarPath>
+                    <proguard>
+                        <skip>false</skip>
+                        <proguardJarPath>${env.ANDROID_HOME}/tools/proguard/lib/proguard.jar</proguardJarPath>
+                    </proguard>
                     <sdk>
                         <platform>16</platform>
                     </sdk>
