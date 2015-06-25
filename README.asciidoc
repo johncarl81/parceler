@@ -372,7 +372,7 @@ Parceler will not write a `Parceler$$Parcels` mapping class if no indexable clas
 
 Alternatively, using `@ParcelClass` in the root project, instead of annotating classes directly in the library can avoid this issue.
 
-== Configuring Proguard
+==== Configuring Proguard
 
 If you use gradle or maven then you **don't need** to specify anything in your proguard configuration file.
 
@@ -410,7 +410,7 @@ or Gradle:
 [source,groovy]
 ----
 compile "org.parceler:parceler-api:${parcelerVersion}"
-provided "org.parceler:parceler:${parcelerVersion}"
+apt "org.parceler:parceler:${parcelerVersion}"
 ----
 
 Or from http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.parceler%22[Maven Central].
