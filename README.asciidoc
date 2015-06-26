@@ -333,7 +333,7 @@ First, one may specify additional types to associate to the given type via the `
 
 [source, java]
 ----
-class ExampleProxy etends Example {}
+class ExampleProxy extends Example {}
 @Parcel(implementations = {ExampleProxy.class})
 class Example {}
 
