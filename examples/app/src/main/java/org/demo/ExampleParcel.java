@@ -15,23 +15,27 @@
  */
 package org.demo;
 
-import com.google.auto.value.AutoValue;
 import org.parceler.Parcel;
 import org.parceler.ParcelFactory;
-import org.parceler.ParcelProperty;
 
 /**
  * Intentionally in a different package to make sure we don't accidentally match it with org.parceler Proguard matchers.
  */
-@AutoValue
 @Parcel
-public abstract class ExampleParcel {
+public class ExampleParcel {
 
-    @ParcelProperty("message")
-    public abstract String getMessage();
+    private final String message;
 
     @ParcelFactory
-    public static ExampleParcel create(@ParcelProperty("message") String message) {
-        return new AutoValue_ExampleParcel(message);
+    public static ExampleParcel create(String message) {
+        return new ExampleParcel(message);
+    }
+
+    public ExampleParcel(String message) {
+        this.message = message;
+    }
+
+    public String getMessage(){
+        return message;
     }
 }
