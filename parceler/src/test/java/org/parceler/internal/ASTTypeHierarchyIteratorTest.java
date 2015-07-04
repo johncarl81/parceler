@@ -38,7 +38,6 @@ public class ASTTypeHierarchyIteratorTest {
     private ASTType a;
     private ASTType b;
     private ASTType c;
-    private ASTType object;
 
     @Inject
     ASTClassFactory astClassFactory;
@@ -49,7 +48,6 @@ public class ASTTypeHierarchyIteratorTest {
         a = astClassFactory.getType(A.class);
         b = astClassFactory.getType(B.class);
         c = astClassFactory.getType(C.class);
-        object = astClassFactory.getType(Object.class);
     }
 
     @Test
@@ -62,15 +60,13 @@ public class ASTTypeHierarchyIteratorTest {
         assertEquals(b, iterator.next());
         assertTrue(iterator.hasNext());
         assertEquals(c, iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(object, iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(null, iterator.next());
     }
 
     @Test
     public void testSkipIterator(){
-        Iterator<ASTType> iterator = new ASTTypeHierarchyIterator(a, ImmutableSet.<ASTType>of(b, c));
+        Iterator<ASTType> iterator = new ASTTypeHierarchyIterator(a, ImmutableSet.of(b, c));
 
         assertTrue(iterator.hasNext());
         assertEquals(b, iterator.next());
@@ -82,12 +78,10 @@ public class ASTTypeHierarchyIteratorTest {
 
     @Test
     public void testSkipIncludingObjectIterator(){
-        Iterator<ASTType> iterator = new ASTTypeHierarchyIterator(a, ImmutableSet.<ASTType>of(c, object));
+        Iterator<ASTType> iterator = new ASTTypeHierarchyIterator(a, ImmutableSet.of(c));
 
         assertTrue(iterator.hasNext());
         assertEquals(c, iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(object, iterator.next());
         assertFalse(iterator.hasNext());
         assertEquals(null, iterator.next());
     }
