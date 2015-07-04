@@ -130,9 +130,9 @@ public class ParcelableAnalysis {
 
             while(typeIterator.hasNext()){
                 ASTType hierarchyLoop = typeIterator.next();
-                Map<String, Collection<ASTReference<ASTMethod>>> defaultWriteMethods = new HashMap<String, Collection<ASTReference<ASTMethod>>>();
-                Map<String, Collection<ASTReference<ASTMethod>>> defaultReadMethods = new HashMap<String, Collection<ASTReference<ASTMethod>>>();
-                Map<String, Collection<ASTReference<ASTField>>> defaultFields = new HashMap<String, Collection<ASTReference<ASTField>>>();
+                HashMultimap<String, ASTReference<ASTMethod>> defaultWriteMethods = HashMultimap.create();
+                HashMultimap<String, ASTReference<ASTMethod>> defaultReadMethods = HashMultimap.create();
+                HashMultimap<String, ASTReference<ASTField>> defaultFields = HashMultimap.create();
 
                 if(Parcel.Serialization.BEAN.equals(serialization)){
                     defaultWriteMethods.putAll(findJavaBeanWriteMethods(hierarchyLoop, definedMethods, false));
@@ -146,14 +146,14 @@ public class ParcelableAnalysis {
                     defaultFields.putAll(findFields(hierarchyLoop, false));
                 }
 
-                Map<String, Collection<ASTReference<ASTMethod>>> propertyWriteMethods = findJavaBeanWriteMethods(hierarchyLoop, definedMethods, true);
-                Map<String, Collection<ASTReference<ASTMethod>>> propertyReadMethods = findJavaBeanReadMethods(hierarchyLoop, definedMethods, true);
-                Map<String, Collection<ASTReference<ASTField>>> propertyFields = findFields(hierarchyLoop, true);
+                HashMultimap<String, ASTReference<ASTMethod>> propertyWriteMethods = findJavaBeanWriteMethods(hierarchyLoop, definedMethods, true);
+                HashMultimap<String, ASTReference<ASTMethod>> propertyReadMethods = findJavaBeanReadMethods(hierarchyLoop, definedMethods, true);
+                HashMultimap<String, ASTReference<ASTField>> propertyFields = findFields(hierarchyLoop, true);
 
                 //check for > 1 properties
-                Map<String, Collection<ASTReference<ASTMethod>>> writeCombination = combine(defaultWriteMethods, propertyWriteMethods);
-                Map<String, Collection<ASTReference<ASTMethod>>> readCombination = combine(defaultReadMethods, propertyReadMethods);
-                Map<String, Collection<ASTReference<ASTField>>> fieldCombination = combine(defaultFields, propertyFields);
+                HashMultimap<String, ASTReference<ASTMethod>> writeCombination = combine(defaultWriteMethods, propertyWriteMethods);
+                HashMultimap<String, ASTReference<ASTMethod>> readCombination = combine(defaultReadMethods, propertyReadMethods);
+                HashMultimap<String, ASTReference<ASTField>> fieldCombination = combine(defaultFields, propertyFields);
                 validateSingleProperty(writeCombination);
                 validateSingleProperty(readCombination);
                 validateSingleProperty(fieldCombination);
@@ -165,11 +165,11 @@ public class ParcelableAnalysis {
                 Map<String, MethodReference> methodWriteReferences = new HashMap<String, MethodReference>();
                 Map<String, ASTType> converters = new HashMap<String, ASTType>();
 
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultReadMethods.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultReadMethods.asMap().entrySet()) {
                     readReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getReturnType(), methodEntry.getValue().iterator().next().getReference()));
                 }
                 //overwrite with field accessor
-                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : defaultFields.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : defaultFields.asMap().entrySet()) {
                     readReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
                     fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
                     if(fieldEntry.getValue().iterator().next().getConverter() != null){
@@ -177,14 +177,14 @@ public class ParcelableAnalysis {
                     }
                 }
                 //overwrite with property methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyReadMethods.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyReadMethods.asMap().entrySet()) {
                     readReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getReturnType(), methodEntry.getValue().iterator().next().getReference()));
                     if(methodEntry.getValue().iterator().next().getConverter() != null){
                         converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
                     }
                 }
                 //overwrite with property fields
-                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : propertyFields.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : propertyFields.asMap().entrySet()) {
                     readReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
                     fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
                     if(fieldEntry.getValue().iterator().next().getConverter() != null){
@@ -192,14 +192,14 @@ public class ParcelableAnalysis {
                     }
                 }
                 //default write via methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultWriteMethods.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultWriteMethods.asMap().entrySet()) {
                     methodWriteReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getParameters().iterator().next().getASTType(), methodEntry.getValue().iterator().next().getReference()));
                     if(methodEntry.getValue().iterator().next().getConverter() != null){
                         converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
                     }
                 }
                 //overwrite with property methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyWriteMethods.entrySet()) {
+                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyWriteMethods.asMap().entrySet()) {
                     methodWriteReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getParameters().iterator().next().getASTType(), methodEntry.getValue().iterator().next().getReference()));
                     if(methodEntry.getValue().iterator().next().getConverter() != null){
                         converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
@@ -296,7 +296,7 @@ public class ParcelableAnalysis {
         return methodResult;
     }
 
-    public Map<String, Collection<ASTReference<ASTMethod>>> findJavaBeanWriteMethods(ASTType astType, Set<MethodSignature> definedMethods, final boolean declaredProperty){
+    public HashMultimap<String, ASTReference<ASTMethod>> findJavaBeanWriteMethods(ASTType astType, Set<MethodSignature> definedMethods, final boolean declaredProperty){
         return findValueMethods(astType, new Predicate<ASTMethod>() {
                     @Override
                     public boolean apply(ASTMethod astMethod) {
@@ -308,10 +308,10 @@ public class ParcelableAnalysis {
                     public String apply(ASTMethod astMethod) {
                         return getPropertyName(astMethod);
                     }
-                }, definedMethods, declaredProperty).asMap();
+                }, definedMethods, declaredProperty);
     }
 
-    private Map<String, Collection<ASTReference<ASTMethod>>> findValueWriteMethods(ASTType astType, final Set<MethodSignature> definedMethods, final boolean declaredProperty) {
+    private HashMultimap<String, ASTReference<ASTMethod>> findValueWriteMethods(ASTType astType, final Set<MethodSignature> definedMethods, final boolean declaredProperty) {
         return findValueMethods(astType, new Predicate<ASTMethod>() {
                     @Override
                     public boolean apply(ASTMethod astMethod) {
@@ -323,10 +323,10 @@ public class ParcelableAnalysis {
                     public String apply(ASTMethod astMethod) {
                         return astMethod.getName();
                     }
-                }, definedMethods, declaredProperty).asMap();
+                }, definedMethods, declaredProperty);
     }
 
-    private Map<String, Collection<ASTReference<ASTMethod>>> findJavaBeanReadMethods(ASTType astType, Set<MethodSignature> definedMethods, final boolean declaredProperty){
+    private HashMultimap<String, ASTReference<ASTMethod>> findJavaBeanReadMethods(ASTType astType, Set<MethodSignature> definedMethods, final boolean declaredProperty){
         return findValueMethods(astType, new Predicate<ASTMethod>() {
                     @Override
                     public boolean apply(ASTMethod astMethod) {
@@ -338,22 +338,22 @@ public class ParcelableAnalysis {
                     public String apply(ASTMethod astMethod) {
                         return getPropertyName(astMethod);
                     }
-                }, definedMethods, declaredProperty).asMap();
+                }, definedMethods, declaredProperty);
     }
 
-    private Map<String, Collection<ASTReference<ASTMethod>>> findValueReadMethods(ASTType astType, final Set<MethodSignature> definedMethods, final boolean declaredProperty) {
+    private HashMultimap<String, ASTReference<ASTMethod>> findValueReadMethods(ASTType astType, final Set<MethodSignature> definedMethods, final boolean declaredProperty) {
         return findValueMethods(astType, new Predicate<ASTMethod>() {
                     @Override
                     public boolean apply(ASTMethod astMethod) {
                         return isValueAccessor(astMethod, declaredProperty);
                     }
                 },
-                new Function<ASTMethod, String>(){
+                new Function<ASTMethod, String>() {
                     @Override
                     public String apply(ASTMethod astMethod) {
                         return astMethod.getName();
                     }
-                }, definedMethods, declaredProperty).asMap();
+                }, definedMethods, declaredProperty);
     }
 
     private HashMultimap<String, ASTReference<ASTMethod>> findValueMethods(ASTType astType, Predicate<ASTMethod> filter, final Function<ASTMethod, String> nameTransformer, final Set<MethodSignature> definedMethods, final boolean declaredProperty) {
@@ -382,7 +382,7 @@ public class ParcelableAnalysis {
                 })), HashMultimap.<String, ASTReference<ASTMethod>>create());
     }
 
-    private Map<String, Collection<ASTReference<ASTField>>> findFields(ASTType astType, final boolean declaredProperty){
+    private HashMultimap<String, ASTReference<ASTField>> findFields(ASTType astType, final boolean declaredProperty){
         return Multimaps.invertFrom(Multimaps.forMap(FluentIterable.from(astType.getFields())
                 .filter(new Predicate<ASTField>() {
                     @Override
@@ -408,7 +408,7 @@ public class ParcelableAnalysis {
                         }
                         return astField.getName();
                     }
-                })), HashMultimap.<String, ASTReference<ASTField>>create()).asMap();
+                })), HashMultimap.<String, ASTReference<ASTField>>create());
     }
 
     private Set<ASTConstructor> findConstructors(ASTType astType, boolean includeEmptyBeanConstructor){
@@ -485,8 +485,8 @@ public class ParcelableAnalysis {
         return parameters;
     }
 
-    private void validateSingleProperty(Map<String, ? extends Collection<? extends ASTReference<? extends ASTBase>>> input){
-        for (Map.Entry<String, ? extends Collection<? extends ASTReference<? extends ASTBase>>> entry : input.entrySet()) {
+    private void validateSingleProperty(HashMultimap<String, ? extends ASTReference<? extends ASTBase>> input){
+        for (Map.Entry<String, ? extends Collection<? extends ASTReference<? extends ASTBase>>> entry : input.asMap().entrySet()) {
             if(entry.getValue().size() != 1){
                 for (ASTReference<? extends ASTBase> reference : entry.getValue()) {
                     validator.error("Too many properties defined under " + entry.getKey())
@@ -497,7 +497,7 @@ public class ParcelableAnalysis {
         }
     }
 
-    private void validateConverters(Map<String, Collection<ASTReference<ASTMethod>>> input, Map<String, Collection<ASTReference<ASTField>>> fieldReferences, Map<String, ASTReference<ASTParameter>> parameterReferences){
+    private void validateConverters(HashMultimap<String, ASTReference<ASTMethod>> input, HashMultimap<String, ASTReference<ASTField>> fieldReferences, Map<String, ASTReference<ASTParameter>> parameterReferences){
         Set<String> keys = new HashSet<String>();
         keys.addAll(input.keySet());
         keys.addAll(fieldReferences.keySet());
@@ -619,22 +619,12 @@ public class ParcelableAnalysis {
         return null;
     }
 
-    private <T> Map<String, Collection<T>> combine(Map<String, Collection<T>> one, Map<String, Collection<T>> two){
-        Map<String, Collection<T>> result = new HashMap<String, Collection<T>>();
+    private <T> HashMultimap<String, T> combine(HashMultimap<String, T> one, HashMultimap<String, T> two){
+        HashMultimap<String, T> result = HashMultimap.create();
 
-        for (Map.Entry<String, Collection<T>> oneEntry : one.entrySet()) {
-            if(!result.containsKey(oneEntry.getKey())){
-                result.put(oneEntry.getKey(), new HashSet<T>());
-            }
-            result.get(oneEntry.getKey()).addAll(oneEntry.getValue());
-        }
+        result.putAll(one);
+        result.putAll(two);
 
-        for (Map.Entry<String, Collection<T>> twoEntry : two.entrySet()) {
-            if(!result.containsKey(twoEntry.getKey())){
-                result.put(twoEntry.getKey(), new HashSet<T>());
-            }
-            result.get(twoEntry.getKey()).addAll(twoEntry.getValue());
-        }
         return result;
     }
 
