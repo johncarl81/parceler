@@ -3,6 +3,10 @@
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
 image:https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api/badge.svg["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api"]
 
+Have a question?  http://stackoverflow.com/questions/ask?tags=parceler[Ask it on StackOverflow.]
+
+Found an issue?  https://github.com/johncarl81/parceler/issues/new[Please report it.]
+
 In Android, http://developer.android.com/reference/android/os/Parcelable.html[Parcelables] are a great way to serialize Java Objects between Contexts.
 http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditional Serialization, Parcelables take on the order of 10x less time to both serialize and deserialize.
 There is a major flaw with Parcelables, however.
@@ -289,6 +293,25 @@ public class ItemListParcelConverter implements ParcelConverter<List<Item>> {
             items.add((Item) Parcels.unwrap(parcel.readParcelable(Item.class.getClassLoader())));
         }
         return items;
+    }
+}
+----
+
+Parceler is also packaged with a series of base classes to make Collection conversion easier located under the `org.parceler.converter` package of the api.
+These base classes take care of a variety of difficult or verbose jobs dealing with Collections including null checks and collectin iteration.
+For instance, the above `ParcelConverter` could be written using the `ArrayListParcelConverter':
+
+[source,java]
+----
+public class ItemListParcelConverter extends ArrayListParcelConverter<Item> {
+    @Override
+    public void itemToParcel(Item item, Parcel parcel) {
+        parcel.writeParcelable(Parcels.wrap(item), 0);
+    }
+
+    @Override
+    public Item itemFromParcel(Parcel parcel) {
+        return Parcels.unwrap(parcel.readParcelable(ItemListParcelConverter.class.getClassLoader()));
     }
 }
 ----
