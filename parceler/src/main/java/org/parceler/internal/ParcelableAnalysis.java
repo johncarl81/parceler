@@ -560,6 +560,7 @@ public class ParcelableAnalysis {
 
     private boolean isGetter(ASTMethod astMethod, boolean ignoreModifier) {
         return astMethod.getParameters().size() == 0 &&
+                !astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier ||
                 (astMethod.getName().startsWith(GET) || astMethod.getName().startsWith(IS)) &&
                         astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
@@ -567,6 +568,7 @@ public class ParcelableAnalysis {
 
     private boolean isValueAccessor(ASTMethod astMethod, boolean ignoreModifier){
         return astMethod.getParameters().size() == 0 &&
+                !astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier || astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
@@ -620,15 +622,18 @@ public class ParcelableAnalysis {
     private <T> Map<String, Collection<T>> combine(Map<String, Collection<T>> one, Map<String, Collection<T>> two){
         Map<String, Collection<T>> result = new HashMap<String, Collection<T>>();
 
-        result.putAll(one);
+        for (Map.Entry<String, Collection<T>> oneEntry : one.entrySet()) {
+            if(!result.containsKey(oneEntry.getKey())){
+                result.put(oneEntry.getKey(), new HashSet<T>());
+            }
+            result.get(oneEntry.getKey()).addAll(oneEntry.getValue());
+        }
 
         for (Map.Entry<String, Collection<T>> twoEntry : two.entrySet()) {
             if(!result.containsKey(twoEntry.getKey())){
-                result.put(twoEntry.getKey(), twoEntry.getValue());
+                result.put(twoEntry.getKey(), new HashSet<T>());
             }
-            else{
-                result.get(twoEntry.getKey()).addAll(twoEntry.getValue());
-            }
+            result.get(twoEntry.getKey()).addAll(twoEntry.getValue());
         }
         return result;
     }
