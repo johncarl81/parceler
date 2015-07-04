@@ -165,44 +165,50 @@ public class ParcelableAnalysis {
                 Map<String, MethodReference> methodWriteReferences = new HashMap<String, MethodReference>();
                 Map<String, ASTType> converters = new HashMap<String, ASTType>();
 
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultReadMethods.asMap().entrySet()) {
-                    readReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getReturnType(), methodEntry.getValue().iterator().next().getReference()));
+                for (String methodKey : defaultReadMethods.keys()) {
+                    ASTReference<ASTMethod> methodASTReference = defaultReadMethods.get(methodKey).iterator().next();
+                    readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getReturnType(), methodASTReference.getReference()));
                 }
                 //overwrite with field accessor
-                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : defaultFields.asMap().entrySet()) {
-                    readReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
-                    fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
-                    if(fieldEntry.getValue().iterator().next().getConverter() != null){
-                        converters.put(fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getConverter());
+                for (String fieldKey : defaultFields.keys()){
+                    ASTReference<ASTField> fieldASTReference = defaultFields.get(fieldKey).iterator().next();
+                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    if(fieldASTReference.getConverter() != null){
+                        converters.put(fieldKey, fieldASTReference.getConverter());
                     }
                 }
                 //overwrite with property methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyReadMethods.asMap().entrySet()) {
-                    readReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getReturnType(), methodEntry.getValue().iterator().next().getReference()));
-                    if(methodEntry.getValue().iterator().next().getConverter() != null){
-                        converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
+                for (String methodKey : propertyReadMethods.keys()) {
+                    ASTReference<ASTMethod> methodASTReference = propertyReadMethods.get(methodKey).iterator().next();
+                    readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getReturnType(), methodASTReference.getReference()));
+                    if(methodASTReference.getConverter() != null){
+                        converters.put(methodKey, methodASTReference.getConverter());
                     }
                 }
                 //overwrite with property fields
-                for (Map.Entry<String, Collection<ASTReference<ASTField>>> fieldEntry : propertyFields.asMap().entrySet()) {
-                    readReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
-                    fieldWriteReferences.put(fieldEntry.getKey(), new FieldReference(hierarchyLoop, fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getReference()));
-                    if(fieldEntry.getValue().iterator().next().getConverter() != null){
-                        converters.put(fieldEntry.getKey(), fieldEntry.getValue().iterator().next().getConverter());
+                for (String fieldKey : propertyFields.keys()){
+                    ASTReference<ASTField> fieldASTReference = propertyFields.get(fieldKey).iterator().next();
+                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    if(fieldASTReference.getConverter() != null){
+                        converters.put(fieldKey, fieldASTReference.getConverter());
                     }
                 }
                 //default write via methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : defaultWriteMethods.asMap().entrySet()) {
-                    methodWriteReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getParameters().iterator().next().getASTType(), methodEntry.getValue().iterator().next().getReference()));
-                    if(methodEntry.getValue().iterator().next().getConverter() != null){
-                        converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
+                for (String methodKey : defaultWriteMethods.keys()) {
+                    ASTReference<ASTMethod> methodASTReference = defaultWriteMethods.get(methodKey).iterator().next();
+                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getParameters().iterator().next().getASTType(), methodASTReference.getReference()));
+                    if(methodASTReference.getConverter() != null){
+                        converters.put(methodKey, methodASTReference.getConverter());
                     }
                 }
                 //overwrite with property methods
-                for (Map.Entry<String, Collection<ASTReference<ASTMethod>>> methodEntry : propertyWriteMethods.asMap().entrySet()) {
-                    methodWriteReferences.put(methodEntry.getKey(), new MethodReference(astType, hierarchyLoop, methodEntry.getKey(), methodEntry.getValue().iterator().next().getReference().getParameters().iterator().next().getASTType(), methodEntry.getValue().iterator().next().getReference()));
-                    if(methodEntry.getValue().iterator().next().getConverter() != null){
-                        converters.put(methodEntry.getKey(), methodEntry.getValue().iterator().next().getConverter());
+                for (String methodKey : propertyWriteMethods.keys()) {
+                    ASTReference<ASTMethod> methodASTReference = propertyWriteMethods.get(methodKey).iterator().next();
+                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getParameters().iterator().next().getASTType(), methodASTReference.getReference()));
+                    if(methodASTReference.getConverter() != null){
+                        converters.put(methodKey, methodASTReference.getConverter());
                     }
                 }
 
@@ -230,9 +236,8 @@ public class ParcelableAnalysis {
                 }
 
                 //methods
-                for (Map.Entry<String, MethodReference> methodReferenceEntry : methodWriteReferences.entrySet()) {
-                    MethodReference methodReference = methodReferenceEntry.getValue();
-                    String propertyName = methodReferenceEntry.getKey();
+                for (String propertyName : methodWriteReferences.keySet()) {
+                    MethodReference methodReference = methodWriteReferences.get(propertyName);
                     if(!writeParameters.containsKey(propertyName) && readReferences.containsKey(propertyName)){
                         validateReadReference(readReferences, methodReference.getMethod(), propertyName);
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
@@ -244,9 +249,8 @@ public class ParcelableAnalysis {
                 }
 
                 //fields
-                for (Map.Entry<String, FieldReference> fieldReferenceEntry : fieldWriteReferences.entrySet()) {
-                    FieldReference fieldReference = fieldReferenceEntry.getValue();
-                    String propertyName = fieldReferenceEntry.getKey();
+                for (String propertyName : fieldWriteReferences.keySet()) {
+                    FieldReference fieldReference = fieldWriteReferences.get(propertyName);
                     if(!writeParameters.containsKey(propertyName) &&
                             !methodWriteReferences.containsKey(propertyName) &&
                             readReferences.containsKey(propertyName)){
@@ -486,10 +490,10 @@ public class ParcelableAnalysis {
     }
 
     private void validateSingleProperty(HashMultimap<String, ? extends ASTReference<? extends ASTBase>> input){
-        for (Map.Entry<String, ? extends Collection<? extends ASTReference<? extends ASTBase>>> entry : input.asMap().entrySet()) {
-            if(entry.getValue().size() != 1){
-                for (ASTReference<? extends ASTBase> reference : entry.getValue()) {
-                    validator.error("Too many properties defined under " + entry.getKey())
+        for (String key : input.keys()) {
+            if(input.get(key).size() != 1){
+                for (ASTReference<? extends ASTBase> reference : input.get(key)) {
+                    validator.error("Too many properties defined under " + key)
                             .element(reference.getReference())
                             .build();
                 }
