@@ -134,7 +134,7 @@ public class ParcelableAnalysis {
                 HashMultimap<String, ASTReference<ASTMethod>> defaultReadMethods = HashMultimap.create();
                 HashMultimap<String, ASTReference<ASTField>> defaultFields = HashMultimap.create();
 
-                if(Parcel.Serialization.BEAN.equals(serialization)){
+                if(Parcel.Serialization.BEAN.equals(serialization) || Parcel.Serialization.METHOD.equals(serialization)){
                     defaultWriteMethods.putAll(findJavaBeanWriteMethods(hierarchyLoop, definedMethods, false));
                     defaultReadMethods.putAll(findJavaBeanReadMethods(hierarchyLoop, definedMethods, false));
                 }
