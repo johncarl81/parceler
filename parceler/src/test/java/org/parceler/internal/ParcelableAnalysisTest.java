@@ -1162,10 +1162,6 @@ public class ParcelableAnalysisTest {
     public void testValueClassAnalysis() {
         ParcelableDescriptor analysis = analyze(ValueClass.class);
 
-        for (ReferencePair<MethodReference> methodReferenceReferencePair : analysis.getMethodPairs()) {
-            System.out.println("VALUE: " + methodReferenceReferencePair.getName());
-        }
-
         assertNull(analysis.getParcelConverterType());
         assertNotNull(analysis.getConstructorPair());
         assertEquals(0, analysis.getFieldPairs().size());
