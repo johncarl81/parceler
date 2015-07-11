@@ -22,6 +22,23 @@
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.simpligility.maven.plugins</groupId>
+                    <artifactId>android-maven-plugin</artifactId>
+                    <configuration>
+                        <proguard>
+                            <skip>false</skip>
+                        </proguard>
+                        <sdk>
+                            <platform>16</platform>
+                        </sdk>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

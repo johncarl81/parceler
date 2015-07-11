@@ -46,22 +46,10 @@
             <plugin>
                 <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
-                <version>4.3.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.sf.proguard</groupId>
-                        <artifactId>proguard-base</artifactId>
-                        <version>5.2.1</version>
-                    </dependency>
-                </dependencies>
-                <extensions>true</extensions>
                 <configuration>
                     <proguard>
                         <skip>false</skip>
                     </proguard>
-                    <sdk>
-                        <platform>16</platform>
-                    </sdk>
                 </configuration>
             </plugin>
             <plugin>

@@ -23,12 +23,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.parceler</groupId>
-            <artifactId>parceler-api</artifactId>
-            <version>${project.version}</version>
-            <type>aar</type>
-        </dependency>
-        <dependency>
             <groupId>com.google.auto.value</groupId>
             <artifactId>auto-value</artifactId>
             <version>1.0</version>

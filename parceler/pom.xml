@@ -23,6 +23,7 @@
             <groupId>org.parceler</groupId>
             <artifactId>parceler-api</artifactId>
             <version>${project.version}</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.androidtransfuse</groupId>
