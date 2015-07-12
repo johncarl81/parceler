@@ -16,6 +16,7 @@
 package org.parceler.internal;
 
 import com.google.common.collect.ImmutableSet;
+import org.androidtransfuse.adapter.ASTStringType;
 import org.androidtransfuse.adapter.ASTType;
 
 import java.util.Iterator;
@@ -24,6 +25,8 @@ import java.util.Iterator;
  * @author John Ericksen
  */
 public class ASTTypeHierarchyIterator implements Iterator<ASTType> {
+
+    private static final ASTType OBJECT_TYPE = new ASTStringType(Object.class.getCanonicalName());
 
     private final ImmutableSet<ASTType> analyze;
     private final ASTType root;
@@ -69,7 +72,7 @@ public class ASTTypeHierarchyIterator implements Iterator<ASTType> {
     }
 
     private boolean checkAnalysis(ASTType type){
-        return analyze.isEmpty() || analyze.contains(type);
+        return (analyze.isEmpty() || analyze.contains(type)) && !type.equals(OBJECT_TYPE);
     }
 
     @Override

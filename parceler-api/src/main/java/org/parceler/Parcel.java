@@ -102,13 +102,17 @@ public @interface Parcel {
          */
         FIELD,
         /**
-         * Deprecated, use BEAN instead
+         * Deprecated, use `BEAN` instead
          */
         @Deprecated
         METHOD,
         /**
          * Read and write via the Bean standard, public matching getter and setters.
          */
-        BEAN
+        BEAN,
+        /**
+         * Read and write via value accessors and mutators.
+         */
+        VALUE
     }
 }

@@ -49,11 +49,11 @@ public class ParcelableAnalysisTest {
         converterAst = astClassFactory.getType(TargetSubTypeWriterConverter.class);
     }
 
-    public static class TargetSubType {
+    static class TargetSubType {
         String value;
     }
 
-    public class TargetSubTypeWriterConverter implements ParcelConverter<ParcelableAnalysisTest.TargetSubType> {
+    static class TargetSubTypeWriterConverter implements ParcelConverter<ParcelableAnalysisTest.TargetSubType> {
 
         @Override
         public void toParcel(ParcelableAnalysisTest.TargetSubType input, android.os.Parcel parcel) {
@@ -69,7 +69,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    private static class FieldSerialization {
+    static class FieldSerialization {
         String value;
     }
 
@@ -88,7 +88,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class TransientFieldSerialization {
+    static class TransientFieldSerialization {
         @Transient String value;
     }
 
@@ -107,12 +107,12 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class StaticFieldExcluded {
+    static class StaticFieldExcluded {
         static String staticField = "value";
     }
 
     @Parcel(Serialization.BEAN)
-    public static class StaticMethodsExcluded {
+    static class StaticMethodsExcluded {
         public static String getStatic() {
             return "value";
         }
@@ -147,7 +147,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class ConstructorSerialization {
+    static class ConstructorSerialization {
         String value;
 
         @ParcelConstructor
@@ -170,7 +170,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class UnnamedConstructorSerialization {
+    static class UnnamedConstructorSerialization {
         String value;
 
         @ParcelConstructor
@@ -193,7 +193,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class ConstructorMethod {
+    static class ConstructorMethod {
         String value;
 
         @ParcelConstructor
@@ -220,7 +220,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class ConstructorProtectedMethod {
+    static class ConstructorProtectedMethod {
         String value;
 
         @ParcelConstructor
@@ -239,7 +239,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class ConstructorAnnotatedPrivateMethod {
+    static class ConstructorAnnotatedPrivateMethod {
         String value;
 
         @ParcelConstructor
@@ -268,7 +268,7 @@ public class ParcelableAnalysisTest {
 
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class Basic {
+    static class Basic {
         String stringValue;
         int intValue;
 
@@ -304,7 +304,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class Modifiers {
+    static class Modifiers {
         String one;
         String two;
         String three;
@@ -358,7 +358,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class MissingSetter {
+    static class MissingSetter {
         String stringValue;
         int intValue;
 
@@ -391,7 +391,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class MissingGetter {
+    static class MissingGetter {
         String stringValue;
         int intValue;
 
@@ -435,7 +435,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(converter = Converter.class)
-    public static class Target {}
+    static class Target {}
 
     @Test
     public void testParcelConverter() {
@@ -450,7 +450,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel(Parcel.Serialization.BEAN)
-    public static class MethodTransient {
+    static class MethodTransient {
         String stringValue;
         int intValue;
 
@@ -488,7 +488,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class FieldTransient {
+    static class FieldTransient {
         @Transient String stringValue;
         transient int intValue;
     }
@@ -509,7 +509,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class DuplicateProperty {
+    static class DuplicateProperty {
         @ParcelProperty("value")
         String value;
         @ParcelProperty("value")
@@ -522,7 +522,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class NoDesignatedConstructor {
+    static class NoDesignatedConstructor {
         String value;
 
         public NoDesignatedConstructor(@ASTClassFactory.ASTParameterName("value") String value){
@@ -536,7 +536,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class TooManyParcelConstructors {
+    static class TooManyParcelConstructors {
         String value;
 
         @ParcelConstructor
@@ -554,7 +554,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class DefaultConstructor {
+    static class DefaultConstructor {
         public DefaultConstructor(){}
     }
 
@@ -571,7 +571,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class FieldMethodProperty {
+    static class FieldMethodProperty {
         String one;
         String two;
 
@@ -602,7 +602,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class NonBeanMethodProperty {
+    static class NonBeanMethodProperty {
         String one;
 
         @ParcelProperty("one")
@@ -632,7 +632,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingConstructorProperty {
+    static class CollidingConstructorProperty {
         @ParcelProperty("value")
         String value;
 
@@ -664,7 +664,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingMethodProperty {
+    static class CollidingMethodProperty {
         @ParcelProperty("value")
         String someValue;
 
@@ -690,7 +690,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class PropertyConverterParcel{
+    static class PropertyConverterParcel{
         @ParcelProperty("value")
         @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
         TargetSubType value;
@@ -707,7 +707,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class MethodPropertyConverter {
+    static class MethodPropertyConverter {
         TargetSubType value;
 
         @ParcelProperty("value")
@@ -728,7 +728,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class ConstructorConverterSerialization {
+    static class ConstructorConverterSerialization {
         TargetSubType value;
 
         @ParcelConstructor
@@ -751,7 +751,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class UnnamedConstructorConverterSerialization {
+    static class UnnamedConstructorConverterSerialization {
         TargetSubType value;
 
         @ParcelConstructor
@@ -774,7 +774,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingConstructorParameterConverterSerialization {
+    static class CollidingConstructorParameterConverterSerialization {
         @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
         TargetSubType value;
 
@@ -790,7 +790,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingMethodParameterConverterSerialization {
+    static class CollidingMethodParameterConverterSerialization {
         @ParcelProperty("value")
         @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
         TargetSubType value;
@@ -808,7 +808,7 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
-    public static class CollidingMethodConverterSerialization {
+    static class CollidingMethodConverterSerialization {
         TargetSubType value;
 
         @ParcelProperty("value")
@@ -1141,6 +1141,34 @@ public class ParcelableAnalysisTest {
         assertEquals(0, analysis.getMethodPairs().size());
         assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel(Serialization.VALUE)
+    static class ValueClass {
+        private String value;
+
+        public String value(){
+            return value;
+        }
+
+        public void value(String value){
+            this.value = value;
+        }
+
+        public void someOtherMethod(String input){}
+    }
+
+    @Test
+    public void testValueClassAnalysis() {
+        ParcelableDescriptor analysis = analyze(ValueClass.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+        methodsContain(analysis, "value");
     }
 
 
