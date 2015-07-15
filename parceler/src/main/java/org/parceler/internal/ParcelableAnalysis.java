@@ -168,6 +168,9 @@ public class ParcelableAnalysis {
                 for (String methodKey : defaultReadMethods.keys()) {
                     ASTReference<ASTMethod> methodASTReference = defaultReadMethods.get(methodKey).iterator().next();
                     readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getReturnType(), methodASTReference.getReference()));
+                    if(methodASTReference.getConverter() != null){
+                        converters.put(methodKey, methodASTReference.getConverter());
+                    }
                 }
                 //overwrite with field accessor
                 for (String fieldKey : defaultFields.keys()){

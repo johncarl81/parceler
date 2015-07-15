@@ -449,6 +449,44 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
+    @Parcel(Serialization.BEAN)
+    static class BeanConverters {
+        private TargetSubType one;
+        private TargetSubType two;
+
+        @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
+        public TargetSubType getOne() {
+            return one;
+        }
+
+        public void setOne(TargetSubType one) {
+            this.one = one;
+        }
+
+        public TargetSubType getTwo() {
+            return two;
+        }
+
+        @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
+        public void setTwo(TargetSubType two) {
+            this.two = two;
+        }
+    }
+
+    @Test
+    public void testBeanConverters() {
+
+        ParcelableDescriptor analysis = analyze(BeanConverters.class);
+
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(2, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertEquals(converterAst, analysis.getMethodPairs().get(0).getConverter());
+        assertEquals(converterAst, analysis.getMethodPairs().get(1).getConverter());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
     @Parcel(Parcel.Serialization.BEAN)
     static class MethodTransient {
         String stringValue;
@@ -691,7 +729,6 @@ public class ParcelableAnalysisTest {
 
     @Parcel
     static class PropertyConverterParcel{
-        @ParcelProperty("value")
         @ParcelPropertyConverter(TargetSubTypeWriterConverter.class)
         TargetSubType value;
     }
