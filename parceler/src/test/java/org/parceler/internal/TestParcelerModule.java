@@ -34,6 +34,7 @@ import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
+import org.parceler.internal.generator.EnumReadWriteGenerator;
 import org.parceler.internal.generator.NullCheckFactory;
 import org.parceler.internal.generator.ParcelReadWriteGenerator;
 import org.parceler.internal.generator.SerializableReadWriteGenerator;
@@ -99,8 +100,9 @@ public class TestParcelerModule {
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
                                     NullCheckFactory nullCheckFactory,
-                                    ParcelReadWriteGenerator parcelReadWriteGenerator){
+                                    ParcelReadWriteGenerator parcelReadWriteGenerator,
+                                    EnumReadWriteGenerator enumReadWriteGenerator){
 
-        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator);
+        return ParcelerModule.addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator, enumReadWriteGenerator);
     }
 }

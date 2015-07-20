@@ -102,8 +102,9 @@ public class ParcelableGenerator {
             JVar flags = writeToParcelMethod.param(codeModel.INT, "flags");
 
             JBlock writeToParcelMethodBody = writeToParcelMethod.body();
-            parcelConstructorBody.assign(wrapped, buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), parcelReadWriteGenerator).getExpression());
-            buildWriteToParcelExpression(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), parcelReadWriteGenerator);
+            ReadWriteGenerator rootGenerator = getRootReadWriteGenerator(type);
+            parcelConstructorBody.assign(wrapped, buildReadFromParcelExpression(parcelConstructorBody, parcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), rootGenerator).getExpression());
+            buildWriteToParcelExpression(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), rootGenerator);
 
             //@Parcel input
             JMethod inputConstructor = parcelableClass.constructor(JMod.PUBLIC);
@@ -307,5 +308,14 @@ public class ParcelableGenerator {
         }
 
         generator.generateWriter(body, parcel, flags, type, targetExpression, parcelableClass);
+    }
+
+    private ReadWriteGenerator getRootReadWriteGenerator(ASTType type) {
+        if(generators.matches(type)){
+            return generators.getGenerator(type);
+        }
+        else {
+            return parcelReadWriteGenerator;
+        }
     }
 }

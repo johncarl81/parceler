@@ -48,6 +48,7 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
+import org.parceler.internal.matcher.EnumMatcher;
 import org.parceler.internal.matcher.GenericCollectionMatcher;
 import org.parceler.internal.matcher.ParcelMatcher;
 
@@ -199,9 +200,10 @@ public class ParcelerModule {
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
                                     NullCheckFactory nullCheckFactory,
-                                    ParcelReadWriteGenerator parcelReadWriteGenerator){
+                                    ParcelReadWriteGenerator parcelReadWriteGenerator,
+                                    EnumReadWriteGenerator enumReadWriteGenerator){
 
-        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator);
+        return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator, enumReadWriteGenerator);
     }
     
     public static Generators addGenerators(Generators generators,
@@ -212,7 +214,7 @@ public class ParcelerModule {
                                            JCodeModel codeModel,
                                            SerializableReadWriteGenerator serializableReadWriteGenerator,
                                            NullCheckFactory nullCheckFactory,
-                                           ParcelReadWriteGenerator parcelReadWriteGenerator){
+                                           ParcelReadWriteGenerator parcelReadWriteGenerator, EnumReadWriteGenerator enumReadWriteGenerator){
 
         generators.addPair(byte.class, "readByte", "writeByte");
         generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));
@@ -237,6 +239,7 @@ public class ParcelerModule {
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new ImplementsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
+        generators.add(new EnumMatcher(), enumReadWriteGenerator);
         generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class));
