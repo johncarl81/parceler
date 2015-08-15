@@ -1085,6 +1085,14 @@ public class ParcelableAnalysisTest {
     }
 
     @Parcel
+    class NonStaticInnerClass {}
+
+    @Test
+    public void testNonStaticInnerClass(){
+        errors(NonStaticInnerClass.class);
+    }
+
+    @Parcel
     static class UnmappedType {
         Object value;
     }
@@ -1211,7 +1219,7 @@ public class ParcelableAnalysisTest {
 
     private void errors(Class clazz){
         analyze(clazz);
-        assertTrue(messager.isErrored());
+        assertTrue(messager.getMessage(), messager.isErrored());
     }
 
     private boolean constructorContains(ParcelableDescriptor descriptor, String name) {

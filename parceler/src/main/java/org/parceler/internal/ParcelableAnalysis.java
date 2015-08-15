@@ -87,6 +87,10 @@ public class ParcelableAnalysis {
             Set<ASTConstructor> constructors = findConstructors(astType, true);
             Set<ASTMethod> factoryMethods = findFactoryMethods(astType);
             ConstructorReference constructorReference = null;
+            if(!astType.isStatic() && astType.isInnerClass()){
+                validator.error("Inner Classes annotated with @Parcel must be static.").element(astType).build();
+            }
+
             if(!factoryMethods.isEmpty() && !findConstructors(astType, false).isEmpty()) {
                 validator.error("Both @ParcelConstructor and @ParcelFactory may not be annotated on the same class.").element(astType).build();
             }
