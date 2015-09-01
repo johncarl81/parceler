@@ -122,7 +122,7 @@ public class ParcelableGenerator {
             getWrappedMethod.body()._return(wrapped);
 
             //public static final CREATOR = ...
-            JDefinedClass creatorClass = parcelableClass._class(JMod.PRIVATE | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(new ASTStringType("android.os.Parcelable.Creator")).build().getClassName());
+            JDefinedClass creatorClass = parcelableClass._class(JMod.PUBLIC | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(new ASTStringType("android.os.Parcelable.Creator")).build().getClassName());
 
             creatorClass._implements(generationUtil.ref("android.os.Parcelable.Creator").narrow(parcelableClass));
 
