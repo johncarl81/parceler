@@ -278,12 +278,22 @@ public class ParcelableAnalysis {
                 }
             }
 
-            //validate all constructor parameters have a matching read converter
-            if(constructorReference != null && constructorReference.getConstructor() != null){
-                for (ASTParameter parameter : constructorReference.getConstructor().getParameters()) {
-                    if(!constructorReference.containsWriteReference(parameter)){
-                        validator.error("No corresponding property found for constructor parameter " + parameter.getName())
-                                .element(parameter).build();
+            //validate all constructor / factory parameters have a matching read property
+            if(constructorReference != null){
+                if(constructorReference.getConstructor() != null) {
+                    for (ASTParameter parameter : constructorReference.getConstructor().getParameters()) {
+                        if(!constructorReference.containsWriteReference(parameter)){
+                            validator.error("No corresponding property found for constructor parameter " + parameter.getName())
+                                    .element(parameter).build();
+                        }
+                    }
+                }
+                else if (constructorReference.getFactoryMethod() != null){
+                    for (ASTParameter parameter : constructorReference.getFactoryMethod().getParameters()) {
+                        if(!constructorReference.containsWriteReference(parameter)){
+                            validator.error("No corresponding property found for factory method parameter " + parameter.getName())
+                                    .element(parameter).build();
+                        }
                     }
                 }
             }

@@ -1043,14 +1043,30 @@ public class ParcelableAnalysisTest {
         }
 
         @ParcelFactory
-        public FactoryMethod build(String value) {
-            return new FactoryMethod();
+        public NonStaticFactoryMethod build(String value) {
+            return new NonStaticFactoryMethod();
         }
     }
 
     @Test
     public void testNonStaticFactoryMethod() {
         errors(NonStaticFactoryMethod.class);
+    }
+    
+    @Parcel
+    static class MismatchedFactoryMethodParams {
+        
+        public String getValue(){return null;}
+        
+        @ParcelFactory 
+        public MismatchedFactoryMethodParams build(String value){
+            return new MismatchedFactoryMethodParams();
+        }
+    }
+
+    @Test
+    public void testMismatchedFactoryMethodParams() {
+        errors(MismatchedFactoryMethodParams.class);
     }
 
     @Parcel
