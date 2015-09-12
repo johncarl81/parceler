@@ -71,7 +71,7 @@ And dereferenced in the `onCreate()` method:
 
 [source,java]
 ----
-Example example = Parcels.unwrap(this.getIntent().getExtras().get("example"));
+Example example = Parcels.unwrap(this.getIntent().getParcelableExtra("example"));
 ----
 
 This wrapping and unwrapping technique plays well with the Intent Factory pattern.
