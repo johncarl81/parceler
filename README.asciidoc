@@ -224,7 +224,7 @@ This allows `@Parcel` annotated classes to be used with other POJO based librari
 
 ==== Static Factory support
 As an alternative to using a constructor directly, Parceler supports using an annotated Static Factory to build an instance of the given class.
-This style supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annoation processor / code generation library for generating immutable beans.
+This style supports Google's https://github.com/google/auto/tree/master/value[AutoValue] annotation processor / code generation library for generating immutable beans.
 Parceler interfaces with AutoValue via the `@ParcelFactory` annotation, which maps a static factory method into the annotated `@Parcel` serialization:
 
 [source,java]
