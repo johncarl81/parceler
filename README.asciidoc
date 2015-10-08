@@ -217,7 +217,7 @@ public class Example {
 }
 ----
 
-For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by `@Transient`.
+For attributes that should not be serialized with Parceler, the attribute field, getter or setter may be annotated by `@Transient`.  In addition, fields marked with the `transient` keyword will also not be serialized.
 
 Parceler supports many different styles centering around the POJO.
 This allows `@Parcel` annotated classes to be used with other POJO based libraries, including https://code.google.com/p/google-gson/[GSON], https://realm.io/docs/java/latest/#parceler[Realm], https://bitbucket.org/qbusict/cupboard[Cupboard], and http://simple.sourceforge.net/[Simple XML] to name a few.
