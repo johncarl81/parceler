@@ -94,7 +94,7 @@ public @interface Parcel {
      * `ParcelConverter` to use when serializing this class.
      * Parceler will attempt to generate serialization specifics if this converter is not specified.
      */
-    Class<? extends ParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
+    Class<? extends TypeRangeParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 
     enum Serialization {
         /**
