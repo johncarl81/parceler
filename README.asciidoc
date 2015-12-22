@@ -417,21 +417,21 @@ You may download Parceler as a Maven dependency:
 <dependency>
     <groupId>org.parceler</groupId>
     <artifactId>parceler</artifactId>
-    <version>${parceler.version}</version>
+    <version>1.0.4</version>
     <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>org.parceler</groupId>
     <artifactId>parceler-api</artifactId>
-    <version>${parceler.version}</version>
+    <version>1.0.4</version>
 </dependency>
 ----
 
 or Gradle:
 [source,groovy]
 ----
-compile "org.parceler:parceler-api:${parcelerVersion}"
-apt "org.parceler:parceler:${parcelerVersion}"
+compile 'org.parceler:parceler-api:1.0.4'
+apt 'org.parceler:parceler:1.0.4'
 ----
 For details on using the apt scope see the https://bitbucket.org/hvisser/android-apt[android-apt project].
 
