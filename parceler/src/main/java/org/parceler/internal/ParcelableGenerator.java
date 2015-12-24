@@ -150,44 +150,53 @@ public class ParcelableGenerator {
         }
     }
 
-    public void buildParcelRead(ParcelableDescriptor parcelableDescriptor, JDefinedClass parcelableClass, JVar wrapped, ASTType type, JType inputType, JVar identity, JVar parcelParam, JBlock parcelConstructorBody, JVar writeIdentityMap) {
+    public void buildParcelRead(ParcelableDescriptor parcelableDescriptor, JDefinedClass parcelableClass, JVar wrapped, ASTType type, JType inputType, JVar identity, JVar parcelParam, JBlock readFromParcelBody, JVar writeIdentityMap) {
         if (parcelableDescriptor.getParcelConverterType() == null) {
 
             //constructor
             ConstructorReference constructorPair = parcelableDescriptor.getConstructorPair();
             if(constructorPair == null){
                 JInvocation constructorInvocation = JExpr._new(inputType);
-                parcelConstructorBody.assign(wrapped, constructorInvocation);
+                readFromParcelBody.assign(wrapped, constructorInvocation);
             }
             else {
-                parcelConstructorBody.add(writeIdentityMap.invoke("put").arg(identity).arg(JExpr._null()));
+                readFromParcelBody.add(writeIdentityMap.invoke("put").arg(identity).arg(JExpr._null()));
                 if(constructorPair.getConstructor() != null){
-                    buildReadFromParcelConstructor(parcelableClass, parcelConstructorBody, wrapped, constructorPair, type, parcelParam, writeIdentityMap);
+                    buildReadFromParcelConstructor(parcelableClass, readFromParcelBody, wrapped, constructorPair, type, parcelParam, writeIdentityMap);
                 }
                 else if(constructorPair.getFactoryMethod() != null){
-                    buildReadFromParcelFactoryMethod(parcelableClass, parcelConstructorBody, wrapped, constructorPair, type, parcelParam, writeIdentityMap);
+                    buildReadFromParcelFactoryMethod(parcelableClass, readFromParcelBody, wrapped, constructorPair, type, parcelParam, writeIdentityMap);
                 }
             }
             //add to identity map
-            parcelConstructorBody.add(writeIdentityMap.invoke("put").arg(identity).arg(wrapped));
+            readFromParcelBody.add(writeIdentityMap.invoke("put").arg(identity).arg(wrapped));
             //field
             for (ReferencePair<FieldReference> fieldPair : parcelableDescriptor.getFieldPairs()) {
-                buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, fieldPair.getReference(), parcelParam, fieldPair.getConverter(), writeIdentityMap);
+                buildReadFromParcel(parcelableClass, readFromParcelBody, type, wrapped, fieldPair.getReference(), parcelParam, fieldPair.getConverter(), writeIdentityMap);
             }
             //method
             for (ReferencePair<MethodReference> methodPair : parcelableDescriptor.getMethodPairs()) {
-                buildReadFromParcel(parcelableClass, parcelConstructorBody, type, wrapped, methodPair.getReference(), parcelParam, methodPair.getConverter(), writeIdentityMap);
+                buildReadFromParcel(parcelableClass, readFromParcelBody, type, wrapped, methodPair.getReference(), parcelParam, methodPair.getConverter(), writeIdentityMap);
             }
         } else {
             JClass converterType = generationUtil.ref(parcelableDescriptor.getParcelConverterType());
             JFieldVar converterField = parcelableClass.field(JMod.PRIVATE, converterType,
                     variableNamer.generateName(parcelableDescriptor.getParcelConverterType()), JExpr._new(converterType));
 
-            parcelConstructorBody.assign(wrapped, JExpr.invoke(converterField, ParcelConverter.CONVERT_FROM_PARCEL).arg(parcelParam));
+            readFromParcelBody.assign(wrapped, JExpr.invoke(converterField, ParcelConverter.CONVERT_FROM_PARCEL).arg(parcelParam));
+        }
+
+        for (ASTMethod unwrapMethods : parcelableDescriptor.getUnwrapCallbacks()) {
+            readFromParcelBody.invoke(wrapped, unwrapMethods.getName());
         }
     }
 
     public void buildParcelWrite(ParcelableDescriptor parcelableDescriptor, JDefinedClass parcelableClass, JExpression wrapped, ASTType type, JExpression wtParcelParam, JVar flags, JBlock writeToParcelBody, JVar writeIdentityMap){
+
+        for (ASTMethod wrapMethods : parcelableDescriptor.getWrapCallbacks()) {
+            writeToParcelBody.invoke(wrapped, wrapMethods.getName());
+        }
+
         if (parcelableDescriptor.getParcelConverterType() == null) {
 
             //constructor

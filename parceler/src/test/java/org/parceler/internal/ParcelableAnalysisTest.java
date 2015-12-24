@@ -1232,6 +1232,51 @@ public class ParcelableAnalysisTest {
         methodsContain(analysis, "value");
     }
 
+    @Parcel
+    static class CallbackExample {
+
+        @OnWrap
+        public void onWrap(){}
+        @OnUnwrap
+        public void onUnwrap(){}
+    }
+
+    @Test
+    public void testCallbackAnalysis() {
+        ParcelableDescriptor analysis = analyze(CallbackExample.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertEquals(1, analysis.getWrapCallbacks().size());
+        assertEquals(1, analysis.getUnwrapCallbacks().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class CallbackInheritanceExample extends CallbackExample {
+
+        @OnWrap
+        public void onWrap2(){}
+        @OnUnwrap
+        public void onUnwrap2(){}
+    }
+
+    @Test
+    public void testCallbackInheritanceAnalysis() {
+        ParcelableDescriptor analysis = analyze(CallbackInheritanceExample.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertEquals(2, analysis.getWrapCallbacks().size());
+        assertEquals(2, analysis.getUnwrapCallbacks().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
 
     private void errors(Class clazz){
         analyze(clazz);
