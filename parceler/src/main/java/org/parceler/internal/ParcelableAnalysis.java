@@ -154,6 +154,32 @@ public class ParcelableAnalysis {
                 parcelableDescriptor.getWrapCallbacks().addAll(findCallbacks(hierarchyLoop, definedMethods, OnWrap.class));
                 parcelableDescriptor.getUnwrapCallbacks().addAll(findCallbacks(hierarchyLoop, definedMethods, OnUnwrap.class));
 
+                for (ASTMethod wrapCallbackMethod : parcelableDescriptor.getWrapCallbacks()) {
+                    if(!wrapCallbackMethod.getReturnType().equals(ASTVoidType.VOID)){
+                        validator.error("@OnWrap annotated methods must return void.")
+                                .element(wrapCallbackMethod)
+                                .build();
+                    }
+                    if(!wrapCallbackMethod.getParameters().isEmpty()){
+                        validator.error("@OnWrap annotated methods must have no method parameters.")
+                                .element(wrapCallbackMethod)
+                                .build();
+                    }
+                }
+
+                for (ASTMethod unwrapCallbackMethod : parcelableDescriptor.getUnwrapCallbacks()) {
+                    if(!unwrapCallbackMethod.getReturnType().equals(ASTVoidType.VOID)){
+                        validator.error("@OnUnwrap annotated methods must return void.")
+                                .element(unwrapCallbackMethod)
+                                .build();
+                    }
+                    if(!unwrapCallbackMethod.getParameters().isEmpty()){
+                        validator.error("@OnUnwrap annotated methods must have no method parameters.")
+                                .element(unwrapCallbackMethod)
+                                .build();
+                    }
+                }
+
                 HashMultimap<String, ASTReference<ASTMethod>> propertyWriteMethods = findJavaBeanWriteMethods(hierarchyLoop, definedMethods, true);
                 HashMultimap<String, ASTReference<ASTMethod>> propertyReadMethods = findJavaBeanReadMethods(hierarchyLoop, definedMethods, true);
                 HashMultimap<String, ASTReference<ASTField>> propertyFields = findFields(hierarchyLoop, true);

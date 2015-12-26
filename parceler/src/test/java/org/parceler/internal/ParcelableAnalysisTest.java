@@ -1278,6 +1278,54 @@ public class ParcelableAnalysisTest {
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
+    @Parcel
+    static class CallbackWrapReturnNonNull {
+
+        @OnWrap
+        public String onWrap(){return null;}
+    }
+
+    @Test
+    public void testCallbackWrapReturnNonNull() {
+        errors(CallbackWrapReturnNonNull.class);
+    }
+
+    @Parcel
+    static class CallbackUnwrapReturnNonNull {
+
+        @OnUnwrap
+        public String onUnwrap(){return null;}
+    }
+
+    @Test
+    public void testCallbackUnwrapReturnNonNull() {
+        errors(CallbackUnwrapReturnNonNull.class);
+    }
+
+    @Parcel
+    static class CallbackWrapAcceptValue {
+
+        @OnWrap
+        public void onWrap(String value){}
+    }
+
+    @Test
+    public void testCallbackWrapAcceptValue() {
+        errors(CallbackWrapAcceptValue.class);
+    }
+
+    @Parcel
+    static class CallbackUnwrapAcceptValue {
+
+        @OnUnwrap
+        public void onUnwrap(String value){}
+    }
+
+    @Test
+    public void testCallbackUnwrapAcceptValue() {
+        errors(CallbackUnwrapReturnNonNull.class);
+    }
+
     private void errors(Class clazz){
         analyze(clazz);
         assertTrue(messager.getMessage(), messager.isErrored());

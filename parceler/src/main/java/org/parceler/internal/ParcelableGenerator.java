@@ -186,15 +186,15 @@ public class ParcelableGenerator {
             readFromParcelBody.assign(wrapped, JExpr.invoke(converterField, ParcelConverter.CONVERT_FROM_PARCEL).arg(parcelParam));
         }
 
-        for (ASTMethod unwrapMethods : parcelableDescriptor.getUnwrapCallbacks()) {
-            readFromParcelBody.invoke(wrapped, unwrapMethods.getName());
+        for (ASTMethod unwrapMethod : parcelableDescriptor.getUnwrapCallbacks()) {
+            readFromParcelBody.add(invocationBuilder.buildMethodCall(new ASTJDefinedClassType(parcelableClass), type, unwrapMethod, Collections.<JExpression>emptyList(), new TypedExpression(type, wrapped)));
         }
     }
 
     public void buildParcelWrite(ParcelableDescriptor parcelableDescriptor, JDefinedClass parcelableClass, JExpression wrapped, ASTType type, JExpression wtParcelParam, JVar flags, JBlock writeToParcelBody, JVar writeIdentityMap){
 
-        for (ASTMethod wrapMethods : parcelableDescriptor.getWrapCallbacks()) {
-            writeToParcelBody.invoke(wrapped, wrapMethods.getName());
+        for (ASTMethod wrapMethod : parcelableDescriptor.getWrapCallbacks()) {
+            writeToParcelBody.add(invocationBuilder.buildMethodCall(new ASTJDefinedClassType(parcelableClass), type, wrapMethod, Collections.<JExpression>emptyList(), new TypedExpression(type, wrapped)));
         }
 
         if (parcelableDescriptor.getParcelConverterType() == null) {
