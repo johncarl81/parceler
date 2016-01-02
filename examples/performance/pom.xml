@@ -29,29 +29,29 @@
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>2.1_r1</version>
+            <version>4.1.1.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.3</version>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>com.github.frankiesardo</groupId>
             <artifactId>auto-parcel-processor</artifactId>
-            <version>0.2</version>
+            <version>0.3.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.frankiesardo</groupId>
             <artifactId>auto-parcel</artifactId>
-            <version>0.2</version>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.auto.value</groupId>
             <artifactId>auto-value</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
     </dependencies>
 

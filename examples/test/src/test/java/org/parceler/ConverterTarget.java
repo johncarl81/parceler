@@ -18,8 +18,8 @@ package org.parceler;
 import android.util.SparseArray;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import uk.co.jemos.podam.annotations.PodamCollection;
-import uk.co.jemos.podam.annotations.PodamStrategyValue;
+import uk.co.jemos.podam.common.PodamCollection;
+import uk.co.jemos.podam.common.PodamStrategyValue;
 
 import java.util.*;
 

@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.google.auto.value</groupId>
             <artifactId>auto-value</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -42,18 +42,18 @@
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>2.1_r1</version>
+            <version>4.1.1.4</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.robolectric</groupId>
             <artifactId>robolectric</artifactId>
-            <version>2.3</version>
+            <version>3.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>uk.co.jemos.podam</groupId>
             <artifactId>podam</artifactId>
-            <version>3.2.0.RELEASE</version>
+            <version>6.0.2.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
