@@ -337,7 +337,7 @@ public class AndroidApplication extends Application{
 Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
 
 In addition, classes referenced by `@ParcelClass` may be configured using the `@Parcel` annotation.
-This allows the seralization configuration through any parameter available on the `@Parcel` annotation including the seralization technique or classes to analyze.
+Any parameter available on the `@Parcel` annotation may be used to configure the referenced class, including the seralization technique or classes to analyze.
 
 One useful technique is the ability to define global custom converters for a type:
 [source,java]
