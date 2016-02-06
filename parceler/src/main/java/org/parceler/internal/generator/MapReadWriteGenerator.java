@@ -50,7 +50,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
 
         JClass hashMapType = generationUtil.ref(mapType);
 
@@ -91,10 +91,10 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);
 
-        JExpression readKeyExpression = keyGenerator.generateReader(readLoopBody, parcelParam, keyComponentType, generationUtil.ref(keyComponentType), parcelableClass);
+        JExpression readKeyExpression = keyGenerator.generateReader(readLoopBody, parcelParam, keyComponentType, generationUtil.ref(keyComponentType), parcelableClass, readIdentityMap);
         JVar keyVar = readLoopBody.decl(keyType, namer.generateName(keyComponentType), readKeyExpression);
 
-        JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass);
+        JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass, readIdentityMap);
         JVar valueVar = readLoopBody.decl(valueType, namer.generateName(valueComponentType), readValueExpression);
 
         readLoopBody.invoke(outputVar, "put").arg(keyVar).arg(valueVar);
@@ -103,7 +103,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
 
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);
@@ -131,7 +131,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);
 
-        keyGenerator.generateWriter(forEach.body(), parcel, flags, keyComponentType, forEach.var().invoke("getKey"), parcelableClass);
-        valueGenerator.generateWriter(forEach.body(), parcel, flags, valueComponentType, forEach.var().invoke("getValue"), parcelableClass);
+        keyGenerator.generateWriter(forEach.body(), parcel, flags, keyComponentType, forEach.var().invoke("getKey"), parcelableClass, writeIdentitySet);
+        valueGenerator.generateWriter(forEach.body(), parcel, flags, valueComponentType, forEach.var().invoke("getValue"), parcelableClass, writeIdentitySet);
     }
 }

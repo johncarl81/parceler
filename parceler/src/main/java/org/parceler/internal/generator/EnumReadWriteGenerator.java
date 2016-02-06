@@ -38,7 +38,7 @@ public class EnumReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
         JClass enumRef = generationUtil.ref(Enum.class);
         JClass enumClassRef = generationUtil.ref(type);
         JClass stringRef = generationUtil.ref(String.class);
@@ -49,7 +49,7 @@ public class EnumReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
         JClass enumClassRef = generationUtil.ref(type);
 
         JVar localVar = body.decl(enumClassRef, namer.generateName(enumClassRef), getExpression);

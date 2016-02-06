@@ -31,12 +31,12 @@ public class ConverterWrapperReadWriteGenerator implements ReadWriteGenerator {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
         return JExpr._new(converter).invoke(ParcelConverter.CONVERT_FROM_PARCEL).arg(parcelParam);
     }
 
     @Override
-    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
         body.invoke(JExpr._new(converter), ParcelConverter.CONVERT_TO_PARCEL).arg(getExpression).arg(parcel);
     }
 }
