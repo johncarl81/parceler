@@ -71,7 +71,7 @@ And dereferenced in the `onCreate()` method:
 
 [source,java]
 ----
-Example example = Parcels.unwrap(this.getIntent().getParcelableExtra("example"));
+Example example = Parcels.unwrap(getIntent().getParcelableExtra("example"));
 ----
 
 This wrapping and unwrapping technique plays well with the Intent Factory pattern.
@@ -224,8 +224,9 @@ This allows `@Parcel` annotated classes to be used with other POJO based librari
 
  * https://code.google.com/p/google-gson/[GSON]
  * https://realm.io/docs/java/latest/#parceler[Realm]
- * https://bitbucket.org/qbusict/cupboard[Cupboard]
+ * https://bitbucket.org/littlerobots/cupboard[Cupboard]
  * http://simple.sourceforge.net/[Simple XML]
+ * https://github.com/Raizlabs/DBFlow[DBFlow]
 
 ==== Static Factory support
 As an alternative to using a constructor directly, Parceler supports using an annotated Static Factory to build an instance of the given class.
@@ -337,13 +338,13 @@ public class AndroidApplication extends Application{
 Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
 
 In addition, classes referenced by `@ParcelClass` may be configured using the `@Parcel` annotation.
-Any parameter available on the `@Parcel` annotation may be used to configure the referenced class, including the seralization technique or classes to analyze.
+This allows the seralization configuration through any parameter available on the `@Parcel` annotation including the seralization technique or classes to analyze.
 
 One useful technique is the ability to define global custom converters for a type:
 [source,java]
 ----
 @ParcelClass(
-    value = LibraryParcel.class, 
+    value = LibraryParcel.class,
     annotation = @Parcel(converter = LibraryParcelConverter.class))
 class SomeClass{}
 ----
