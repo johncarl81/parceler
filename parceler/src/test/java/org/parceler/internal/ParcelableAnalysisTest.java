@@ -886,7 +886,7 @@ public class ParcelableAnalysisTest {
         TargetSubType value;
 
         @ParcelConstructor
-        public CollidingConstructorParameterConverterSerialization(@ParcelPropertyConverter(TargetSubTypeWriterConverter.class) @ASTClassFactory.ASTParameterName("value") TargetSubType value){
+        public CollidingConstructorParameterConverterSerialization(@ParcelPropertyConverter(TargetSubTypeWriterConverter.class) TargetSubType value){
             this.value = value;
         }
     }
@@ -1300,6 +1300,27 @@ public class ParcelableAnalysisTest {
         assertEquals(1, analysis.getMethodPairs().size());
         assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         methodsContain(analysis, "value");
+    }
+
+    static class BaseGenericClass<T> {
+        T value;
+    }
+
+    @Parcel static class Value {}
+    @Parcel static class Concrete extends BaseGenericClass<Value> {}
+
+    @Test
+    public void testGenericDeclaredType() {
+        ParcelableDescriptor analysis = analyze(Concrete.class);
+
+        assertFalse(messager.getMessage(), messager.isErrored());
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(1, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        fieldsContain(analysis, "value");
+        assertEquals(astClassFactory.getType(Value.class), analysis.getMethodPairs().get(0).getReference().getType());
     }
 
     @Parcel
