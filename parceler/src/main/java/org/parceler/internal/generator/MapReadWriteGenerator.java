@@ -37,9 +37,10 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
     private final Class<? extends Map> mapType;
+    private final boolean mapInitialCapacityArgument;
 
     @Inject
-    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType) {
+    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType, boolean mapInitialCapacityArgument) {
         super("readHashMap", new Class[]{ClassLoader.class}, "writeMap", new Class[]{Map.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
@@ -47,12 +48,13 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
         this.mapType = mapType;
+        this.mapInitialCapacityArgument = mapInitialCapacityArgument;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass hashMapType = generationUtil.ref(mapType);
+        JClass mapImplType = generationUtil.ref(mapType);
 
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);
@@ -65,12 +67,12 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
             valueComponentType = iterator.next();
             keyType = generationUtil.narrowRef(keyComponentType);
             valueType = generationUtil.narrowRef(valueComponentType);
-            hashMapType = hashMapType.narrow(keyType, valueType);
+            mapImplType = mapImplType.narrow(keyType, valueType);
         }
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-        JVar outputVar = body.decl(hashMapType, namer.generateName(Map.class));
+        JVar outputVar = body.decl(mapImplType, namer.generateName(Map.class));
 
         JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
 
@@ -80,7 +82,12 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(outputVar, JExpr._new(hashMapType));
+        JInvocation mapConstruction = JExpr._new(mapImplType);
+        if(mapInitialCapacityArgument) {
+            mapConstruction = mapConstruction.arg(sizeVar);
+        }
+
+        nonNullBody.assign(outputVar, mapConstruction);
 
         JForLoop forLoop = nonNullBody._for();
         JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
