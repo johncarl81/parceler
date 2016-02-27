@@ -29,6 +29,7 @@ import org.parceler.*;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -148,6 +149,35 @@ public class ParcelableAnalysis {
                 }
                 else{
                     defaultFields.putAll(findFields(hierarchyLoop, false));
+                }
+
+                parcelableDescriptor.getWrapCallbacks().addAll(findCallbacks(hierarchyLoop, definedMethods, OnWrap.class));
+                parcelableDescriptor.getUnwrapCallbacks().addAll(findCallbacks(hierarchyLoop, definedMethods, OnUnwrap.class));
+
+                for (ASTMethod wrapCallbackMethod : parcelableDescriptor.getWrapCallbacks()) {
+                    if(!wrapCallbackMethod.getReturnType().equals(ASTVoidType.VOID)){
+                        validator.error("@OnWrap annotated methods must return void.")
+                                .element(wrapCallbackMethod)
+                                .build();
+                    }
+                    if(!wrapCallbackMethod.getParameters().isEmpty()){
+                        validator.error("@OnWrap annotated methods must have no method parameters.")
+                                .element(wrapCallbackMethod)
+                                .build();
+                    }
+                }
+
+                for (ASTMethod unwrapCallbackMethod : parcelableDescriptor.getUnwrapCallbacks()) {
+                    if(!unwrapCallbackMethod.getReturnType().equals(ASTVoidType.VOID)){
+                        validator.error("@OnUnwrap annotated methods must return void.")
+                                .element(unwrapCallbackMethod)
+                                .build();
+                    }
+                    if(!unwrapCallbackMethod.getParameters().isEmpty()){
+                        validator.error("@OnUnwrap annotated methods must have no method parameters.")
+                                .element(unwrapCallbackMethod)
+                                .build();
+                    }
                 }
 
                 HashMultimap<String, ASTReference<ASTMethod>> propertyWriteMethods = findJavaBeanWriteMethods(hierarchyLoop, definedMethods, true);
@@ -315,6 +345,16 @@ public class ParcelableAnalysis {
         }
 
         return methodResult;
+    }
+
+    private  List<ASTMethod> findCallbacks(ASTType astType, final Set<MethodSignature> definedMethods, final Class<? extends Annotation> annotation) {
+        return FluentIterable.from(astType.getMethods())
+                .filter(new Predicate<ASTMethod>() {
+                    @Override
+                    public boolean apply(ASTMethod astMethod) {
+                        return astMethod.isAnnotated(annotation) && !definedMethods.contains(new MethodSignature(astMethod));
+                    }
+                }).toList();
     }
 
     public HashMultimap<String, ASTReference<ASTMethod>> findJavaBeanWriteMethods(ASTType astType, Set<MethodSignature> definedMethods, final boolean declaredProperty){

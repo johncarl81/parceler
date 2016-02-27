@@ -1232,6 +1232,99 @@ public class ParcelableAnalysisTest {
         methodsContain(analysis, "value");
     }
 
+    @Parcel
+    static class CallbackExample {
+
+        @OnWrap
+        public void onWrap(){}
+        @OnUnwrap
+        public void onUnwrap(){}
+    }
+
+    @Test
+    public void testCallbackAnalysis() {
+        ParcelableDescriptor analysis = analyze(CallbackExample.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertEquals(1, analysis.getWrapCallbacks().size());
+        assertEquals(1, analysis.getUnwrapCallbacks().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class CallbackInheritanceExample extends CallbackExample {
+
+        @OnWrap
+        public void onWrap2(){}
+        @OnUnwrap
+        public void onUnwrap2(){}
+    }
+
+    @Test
+    public void testCallbackInheritanceAnalysis() {
+        ParcelableDescriptor analysis = analyze(CallbackInheritanceExample.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertEquals(2, analysis.getWrapCallbacks().size());
+        assertEquals(2, analysis.getUnwrapCallbacks().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class CallbackWrapReturnNonNull {
+
+        @OnWrap
+        public String onWrap(){return null;}
+    }
+
+    @Test
+    public void testCallbackWrapReturnNonNull() {
+        errors(CallbackWrapReturnNonNull.class);
+    }
+
+    @Parcel
+    static class CallbackUnwrapReturnNonNull {
+
+        @OnUnwrap
+        public String onUnwrap(){return null;}
+    }
+
+    @Test
+    public void testCallbackUnwrapReturnNonNull() {
+        errors(CallbackUnwrapReturnNonNull.class);
+    }
+
+    @Parcel
+    static class CallbackWrapAcceptValue {
+
+        @OnWrap
+        public void onWrap(String value){}
+    }
+
+    @Test
+    public void testCallbackWrapAcceptValue() {
+        errors(CallbackWrapAcceptValue.class);
+    }
+
+    @Parcel
+    static class CallbackUnwrapAcceptValue {
+
+        @OnUnwrap
+        public void onUnwrap(String value){}
+    }
+
+    @Test
+    public void testCallbackUnwrapAcceptValue() {
+        errors(CallbackUnwrapReturnNonNull.class);
+    }
 
     private void errors(Class clazz){
         analyze(clazz);

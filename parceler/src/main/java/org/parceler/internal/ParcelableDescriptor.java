@@ -15,6 +15,7 @@
  */
 package org.parceler.internal;
 
+import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class ParcelableDescriptor {
     private final ASTType parcelConverterType;
     private final boolean parcelsIndex;
     private ASTType[] extraImplementations;
+    private List<ASTMethod> wrapCallbacks = new ArrayList<ASTMethod>();
+    private List<ASTMethod> unwrapCallbacks = new ArrayList<ASTMethod>();
 
     public ParcelableDescriptor() {
         this(new ASTType[0], true);
@@ -72,5 +75,13 @@ public class ParcelableDescriptor {
 
     public boolean isParcelsIndex() {
         return parcelsIndex;
+    }
+
+    public List<ASTMethod> getWrapCallbacks() {
+        return wrapCallbacks;
+    }
+
+    public List<ASTMethod> getUnwrapCallbacks() {
+        return unwrapCallbacks;
     }
 }
