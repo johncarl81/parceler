@@ -52,7 +52,7 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
 
         JClass setImplType = generationUtil.ref(setType);
 
@@ -89,7 +89,7 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
-        JExpression readExpression = generator.generateReader(readLoopBody, parcelParam, componentType, generationUtil.ref(componentType), parcelableClass);
+        JExpression readExpression = generator.generateReader(readLoopBody, parcelParam, componentType, generationUtil.ref(componentType), parcelableClass, readIdentityMap);
 
         readLoopBody.invoke(outputVar, "add").arg(readExpression);
 
@@ -97,7 +97,7 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
@@ -117,6 +117,6 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
-        generator.generateWriter(forEach.body(), parcel, flags, componentType, forEach.var(), parcelableClass);
+        generator.generateWriter(forEach.body(), parcel, flags, componentType, forEach.var(), parcelableClass, writeIdentitySet);
     }
 }

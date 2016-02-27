@@ -38,7 +38,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
@@ -52,13 +52,13 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(value, getGenerator().generateReader(body, parcelParam, type, returnJClassRef, parcelableClass));
+        nonNullBody.assign(value, getGenerator().generateReader(body, parcelParam, type, returnJClassRef, parcelableClass, readIdentityMap));
 
         return value;
     }
 
     @Override
-    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass) {
+    public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
 
         JConditional nullConditional = body._if(getExpression.eq(JExpr._null()));
         nullConditional._then().invoke(parcel, "writeInt").arg(JExpr.lit(-1));
@@ -66,7 +66,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
         JBlock writeBody = nullConditional._else();
         writeBody.invoke(parcel, "writeInt").arg(JExpr.lit(1));
 
-        getGenerator().generateWriter(writeBody, parcel, flags, type, getExpression, parcelableClass);
+        getGenerator().generateWriter(writeBody, parcel, flags, type, getExpression, parcelableClass, writeIdentitySet);
     }
 
     protected abstract ReadWriteGenerator getGenerator();
