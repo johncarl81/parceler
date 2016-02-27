@@ -72,7 +72,7 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(outputVar, JExpr._new(arrayListType));
+        nonNullBody.assign(outputVar, JExpr._new(arrayListType).arg(sizeVar));
 
         JForLoop forLoop = nonNullBody._for();
         JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));

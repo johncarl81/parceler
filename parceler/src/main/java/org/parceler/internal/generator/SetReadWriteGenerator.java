@@ -37,9 +37,10 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
     private final Class<? extends Set> setType;
+    private final boolean setInitialCapacityArgument;
 
     @Inject
-    public SetReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Set> setType) {
+    public SetReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Set> setType, boolean setInitialCapacityArgument) {
         super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
@@ -47,23 +48,24 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
         this.setType = setType;
+        this.setInitialCapacityArgument = setInitialCapacityArgument;
     }
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass) {
 
-        JClass arrayListType = generationUtil.ref(setType);
+        JClass setImplType = generationUtil.ref(setType);
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
         if(type.getGenericParameters().size() == 1){
             componentType = type.getGenericParameters().iterator().next();
-            arrayListType = arrayListType.narrow(generationUtil.narrowRef(componentType));
+            setImplType = setImplType.narrow(generationUtil.narrowRef(componentType));
         }
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-        JVar outputVar = body.decl(arrayListType, namer.generateName(List.class));
+        JVar outputVar = body.decl(setImplType, namer.generateName(List.class));
 
         JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
 
@@ -72,8 +74,12 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
         nullBody.assign(outputVar, JExpr._null());
 
         JBlock nonNullBody = nullInputConditional._else();
+        JInvocation setImplConstruction = JExpr._new(setImplType);
 
-        nonNullBody.assign(outputVar, JExpr._new(arrayListType));
+        if(setInitialCapacityArgument) {
+            setImplConstruction = setImplConstruction.arg(sizeVar);
+        }
+        nonNullBody.assign(outputVar, setImplConstruction);
 
         JForLoop forLoop = nonNullBody._for();
         JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
