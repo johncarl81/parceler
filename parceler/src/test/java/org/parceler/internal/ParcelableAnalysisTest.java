@@ -271,6 +271,7 @@ public class ParcelableAnalysisTest {
     static class Basic {
         String stringValue;
         int intValue;
+        boolean booleanValue;
 
         public String getStringValue() {
             return stringValue;
@@ -287,6 +288,14 @@ public class ParcelableAnalysisTest {
         public void setIntValue(int intValue) {
             this.intValue = intValue;
         }
+
+        public boolean isBooleanValue() {
+            return booleanValue;
+        }
+
+        public void setBooleanValue(boolean booleanValue) {
+            this.booleanValue = booleanValue;
+        }
     }
 
     @Test
@@ -295,11 +304,12 @@ public class ParcelableAnalysisTest {
 
         assertNull(analysis.getParcelConverterType());
         assertEquals(0, analysis.getFieldPairs().size());
-        assertEquals(2, analysis.getMethodPairs().size());
+        assertEquals(3, analysis.getMethodPairs().size());
         assertNotNull(analysis.getConstructorPair());
         assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
         assertTrue(methodsContain(analysis, "intValue"));
         assertTrue(methodsContain(analysis, "stringValue"));
+        assertTrue(methodsContain(analysis, "booleanValue"));
         assertFalse(messager.getMessage(), messager.isErrored());
     }
 
