@@ -12,7 +12,7 @@ http://www.developerphil.com/parcelable-vs-serializable/[Compared] with traditio
 There is a major flaw with Parcelables, however.
 Parcelables contain a ton of boilerplate code.
 To implement a Parcelable, you must mirror the `writeToParcel()` and `createFromParcel()` methods such that they read and write to the Parcel in the same order.
-Also, a Parcelable must define a `public final static Parcelable.Creator CREATOR` in order for the Android infrastructure to be able to leverage the serialization code.
+Also, a Parcelable must define a `public static final Parcelable.Creator CREATOR` in order for the Android infrastructure to be able to leverage the serialization code.
 
 Parceler is a code generation library that generates the Android Parcelable boilerplate source code.
 No longer do you have to implement the Parcelable interface, the `writeToParcel()` or `createFromParcel()` or the `public static final CREATOR`.
