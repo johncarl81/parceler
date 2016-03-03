@@ -37,7 +37,12 @@ public class ParcelsTestUtil {
 
             Parcelable parcelable = Parcels.wrap(inputType, input);
 
-            parcelable.writeToParcel(parcel, 0);
+            if (parcelable != null) {
+                parcelable.writeToParcel(parcel, 0);
+            }
+            else {
+                return null;
+            }
             parcel.setDataPosition(0);
 
             Field creatorField = parcelable.getClass().getField("CREATOR");
