@@ -194,6 +194,11 @@ public final class Parcels {
             ParcelableFactory result = generatedMap.get(clazz);
             if (result == null) {
                 ParcelableFactory value = findClass(clazz);
+
+                if (Parcelable.class.isAssignableFrom(clazz)) {
+                    value = new NonParcelRepository.ParcelableParcelableFactory();
+                }
+
                 if(value == null){
                     throw new ParcelerRuntimeException(
                                     "Unable to find generated Parcelable class for " + clazz.getName() +

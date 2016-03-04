@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import android.content.Intent;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -128,6 +130,13 @@ public class ParcelTest {
 
         assertEquals(10, unwrapped.i);
         assertArrayEquals(new int[]{1, 2, 3, 4, 5}, unwrapped.getArr());
+    }
+
+    @Test
+    public void testParcelableClassWithoutAnnotation() {
+        Intent expected = new Intent("someAction");
+        Intent actual = Parcels.unwrap(ParcelsTestUtil.wrap(expected));
+        assertEquals(expected, actual);
     }
 
     @Parcel(Parcel.Serialization.BEAN)
