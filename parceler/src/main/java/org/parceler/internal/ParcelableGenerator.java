@@ -27,8 +27,10 @@ import org.parceler.ParcelConverter;
 import org.parceler.ParcelWrapper;
 import org.parceler.Parcels;
 import org.parceler.internal.generator.ConverterWrapperReadWriteGenerator;
+import org.parceler.internal.generator.EnumReadWriteGenerator;
 import org.parceler.internal.generator.ParcelReadWriteGenerator;
 import org.parceler.internal.generator.ReadWriteGenerator;
+import org.parceler.internal.matcher.EnumMatcher;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -53,6 +55,7 @@ public class ParcelableGenerator {
     private final WriteReferenceVisitor writeToParcelVisitor;
     private final InvocationBuilder invocationBuilder;
     private final Generators generators;
+    private final EnumReadWriteGenerator enumReadWriteGenerator;
     private final ParcelReadWriteGenerator parcelReadWriteGenerator;
 
 
@@ -65,7 +68,7 @@ public class ParcelableGenerator {
                                WriteReferenceVisitor writeToParcelVisitor,
                                InvocationBuilder invocationBuilder,
                                Generators generators,
-                               ParcelReadWriteGenerator parcelReadWriteGenerator) {
+                               EnumReadWriteGenerator enumReadWriteGenerator, ParcelReadWriteGenerator parcelReadWriteGenerator) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
         this.classNamer = classNamer;
@@ -74,6 +77,7 @@ public class ParcelableGenerator {
         this.writeToParcelVisitor = writeToParcelVisitor;
         this.invocationBuilder = invocationBuilder;
         this.generators = generators;
+        this.enumReadWriteGenerator = enumReadWriteGenerator;
         this.parcelReadWriteGenerator = parcelReadWriteGenerator;
     }
 
@@ -323,8 +327,8 @@ public class ParcelableGenerator {
     }
 
     private ReadWriteGenerator getRootReadWriteGenerator(ASTType type) {
-        if(generators.matches(type)){
-            return generators.getGenerator(type);
+        if(type.isEnum()){
+            return enumReadWriteGenerator;
         }
         else {
             return parcelReadWriteGenerator;

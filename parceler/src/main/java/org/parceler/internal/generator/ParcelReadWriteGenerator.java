@@ -34,8 +34,8 @@ import java.util.Set;
 */
 public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
 
-    private static final String WRITE_METHOD = "write";
-    private static final String READ_METHOD = "read";
+    public static final String WRITE_METHOD = "write";
+    public static final String READ_METHOD = "read";
     private static final String ANDROID_PARCEL = "android.os.Parcel";
 
     private final ClassGenerationUtil generationUtil;
@@ -57,12 +57,11 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public JExpression generateReader(JBlock body, JVar parcel, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
         JType inputType = generationUtil.ref(type);
-        String readMethodName = READ_METHOD + type.getPackageClass().getFullyQualifiedName().replace(".", "_");
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method
-        JMethod readMethod = findMethodByName(parcelableClass, readMethodName);
+        JMethod readMethod = findMethodByName(parcelableClass, READ_METHOD);
         if(readMethod == null){
-            readMethod = parcelableClass.method(JMod.PRIVATE, generationUtil.ref(type), readMethodName);
+            readMethod = parcelableClass.method(JMod.PUBLIC | JMod.STATIC, generationUtil.ref(type), READ_METHOD);
             JBlock readMethodBody = readMethod.body();
             JVar readWrapped = readMethodBody.decl(inputType, variableNamer.generateName(type));
             JVar parcelParam = readMethod.param(parcelType, variableNamer.generateName(parcelType));
@@ -93,13 +92,12 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
 
-        String writeMethodName = WRITE_METHOD + type.getPackageClass().getFullyQualifiedName().replace(".", "_");
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method
         JType inputType = generationUtil.ref(type);
-        JMethod writeMethod = findMethodByName(parcelableClass, writeMethodName);
+        JMethod writeMethod = findMethodByName(parcelableClass, WRITE_METHOD);
         if(writeMethod == null){
-            writeMethod = parcelableClass.method(JMod.PRIVATE, Void.TYPE, writeMethodName);
+            writeMethod = parcelableClass.method(JMod.PUBLIC | JMod.STATIC, Void.TYPE, WRITE_METHOD);
             JBlock writeMethodBody = writeMethod.body();
             JVar writeInputVar = writeMethod.param(inputType, variableNamer.generateName(inputType));
             JVar parcelParam = writeMethod.param(parcelType, variableNamer.generateName(parcelType));
@@ -111,8 +109,6 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
 
             JBlock buildBody = writeMethodBody._if(identityParam.invoke("contains").arg(identity).not())._then();
             buildBody.add(identityParam.invoke("add").arg(identity));
-
-            //body.decl(codeModel.INT, "identity", generationUtil.ref(System.class).staticInvoke("identityHashCode").arg())
 
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
             if(parcelDescriptor != null) {
