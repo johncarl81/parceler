@@ -74,18 +74,19 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
                     .arg("An instance loop was detected whild building Parcelable and deseralization cannot continue.  This error is most likely due to using @ParcelConstructor or @ParcelFactory."));
             containsKeyBody._return(value);
 
+            JConditional nullCondition = readMethodBody._if(parcelParam.invoke("readInt").eq(JExpr.lit(-1)));
+            nullCondition._then().assign(readWrapped, JExpr._null());
+
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
             if(parcelDescriptor != null) {
-                generator.get().buildParcelRead(parcelDescriptor, parcelableClass, readWrapped, type, inputType, identity, parcelParam, readMethodBody, identityParam);
+                generator.get().buildParcelRead(parcelDescriptor, parcelableClass, readWrapped, type, inputType, identity, parcelParam, nullCondition._else(), identityParam);
             }
 
             readMethodBody._return(readWrapped);
         }
 
         JVar wrapped = body.decl(inputType, variableNamer.generateName(type));
-        JConditional nullCondition = body._if(parcel.invoke("readInt").eq(JExpr.lit(-1)));
-        nullCondition._then().assign(wrapped, JExpr._null());
-        nullCondition._else().assign(wrapped, JExpr.invoke(readMethod).arg(parcel).arg(readIdentityMap));
+        body.assign(wrapped, JExpr.invoke(readMethod).arg(parcel).arg(readIdentityMap));
         return wrapped;
     }
 
@@ -110,17 +111,18 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
             JBlock buildBody = writeMethodBody._if(identityParam.invoke("contains").arg(identity).not())._then();
             buildBody.add(identityParam.invoke("add").arg(identity));
 
+            JConditional nullCondition = buildBody._if(parcelParam.eq(JExpr._null()));
+            nullCondition._then().add(parcelParam.invoke("writeInt").arg(JExpr.lit(-1)));
+            JBlock nonNullCondition = nullCondition._else();
+            nonNullCondition.add(parcelParam.invoke("writeInt").arg(JExpr.lit(1)));
+
             ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);
             if(parcelDescriptor != null) {
-                generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, buildBody, identityParam);
+                generator.get().buildParcelWrite(parcelDescriptor, parcelableClass, writeInputVar, type, parcelParam, flagsParam, nonNullCondition, identityParam);
             }
         }
 
-        JConditional nullCondition = body._if(getExpression.eq(JExpr._null()));
-        nullCondition._then().add(parcel.invoke("writeInt").arg(JExpr.lit(-1)));
-        JBlock nonNullCondition = nullCondition._else();
-        nonNullCondition.add(parcel.invoke("writeInt").arg(JExpr.lit(1)));
-        nonNullCondition.invoke(writeMethod).arg(getExpression).arg(parcel).arg(flags).arg(writeIdentitySet);
+        body.invoke(writeMethod).arg(getExpression).arg(parcel).arg(flags).arg(writeIdentitySet);
     }
 
     private JMethod findMethodByName(JDefinedClass definedClass, String name){
