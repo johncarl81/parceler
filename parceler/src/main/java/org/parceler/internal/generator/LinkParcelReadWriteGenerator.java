@@ -32,7 +32,7 @@ public class LinkParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
         PackageClass packageClass = ClassNamer.className(type).append(Parcels.IMPL_EXT).build();
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         JType inputType = generationUtil.ref(type);

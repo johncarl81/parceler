@@ -38,7 +38,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
@@ -52,7 +52,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(value, getGenerator().generateReader(body, parcelParam, type, returnJClassRef, parcelableClass, readIdentityMap));
+        nonNullBody.assign(value, getGenerator().generateReader(body, parcelParam, type, returnJClassRef, parcelableClass, identity, readIdentityMap));
 
         return value;
     }

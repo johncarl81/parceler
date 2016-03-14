@@ -52,7 +52,7 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
 
         JClass setImplType = generationUtil.ref(setType);
 
@@ -89,7 +89,7 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
-        JExpression readExpression = generator.generateReader(readLoopBody, parcelParam, componentType, generationUtil.ref(componentType), parcelableClass, readIdentityMap);
+        JExpression readExpression = generator.generateReader(readLoopBody, parcelParam, componentType, generationUtil.ref(componentType), parcelableClass, identity, readIdentityMap);
 
         readLoopBody.invoke(outputVar, "add").arg(readExpression);
 
