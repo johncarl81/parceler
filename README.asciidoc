@@ -80,6 +80,7 @@ In addition, Parceler is supported by the following libraries:
  * http://androidtransfuse.org/documentation.html#parcel[Transfuse] - Allows `@Parcel` annotated beans to be used with the `@Extra` injection.
  * https://github.com/sockeqwe/fragmentargs#argsbundler[FragmentArgs] - Uses the `ParcelerArgsBundler` adapter to wrap and unwrap `@Parcel` annotated beans with fragment parameters.
  * https://github.com/f2prateek/dart[Dart] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@InjectExtra`.
+ * http://androidannotations.org/[AndroidAnnotations] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@Extra`.
 
 === Parcel attribute types
 Only a select number of types may be used as attributes of a `@Parcel` class.
