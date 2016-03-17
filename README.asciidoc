@@ -80,7 +80,7 @@ In addition, Parceler is supported by the following libraries:
  * http://androidtransfuse.org/documentation.html#parcel[Transfuse] - Allows `@Parcel` annotated beans to be used with the `@Extra` injection.
  * https://github.com/sockeqwe/fragmentargs#argsbundler[FragmentArgs] - Uses the `ParcelerArgsBundler` adapter to wrap and unwrap `@Parcel` annotated beans with fragment parameters.
  * https://github.com/f2prateek/dart[Dart] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@InjectExtra`.
- * http://androidannotations.org/[AndroidAnnotations] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@Extra`.
+ * http://androidannotations.org/[AndroidAnnotations] - Autodetects `@Parcel` annotated beans and https://github.com/excilys/androidannotations/wiki/ParcelerIntegration[automatically wraps/unwraps] them when using `@Extra`, `@FragmentArg`, `@InstanceState` and other `Bundle` related annotations.
 
 === Parcel attribute types
 Only a select number of types may be used as attributes of a `@Parcel` class.
@@ -339,7 +339,7 @@ public class AndroidApplication extends Application{
 Multiple `@ParcelClass` annotations may be declared using the `@ParcelClasses` annotation.
 
 In addition, classes referenced by `@ParcelClass` may be configured using the `@Parcel` annotation.
-This allows the seralization configuration through any parameter available on the `@Parcel` annotation including the seralization technique or classes to analyze.
+This allows the serialization configuration through any parameter available on the `@Parcel` annotation including the serialization technique or classes to analyze.
 
 One useful technique is the ability to define global custom converters for a type:
 [source,java]
