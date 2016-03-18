@@ -242,9 +242,9 @@ public class ParcelerModule {
         generators.add(new EnumMatcher(), enumReadWriteGenerator);
         generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
-        generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class));
-        generators.add(new GenericCollectionMatcher(astClassFactory.getType(ArrayList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class));
-        generators.add(new GenericCollectionMatcher(astClassFactory.getType(LinkedList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, LinkedList.class));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class, true));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(ArrayList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class, true));
+        generators.add(new GenericCollectionMatcher(astClassFactory.getType(LinkedList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, LinkedList.class, false));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(Map.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashMap.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(HashMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashMap.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(LinkedHashMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, LinkedHashMap.class, true));

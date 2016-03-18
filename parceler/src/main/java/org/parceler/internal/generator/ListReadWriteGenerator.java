@@ -36,9 +36,10 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
     private final Class<? extends List> listType;
+    private final boolean listInitialCapacityArgument;
 
     @Inject
-    public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends List> listType) {
+    public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends List> listType, boolean listInitialCapacityArgument) {
         super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
@@ -46,6 +47,7 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
         this.astClassFactory = astClassFactory;
         this.codeModel = codeModel;
         this.listType = listType;
+        this.listInitialCapacityArgument = listInitialCapacityArgument;
     }
 
     @Override
@@ -72,7 +74,13 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(outputVar, JExpr._new(arrayListType).arg(sizeVar));
+        JInvocation listCreation = JExpr._new(arrayListType);
+
+        if(listInitialCapacityArgument){
+            listCreation = listCreation.arg(sizeVar);
+        }
+
+        nonNullBody.assign(outputVar, listCreation);
 
         JForLoop forLoop = nonNullBody._for();
         JVar nVar = forLoop.init(codeModel.INT, namer.generateName(codeModel.INT), JExpr.lit(0));
