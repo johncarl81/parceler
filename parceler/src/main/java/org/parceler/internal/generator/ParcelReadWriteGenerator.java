@@ -50,8 +50,6 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public JExpression generateReader(JBlock body, JVar parcel, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
         JType inputType = generationUtil.ref(type);
-
-        //JVar identity = body.decl(codeModel.INT, variableNamer.generateName("identity"), parcel.invoke("readInt"));
         JVar wrapped = body.decl(inputType, variableNamer.generateName(type));
 
         ParcelableDescriptor parcelDescriptor = this.analysis.analyze(type);

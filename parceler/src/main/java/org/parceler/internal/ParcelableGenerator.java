@@ -388,7 +388,7 @@ public class ParcelableGenerator {
         JBlock buildBody = writeMethodBody._if(identityParam.invoke("contains").arg(identity).not())._then();
         buildBody.add(identityParam.invoke("add").arg(identity));
 
-        JConditional nullCondition = buildBody._if(parcelParam.eq(JExpr._null()));
+        JConditional nullCondition = buildBody._if(writeInputVar.eq(JExpr._null()));
         nullCondition._then().add(parcelParam.invoke("writeInt").arg(JExpr.lit(-1)));
         JBlock nonNullCondition = nullCondition._else();
         nonNullCondition.add(parcelParam.invoke("writeInt").arg(JExpr.lit(1)));
