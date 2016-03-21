@@ -95,10 +95,6 @@ public class ParcelableGenerator {
             //wrapped @Parcel
             JFieldVar wrapped = parcelableClass.field(JMod.PRIVATE, inputType, variableNamer.generateName(type));
 
-            //Parcel constructor
-            JMethod parcelConstructor = parcelableClass.constructor(JMod.PUBLIC);
-            JVar parcelParam = parcelConstructor.param(generationUtil.ref("android.os.Parcel"), variableNamer.generateName("android.os.Parcel"));
-
             //writeToParcel(android.os.Parcel,int)
             JMethod writeToParcelMethod = parcelableClass.method(JMod.PUBLIC, codeModel.VOID, WRITE_TO_PARCEL);
             writeToParcelMethod.annotate(Override.class);
@@ -108,12 +104,7 @@ public class ParcelableGenerator {
             ReadWriteGenerator rootGenerator = getRootReadWriteGenerator(type);
 
             JBlock writeToParcelMethodBody = writeToParcelMethod.body();
-            JVar writeIdentitySet = writeToParcelMethodBody.decl(codeModel.ref(Set.class).narrow(Integer.class), variableNamer.generateName("identityMap"), JExpr._new(codeModel.ref(HashSet.class).narrow(Integer.class)));
-            buildWriteMethod(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), rootGenerator, writeIdentitySet);
-
-            JBlock parcelConstructorBody = parcelConstructor.body();
-            JVar readIdentityMap = parcelConstructorBody.decl(codeModel.ref(Map.class).narrow(Integer.class, Object.class), variableNamer.generateName("identityMap"), JExpr._new(codeModel.ref(HashMap.class).narrow(Integer.class, Object.class)));
-            parcelConstructorBody.assign(wrapped, buildReadMethod(parcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), rootGenerator, readIdentityMap));
+            buildWriteMethod(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(HashSet.class).narrow(Integer.class)));
 
             //@Parcel input
             JMethod inputConstructor = parcelableClass.constructor(JMod.PUBLIC);
@@ -140,7 +131,9 @@ public class ParcelableGenerator {
             createFromParcelMethod.annotate(Override.class);
             JVar cfpParcelParam = createFromParcelMethod.param(generationUtil.ref("android.os.Parcel"), variableNamer.generateName(generationUtil.ref("android.os.Parcel")));
 
-            createFromParcelMethod.body()._return(JExpr._new(parcelableClass).arg(cfpParcelParam));
+            createFromParcelMethod.body()._return(
+                    JExpr._new(parcelableClass).arg(
+                            buildReadMethod(cfpParcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(HashMap.class).narrow(Integer.class, Object.class)))));
 
             //newArray method
             JMethod newArrayMethod = creatorClass.method(JMod.PUBLIC, parcelableClass.array(), NEW_ARRAY);
@@ -340,7 +333,7 @@ public class ParcelableGenerator {
         }
     }
 
-    public JExpression buildReadMethod(JVar inputParcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter, ReadWriteGenerator overrideGenerator, JVar readIdentityMap) {
+    public JExpression buildReadMethod(JVar inputParcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter, ReadWriteGenerator overrideGenerator, JExpression readIdentityMap) {
         JType inputType = generationUtil.ref(type);
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method
@@ -369,7 +362,7 @@ public class ParcelableGenerator {
         return JExpr.invoke(readMethod).arg(inputParcelParam).arg(readIdentityMap);
     }
 
-    public void buildWriteMethod(JDefinedClass parcelableClass, JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression targetExpression, ASTType converter, ReadWriteGenerator overrideGenerator, JVar writeIdentitySet) {
+    public void buildWriteMethod(JDefinedClass parcelableClass, JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression targetExpression, ASTType converter, ReadWriteGenerator overrideGenerator, JExpression writeIdentitySet) {
 
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method

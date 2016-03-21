@@ -93,7 +93,7 @@ public class ParcelableIntegrationTest {
     }
 
     @Test
-    public void testGeneratedParcelable() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public void testGeneratedParcelable() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchFieldException {
 
         ParcelTarget parcelTarget = new ParcelTarget();
         ParcelSecondTarget parcelSecondTarget = new ParcelSecondTarget();
@@ -109,7 +109,7 @@ public class ParcelableIntegrationTest {
         outputParcelable.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
+        Parcelable inputParcelable = ((Parcelable.Creator<Parcelable>)parcelableClass.getField("CREATOR").get(null)).createFromParcel(parcel);
 
         ParcelTarget wrapped = Parcels.unwrap(inputParcelable);
 
