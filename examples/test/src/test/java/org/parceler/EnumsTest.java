@@ -23,8 +23,7 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.parceler.Enums.Values.*;
 
 /**
@@ -59,6 +58,7 @@ public class EnumsTest {
         enums.one = A;
         enums.two = null;
         enums.three = B;
+        enums.enumArray = new Enums.Values[]{A, C};
 
         Enums unwrapped = Parcels.unwrap(ParcelsTestUtil.wrap(enums));
 
@@ -66,5 +66,6 @@ public class EnumsTest {
         assertEquals(A, unwrapped.one);
         assertNull(unwrapped.two);
         assertEquals(B, unwrapped.three);
+        assertArrayEquals(enums.enumArray, unwrapped.enumArray);
     }
 }
