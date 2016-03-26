@@ -43,7 +43,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <sdk>
-                        <platform>16</platform>
+                        <platform>23</platform>
                     </sdk>
                 </configuration>
             </plugin>
