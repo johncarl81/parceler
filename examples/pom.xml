@@ -19,6 +19,7 @@
         <module>app</module>
         <module>test</module>
         <module>performance</module>
+        <module>gradle</module>
     </modules>
 
     <build>
