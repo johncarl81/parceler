@@ -1,0 +1,193 @@
+= Parceler Changelog
+
+
+== Pending Release
+
+Enhancements::
+  * Added `@OnWrap` and `@OnUnwrap` callbacks.
+  * Added initial size to relevant collections.
+  * Added instance identity collection during marshalling to avoid instance loops.
+
+Deprecations::
+  * Removed `NullParcelable` shim from `Parcels` utility class for `null` inputs.
+
+Bug Fixes::
+  * Fixed Enum array parceling, previously serialzied as a enum instead of an array.
+
+== Release 1.0.4 (2015-10-27)
+
+Enhancements::
+  * Add validation for factory method parameters.
+  * Changed `@Parcel` `converter` property to `TypeRangeParcelConverter`.
+  * Made Creator inner class public to accommodate testing.
+  * Added validation error to non-static inner classes.
+
+== Release 1.0.3 (2015-07-25)
+
+Bug Fixes::
+  * Fixed seralization of null enums.
+
+== Release 1.0.2 (2015-07-20)
+
+Enhancements::
+  * Enabled recognition of `@ParcelPropertyConverter` annotation on getters in addition to setters.
+  * Added enum support.
+  * Added VALUE seralization type.
+
+== Release 1.0.1 (2015-06-11)
+
+Bug Fixes::
+  * Fixes issue of reading and caching analysis results when dealing with sub-parcels.
+
+
+== Release 1.0.0 (2015-05-11)
+
+Enhancements::
+  * Added debug logging via `--parcelerDebugLogging` APT option.
+  * Introduced `TypeRangeParcelConverter` for better collection support and other type range solutions for Converters.
+
+Bug Fixes::
+  * Added stacktrace printing compiler argument to avoid throwing exceptions when an error occurs.
+
+== Release 0.2.16 (2015-03-17)
+
+Enhancements::
+  * Added addtional factory method validation.
+  * Consolidated ParcelClass configuration with Parcel annotation.
+
+Deprecations::
+  * Depreciated `METHOD` serialziation type for `BEAN`.
+
+== Release 0.2.15 (2014-12-02)
+
+Bug Fixes::
+  * Exclude static members from analysis.
+
+== Release 0.2.14 (2014-11-09)
+
+Enhancements::
+  * Added additional collection support.
+  * Added generic collection matching to support better validation.
+  * Added flags parameter to sub-parcel write methods.
+  * Added parcelsIndex to avoid indexing and potentially writing the index (in library cases where it would duplicate the index class).
+
+== Release 0.2.13 (2014-09-24)
+
+Enhancements::
+  * Added functionality to `Parcels` to wrap under a specific type, using the associated factory mapping.
+
+== Release 0.2.12 (2014-08-26)
+
+Bug Fixes::
+  * Fixed problem with circular Parcel graph references.
+
+== Release 0.2.11 (2014-08-22)
+
+Enhancements::
+  * Added validation for method seralization case where no read property exists for a constructor parameter.
+  * Replaced jar-with-dependencies assembly plugin with shade plugin to wrap all dependencies into an uber-jar (no more transitive dependency issues!).
+  * Added Boolean ReadWriteGenerator based on int rather than boolean[].
+  * Added performance benchmark application.
+
+Bug Fixes::
+  * Fixed classloading issue when loading Bundles (needed to supply classloader).
+
+== Release 0.2.10 (2014-06-02)
+
+Bug Fixes::
+  * Converted Android related dependency ASTTypes to ASTStringTypes.  This effectively avoids referencing Android classes directly during annotation processing.
+
+== Release 0.2.9 (2014-04-30)
+
+Enhancements::
+  * Enforced constructor and factory ordering through intermediate variables.
+
+== Release 0.2.8 (2014-04-28)
+
+Enhancements::
+  * Added `@ParcelFactory` implementation.
+  * Added Boolean and Character nullable support.
+  * Added boxed-type null handling.
+
+Bug Fixes::
+  * Fixed repository seeding order (before analysis).
+  * Fixed constructor to property in superclass associations and validations.
+
+== Release 0.2.7 (2014-02-26)
+
+Enhancements::
+  * Added `transient` keyword modifier handling.
+  * Added Non-Parcel types and Null Parcelable.
+  * Added package-private and protected specific invocation strategy.
+  * Added class hierarchy scanning for inheritance handling.
+  * Added Collection support to `Parcels` utility class.
+
+Bug Fixes::
+  * Fixeed issue around classloading and static CREATOR.
+
+== Release 0.2.6 (2014-02-07)
+
+Enhancements::
+  * Added generic SparseArray marshalling.
+  * Added converter to ParcelProperty annotation.
+  * Introduced `@ParcelPropertyConverter`.
+
+Deprecations::
+  * Removed `@ParcelProperty` `converter` property.
+
+Bug Fixes::
+  * Reverted to single thread model to avoid concurrency issues during annotation processing.
+  * Fixed issue with private get/set invocation and added related tests.
+
+== Release 0.2.5 (2014-01-12)
+
+Enhancements::
+  * Reworked map key/value read calls to better handle nested collections.
+
+Bug Fixes::
+  * Fixed looping variables and added null safe behavior.
+
+== Release 0.2.4 (2014-01-11)
+
+Enhancements::
+  * Reconfigured List handling to use generators to handle generic elements.
+
+== Release 0.2.3 (2013-12-25)
+
+Bug Fixes::
+  * Fixed bug in looking up `@Parcel` annotation (2013-12-25 21:53:56 -0700)
+
+== Release 0.2.2 (2013-12-24)
+
+Enhancements::
+  * Added Parcelable marhalling.
+  * Added support for List and Maps.
+
+Bug Fixes::
+  * Moved Android class references to Strings to avoid Android dependencies during compile time.
+
+== Release 0.2.1 (2013-10-18)
+
+Enhancements::
+  * Added `@Parcel` `converter` property to avoid ambiguity in api.
+  * Added Parcels.unwrap().
+
+Bug Fixes::
+  * Fixed an issue with `@Parcel` `converter` property fetching.
+
+== Release 0.2.0 (2013-07-24)
+
+Enhancements::
+  * Added ParcelClasses for multiple ParcelClass definitions (along with converters).
+  * Added external configuration of parcels via the ParcelClass annotation.
+
+== Release 0.1.1 (2013-07-14)
+
+Enhancements::
+  * Minor build updates
+
+== Release 0.1.0 (2013-07-13)
+
+Enhancements::
+  * Added Parcel annotation and supporting classes.
+  * Migrated Parcel Annotation Processor from Transfuse.
