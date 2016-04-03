@@ -265,6 +265,14 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         }
     }
 
+    static class ParcelableParcelableFactory implements Parcels.ParcelableFactory<Parcelable>{
+
+        @Override
+        public Parcelable buildParcelable(Parcelable input) {
+            return new ParcelableParcelable(input);
+        }
+    }
+
 
     public static final class ListParcelable extends ConverterParcelable<List>{
 
@@ -1230,6 +1238,49 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         @Override
         public T getParcel() {
             return value;
+        }
+    }
+
+    public static final class ParcelableParcelable implements Parcelable, ParcelWrapper<Parcelable> {
+
+        private Parcelable parcelable;
+
+        private ParcelableParcelable(android.os.Parcel parcel) {
+            parcelable = parcel.readParcelable(ParcelableParcelable.class.getClassLoader());
+        }
+
+        private ParcelableParcelable(Parcelable parcelable) {
+            this.parcelable = parcelable;
+        }
+
+        @Override
+        public void writeToParcel(android.os.Parcel parcel, int flags) {
+            parcel.writeParcelable(parcelable, flags);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public Parcelable getParcel() {
+            return parcelable;
+        }
+
+        public static final ParcelableParcelableCreator CREATOR = new ParcelableParcelableCreator();
+
+        private static final class ParcelableParcelableCreator implements Creator<ParcelableParcelable> {
+
+            @Override
+            public ParcelableParcelable createFromParcel(android.os.Parcel parcel) {
+                return new ParcelableParcelable(parcel);
+            }
+
+            @Override
+            public ParcelableParcelable[] newArray(int size) {
+                return new ParcelableParcelable[size];
+            }
         }
     }
 }
