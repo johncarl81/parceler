@@ -38,7 +38,7 @@ public class EnumReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
         JClass enumRef = generationUtil.ref(Enum.class);
         JClass enumClassRef = generationUtil.ref(type);
         JClass stringRef = generationUtil.ref(String.class);

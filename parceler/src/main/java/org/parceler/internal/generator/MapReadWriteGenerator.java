@@ -52,7 +52,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
 
         JClass mapImplType = generationUtil.ref(mapType);
 
@@ -98,10 +98,10 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);
 
-        JExpression readKeyExpression = keyGenerator.generateReader(readLoopBody, parcelParam, keyComponentType, generationUtil.ref(keyComponentType), parcelableClass, readIdentityMap);
+        JExpression readKeyExpression = keyGenerator.generateReader(readLoopBody, parcelParam, keyComponentType, generationUtil.ref(keyComponentType), parcelableClass, identity, readIdentityMap);
         JVar keyVar = readLoopBody.decl(keyType, namer.generateName(keyComponentType), readKeyExpression);
 
-        JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass, readIdentityMap);
+        JExpression readValueExpression = valueGenerator.generateReader(readLoopBody, parcelParam, valueComponentType, generationUtil.ref(valueComponentType), parcelableClass, identity, readIdentityMap);
         JVar valueVar = readLoopBody.decl(valueType, namer.generateName(valueComponentType), readValueExpression);
 
         readLoopBody.invoke(outputVar, "put").arg(keyVar).arg(valueVar);

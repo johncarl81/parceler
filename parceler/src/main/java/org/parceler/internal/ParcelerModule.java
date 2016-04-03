@@ -200,7 +200,7 @@ public class ParcelerModule {
                                     JCodeModel codeModel,
                                     SerializableReadWriteGenerator serializableReadWriteGenerator,
                                     NullCheckFactory nullCheckFactory,
-                                    ParcelReadWriteGenerator parcelReadWriteGenerator,
+                                    LinkParcelReadWriteGenerator parcelReadWriteGenerator,
                                     EnumReadWriteGenerator enumReadWriteGenerator){
 
         return addGenerators(new Generators(astClassFactory), astClassFactory, generationUtil, externalParcelRepository, namer, codeModel, serializableReadWriteGenerator, nullCheckFactory, parcelReadWriteGenerator, enumReadWriteGenerator);
@@ -214,7 +214,8 @@ public class ParcelerModule {
                                            JCodeModel codeModel,
                                            SerializableReadWriteGenerator serializableReadWriteGenerator,
                                            NullCheckFactory nullCheckFactory,
-                                           ParcelReadWriteGenerator parcelReadWriteGenerator, EnumReadWriteGenerator enumReadWriteGenerator){
+                                           LinkParcelReadWriteGenerator parcelReadWriteGenerator,
+                                           EnumReadWriteGenerator enumReadWriteGenerator){
 
         generators.addPair(byte.class, "readByte", "writeByte");
         generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));

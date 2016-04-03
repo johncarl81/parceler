@@ -27,7 +27,7 @@ public class BooleanEntryReadWriteGenerator extends ReadWriteGeneratorBase {
     }
 
     @Override
-    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar readIdentityMap) {
+    public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
         //target.programmingRelated = (parcel.readInt() == 1);
         return parcelParam.invoke(getReadMethod()).eq(JExpr.lit(1));
     }

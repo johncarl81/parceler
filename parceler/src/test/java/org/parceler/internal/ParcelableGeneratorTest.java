@@ -34,8 +34,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -73,7 +71,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testFieldSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testFieldSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         descriptor.getFieldPairs().add(
@@ -85,7 +83,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testFieldConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testFieldConverterSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         descriptor.getFieldPairs().add(
@@ -97,7 +95,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testMethodSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testMethodSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTMethod getter = getMethod("getValue", targetType.getMethods());
@@ -113,7 +111,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testMethodConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testMethodConverterSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTMethod getter = getMethod("getValue", targetType.getMethods());
@@ -129,7 +127,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testConstructorFieldSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testConstructorFieldSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTType stringType = astClassFactory.getType(String.class);
@@ -147,7 +145,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testConstructorFieldConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testConstructorFieldConverterSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTType stringType = astClassFactory.getType(String.class);
@@ -167,7 +165,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testConstructorMethodSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testConstructorMethodSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTMethod getter = getMethod("getValue", targetType.getMethods());
@@ -186,7 +184,7 @@ public class ParcelableGeneratorTest {
     }
 
     @Test
-    public void testConstructorMethodConverterSerialization() throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testConstructorMethodConverterSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
         ASTMethod getter = getMethod("getValue", targetType.getMethods());
@@ -239,7 +237,7 @@ public class ParcelableGeneratorTest {
         return null;
     }
 
-    private void testSerialization(ParcelableDescriptor descriptor) throws IOException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private void testSerialization(ParcelableDescriptor descriptor) throws Exception {
         JDefinedClass targetGenerated = generator.generateParcelable(targetType, descriptor);
 
         ClassLoader classLoader = codeGenerationUtil.build();
@@ -251,7 +249,7 @@ public class ParcelableGeneratorTest {
 
         parcel.setDataPosition(0);
 
-        Parcelable inputParcelable = parcelableClass.getConstructor(Parcel.class).newInstance(parcel);
+        Parcelable inputParcelable = ((Parcelable.Creator<Parcelable>)parcelableClass.getField("CREATOR").get(null)).createFromParcel(parcel);
 
         Target wrapped = Parcels.unwrap(inputParcelable);
 
