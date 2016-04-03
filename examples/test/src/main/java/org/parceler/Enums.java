@@ -30,4 +30,6 @@ public class Enums {
     Values two;
     Values three;
 
+    Values[] enumArray;
+
 }
