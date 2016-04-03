@@ -7,6 +7,7 @@ Enhancements::
   * Added `@OnWrap` and `@OnUnwrap` callbacks.
   * Added initial size to relevant collections.
   * Added instance identity collection during marshalling to avoid instance loops.
+  * Significantly reduced the number of methods generated.
 
 Deprecations::
   * Removed `NullParcelable` shim from `Parcels` utility class for `null` inputs.
