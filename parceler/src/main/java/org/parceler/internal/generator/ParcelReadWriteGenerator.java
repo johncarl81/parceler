@@ -35,16 +35,14 @@ public class ParcelReadWriteGenerator extends ReadWriteGeneratorBase {
     private final ParcelableAnalysis analysis;
     private final Provider<ParcelableGenerator> generator;
     private final UniqueVariableNamer variableNamer;
-    private final JCodeModel codeModel;
 
     @Inject
-    public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, ParcelableAnalysis analysis, Provider<ParcelableGenerator> generator, UniqueVariableNamer variableNamer, JCodeModel codeModel) {
+    public ParcelReadWriteGenerator(ClassGenerationUtil generationUtil, ParcelableAnalysis analysis, Provider<ParcelableGenerator> generator, UniqueVariableNamer variableNamer) {
         super("readParcelable", new String[]{ClassLoader.class.getName()}, "writeParcelable", new String[]{"android.os.Parcelable", int.class.getName()});
         this.generationUtil = generationUtil;
         this.analysis = analysis;
         this.generator = generator;
         this.variableNamer = variableNamer;
-        this.codeModel = codeModel;
     }
 
     @Override
