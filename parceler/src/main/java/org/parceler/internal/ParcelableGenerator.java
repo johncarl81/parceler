@@ -353,12 +353,12 @@ public class ParcelableGenerator {
         containsKeyBody._return(value);
 
         JConditional nullCondition = readMethodBody._if(parcelParam.invoke("readInt").eq(JExpr.lit(-1)));
-        nullCondition._then().assign(readWrapped, JExpr._null());
+        JBlock nullBlock = nullCondition._then();
+
+        nullBlock.assign(readWrapped, JExpr._null());
+        nullBlock.add(identityParam.invoke("put").arg(identity).arg(JExpr._null()));
 
         nullCondition._else().assign(readWrapped, buildReadFromParcelExpression(nullCondition._else(), parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
-
-        //add to identity map
-        readMethodBody.add(identityParam.invoke("put").arg(identity).arg(readWrapped));
 
         readMethodBody._return(readWrapped);
 
