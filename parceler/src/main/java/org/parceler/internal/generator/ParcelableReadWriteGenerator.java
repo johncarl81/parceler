@@ -29,7 +29,7 @@ public class ParcelableReadWriteGenerator extends ReadWriteGeneratorBase {
 
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
-        return JExpr.cast(returnJClassRef, parcelParam.invoke(getReadMethod()).arg(parcelableClass.dotclass().invoke("getClassLoader")));
+        return JExpr.cast(returnJClassRef, parcelParam.invoke(getReadMethod()).arg(returnJClassRef.dotclass().invoke("getClassLoader")));
     }
 
     @Override
