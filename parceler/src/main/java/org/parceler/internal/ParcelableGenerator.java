@@ -348,12 +348,15 @@ public class ParcelableGenerator {
 
         JBlock containsKeyBody = readMethodBody._if(identityParam.invoke("containsKey").arg(identity))._then();
         JVar value = containsKeyBody.decl(inputType, variableNamer.generateName(inputType), JExpr.cast(inputType, identityParam.invoke("get").arg(identity)));
-        containsKeyBody._if(value.eq(JExpr._null()))._then()._throw(JExpr._new(generationUtil.ref(ParcelerRuntimeException.class))
+        containsKeyBody._if(value.eq(JExpr._null()).cand(identity.ne(JExpr.lit(0))))._then()._throw(JExpr._new(generationUtil.ref(ParcelerRuntimeException.class))
                 .arg("An instance loop was detected whild building Parcelable and deseralization cannot continue.  This error is most likely due to using @ParcelConstructor or @ParcelFactory."));
         containsKeyBody._return(value);
 
         JConditional nullCondition = readMethodBody._if(parcelParam.invoke("readInt").eq(JExpr.lit(-1)));
-        nullCondition._then().assign(readWrapped, JExpr._null());
+        JBlock nullBlock = nullCondition._then();
+
+        nullBlock.assign(readWrapped, JExpr._null());
+        nullBlock.add(identityParam.invoke("put").arg(identity).arg(JExpr._null()));
 
         nullCondition._else().assign(readWrapped, buildReadFromParcelExpression(nullCondition._else(), parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
 
