@@ -28,7 +28,7 @@ public class Example {
     String name;
     int age;
 
-    public Example(){ /*Required empty bean constructor*/ }
+    public Example() {}
 
     public Example(int age, String name) {
         this.age = age;
@@ -126,7 +126,7 @@ This is because Parceler opts for performance rather than checking `.getClass()`
 @Parcel
 public class Example {
     public Parent p;
-    Example(Parent p) { this.p = p; }
+    @ParcelConstructor Example(Parent p) { this.p = p; }
 }
 
 @Parcel public class Parent {}
