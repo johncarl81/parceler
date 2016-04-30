@@ -15,12 +15,8 @@
  */
 package org.parceler.internal;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.CodeGenerationScope;
 import org.androidtransfuse.adapter.ASTFactory;
 import org.androidtransfuse.adapter.ASTStringType;
@@ -138,7 +134,6 @@ public class ParcelerModule {
 
     @Provides
     public ParcelProcessor getParcelProcessor(Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
-                                              Provider<ParcelsGenerator> parcelsTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                                               Provider<PackageHelperGeneratorAdapter> packageHelperGeneratorAdapterProvider,
@@ -149,42 +144,12 @@ public class ParcelerModule {
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
         TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor =
-                new ResultTransformerProcessor(
-                    new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>>(),
-                        new Function<Map<Provider<ASTType>, ParcelImplementations>, Map<Provider<ASTType>, ParcelImplementations>>(){
-                            public Map<Provider<ASTType>, ParcelImplementations> apply(Map<Provider<ASTType>, ParcelImplementations> input) {
-                                return Maps.filterValues(input, new Predicate<ParcelImplementations>() {
-                                    public boolean apply(ParcelImplementations parcelImplementations) {
-                                        //removes all decriptors where parcelsIndex = false, in turn removing them from processing
-                                        //via ParcelsProcessor
-                                        return parcelImplementations.isParcelsIndex();
-                                    }
-                                });
-                            }
-                        });
-        TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor =
-                new ResultTransformerProcessor(new TransactionProcessorPool<Provider<ASTType>, ParcelImplementations>(),
-                        new Function<ParcelImplementations, ParcelImplementations>() {
-                            public ParcelImplementations apply(ParcelImplementations parcelImplementations) {
-                                //removes all decriptors where parcelsIndex = false, in turn removing them from processing
-                                //via ParcelsProcessor
-                                if(parcelImplementations.isParcelsIndex()){
-                                    return parcelImplementations;
-                                }
-                                return null;
-                            }
-                        });
-        TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, JDefinedClass> parcelsProcessor =
-                new TransactionProcessorPool<Map<Provider<ASTType>, ParcelImplementations>, JDefinedClass>();
+                new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>>();
+        TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor = new TransactionProcessorPool<Provider<ASTType>, ParcelImplementations>();
 
-        TransactionProcessor processor =
-                new TransactionProcessorChannel<Provider<ASTType>, ParcelImplementations, JDefinedClass>(
-                        new TransactionProcessorParcelJoin<Provider<ASTType>, ParcelImplementations>(
-                                externalParcelRepositoryProcessor,
+        TransactionProcessor processor = new TransactionProcessorComposite(ImmutableSet.of(externalParcelRepositoryProcessor,
                                 externalParcelProcessor,
-                                parcelProcessor),
-                        parcelsProcessor,
-                        scopedTransactionBuilder.buildFactory(parcelsTransactionWorkerProvider));
+                                parcelProcessor));
 
         TransactionProcessor processorChain = new TransactionProcessorChain(processor,
                         new TransactionProcessorPredefined(ImmutableSet.of(scopedTransactionBuilder.build(packageHelperGeneratorAdapterProvider))));

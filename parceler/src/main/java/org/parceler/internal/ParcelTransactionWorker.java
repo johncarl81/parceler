@@ -51,7 +51,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         if(analysis != null) {
             JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
 
-            return new ParcelImplementations(definedClass, analysis.getExtraImplementations(), analysis.isParcelsIndex());
+            return new ParcelImplementations(definedClass, analysis.getExtraImplementations());
         }
         return null;
     }

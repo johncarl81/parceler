@@ -30,23 +30,21 @@ public class ParcelableDescriptor {
     private final List<ReferencePair<FieldReference>> fieldPairs = new ArrayList<ReferencePair<FieldReference>>();
     private final List<ReferencePair<MethodReference>> methodPairs = new ArrayList<ReferencePair<MethodReference>>();
     private final ASTType parcelConverterType;
-    private final boolean parcelsIndex;
     private ASTType[] extraImplementations;
     private List<ASTMethod> wrapCallbacks = new ArrayList<ASTMethod>();
     private List<ASTMethod> unwrapCallbacks = new ArrayList<ASTMethod>();
 
     public ParcelableDescriptor() {
-        this(new ASTType[0], true);
+        this(new ASTType[0]);
     }
 
-    public ParcelableDescriptor(ASTType[] extraImplementations, boolean parcelsIndex) {
-        this(extraImplementations, null, parcelsIndex);
+    public ParcelableDescriptor(ASTType[] extraImplementations) {
+        this(extraImplementations, null);
     }
 
-    public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType, boolean parcelsIndex) {
+    public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType) {
         this.parcelConverterType = parcelConverterType;
         this.extraImplementations = extraImplementations;
-        this.parcelsIndex = parcelsIndex;
     }
 
     public List<ReferencePair<FieldReference>> getFieldPairs() {
@@ -71,10 +69,6 @@ public class ParcelableDescriptor {
 
     public ASTType[] getExtraImplementations() {
         return extraImplementations;
-    }
-
-    public boolean isParcelsIndex() {
-        return parcelsIndex;
     }
 
     public List<ASTMethod> getWrapCallbacks() {

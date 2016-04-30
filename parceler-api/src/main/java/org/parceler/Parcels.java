@@ -29,9 +29,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class Parcels {
 
-    public static final String PARCELS_NAME = "Parcels";
-    public static final String PARCELS_REPOSITORY_NAME = "Parceler$$Parcels";
-    public static final String PARCELS_PACKAGE = "org.parceler";
     public static final String IMPL_EXT = "Parcelable";
 
     private static final ParcelCodeRepository REPOSITORY = new ParcelCodeRepository();
@@ -42,15 +39,6 @@ public final class Parcels {
 
     private Parcels(){
         // private utility class constructor
-    }
-
-    /**
-     * Testing method for replacing the Parceler$Parcels class with one referenced in the given classloader.
-     *
-     * @param classLoader ClassLoader to use when loading repository.
-     */
-    protected static void update(ClassLoader classLoader){
-        REPOSITORY.loadRepository(classLoader);
     }
 
     /**
@@ -149,10 +137,6 @@ public final class Parcels {
 
         private ConcurrentMap<Class, ParcelableFactory> generatedMap = new ConcurrentHashMap<Class, ParcelableFactory>();
 
-        public ParcelCodeRepository() {
-            loadRepository(getClass().getClassLoader());
-        }
-
         public ParcelableFactory get(Class clazz){
             ParcelableFactory result = generatedMap.get(clazz);
             if (result == null) {
@@ -189,29 +173,6 @@ public final class Parcels {
                 return new ParcelableFactoryReflectionProxy(clazz, parcelWrapperClass);
             } catch (ClassNotFoundException e) {
                 return null;
-            }
-        }
-
-        /**
-         * Update the repository class from the given classloader.  If the given repository class cannot be instantiated
-         * then this method will throw a ParcelerRuntimeException.
-         *
-         * @throws ParcelerRuntimeException
-         * @param classLoader
-         */
-        @SuppressWarnings("unchecked")
-        public void loadRepository(ClassLoader classLoader){
-            try{
-                Class repositoryClass = classLoader.loadClass(PARCELS_PACKAGE + "." + PARCELS_REPOSITORY_NAME);
-                loadRepository((Repository<ParcelableFactory>) repositoryClass.newInstance());
-
-
-            } catch (ClassNotFoundException e) {
-                //nothing
-            } catch (InstantiationException e) {
-                throw new ParcelerRuntimeException("Unable to instantiate generated Repository", e);
-            } catch (IllegalAccessException e) {
-                throw new ParcelerRuntimeException("Unable to access generated Repository", e);
             }
         }
 
