@@ -80,12 +80,6 @@ public @interface Parcel {
     Class[] implementations() default {};
 
     /**
-     * No longer used.
-     */
-    @Deprecated
-    boolean parcelsIndex() default true;
-
-    /**
      * Identifies the types to include in analysis.
      * Parceler will walk to inheritance extension hierarchy only including the classes specified, if the list of classes is non-empty.
      */
@@ -102,11 +96,6 @@ public @interface Parcel {
          * Read and write fields directly.
          */
         FIELD,
-        /**
-         * Deprecated, use `BEAN` instead
-         */
-        @Deprecated
-        METHOD,
         /**
          * Read and write via the Bean standard, public matching getter and setters.
          */
