@@ -398,11 +398,7 @@ To configure Proguard, add the following lines to your proguard configuration fi
 
 ----
 # Parcel library
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
-}
-
--keep class org.parceler.Parceler$$Parcels
+-keep class **$$Parcelable { *; }
 ----
 
 == Getting Parceler
