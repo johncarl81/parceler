@@ -17,6 +17,7 @@ package org.parceler.performance;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -53,6 +54,29 @@ public class ParcelExperiment {
         long total = System.nanoTime() - start;
         double timePer = 1.0 * total / ITERS;
 
-        Toast.makeText(context, name + " Time: " + timePer, 1000).show();
+
+        long writeStart = System.nanoTime();
+        for (int i = 0; i < ITERS; i++) {
+            mutator.write(parcel);
+        }
+        long writeTotal = System.nanoTime() - writeStart;
+        double writeTime = 1.0 * writeTotal / ITERS;
+
+        mutator.write(parcel);
+
+        long readStart = System.nanoTime();
+        for (int i = 0; i < ITERS; i++) {
+
+            parcel.setDataPosition(0);
+
+            mutator.read(parcel);
+        }
+        long reatTotal = System.nanoTime() - readStart;
+        double readTime = 1.0 * reatTotal / ITERS;
+
+        String output = name + " Total Time: " + timePer + " write: " + writeTime + " read: " + readTime;
+
+        Toast.makeText(context, output, 1000).show();
+        Log.i("Parceler", output);
     }
 }
