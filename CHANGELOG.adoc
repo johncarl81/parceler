@@ -1,5 +1,16 @@
 = Parceler Changelog
 
+== Upcoming Release 1.1.3
+
+Depreciations:
+  * Removed METHOD serialization strategy
+  * Removed `parcelsIndex` configuration option on `Parcel` annotation
+
+== Release 1.1.2 (2016-04-30)
+
+Bug Fixes::
+  * Fixed issue generating Parcelable classes from the output of other annotation processors
+
 == Release 1.1.1 (2016-04-11)
 
 Bug Fixes::
