@@ -71,17 +71,16 @@ public class ParcelableAnalysis {
 
         ASTType converter = getConverterType(parcelASTAnnotation);
         Parcel.Serialization serialization = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("value", Parcel.Serialization.class) : null;
-        boolean parcelsIndex = parcelASTAnnotation == null || defaultValue(parcelASTAnnotation.getProperty("parcelsIndex", boolean.class), true);
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
         ASTType[] analyze = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("analyze", ASTType[].class) : new ASTType[0];
 
         ParcelableDescriptor parcelableDescriptor;
 
         if (converter != null) {
-            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter, parcelsIndex);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces, converter);
         }
         else {
-            parcelableDescriptor = new ParcelableDescriptor(interfaces, parcelsIndex);
+            parcelableDescriptor = new ParcelableDescriptor(interfaces);
             Set<MethodSignature> definedMethods = new HashSet<MethodSignature>();
             Map<String, ASTReference<ASTParameter>> writeParameters = new HashMap<String, ASTReference<ASTParameter>>();
 

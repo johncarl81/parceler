@@ -392,29 +392,6 @@ ExampleProxy proxy = new ExampleProxy();
 Parcels.wrap(Example.class, proxy);
 ----
 
-==== Avoiding Parcels indexing
-
-Using Parceler in libraries can be challenging because Parceler writes a single mapping class `Parceler$$Parcels` to associate a given type with a `Parcelable`.
-This mapping class can collide giving the following error during compilation:
-
-[source, bash]
-----
-Error Code:
-    2
-Output:
-    UNEXPECTED TOP-LEVEL EXCEPTION:
-    com.android.dex.DexException: Multiple dex files define Lorg/parceler/Parceler$$Parcels$1;
-        at com.android.dx.merge.DexMerger.readSortableTypes(DexMerger.java:594)
-        at com.android.dx.merge.DexMerger.getSortedTypes(DexMerger.java:552)
-        at com.android.dx.merge.DexMerger.mergeClassDefs(DexMerger.java:533)
-        ....
-----
-
-To avoid writing this common mapping class, set `parcelsIndex = false` to each of the library classes.
-Parceler will not write a `Parceler$$Parcels` mapping class if no indexable classes exist and the Parcels utiltiy class will fallback to looking up the generated class by name.
-
-Alternatively, using `@ParcelClass` in the root project, instead of annotating classes directly in the library can avoid this issue.
-
 ==== Configuring Proguard
 
 To configure Proguard, add the following lines to your proguard configuration file.  These will keep files related to the `Parcels` utilty class and the `Parcelable` `CREATOR` instance:

@@ -80,8 +80,9 @@ public @interface Parcel {
     Class[] implementations() default {};
 
     /**
-     * Should the current class be included in the generated Parcels dictionary class.
+     * No longer used.
      */
+    @Deprecated
     boolean parcelsIndex() default true;
 
     /**
