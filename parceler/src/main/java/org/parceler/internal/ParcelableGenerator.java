@@ -23,17 +23,17 @@ import org.androidtransfuse.gen.ClassNamer;
 import org.androidtransfuse.gen.InvocationBuilder;
 import org.androidtransfuse.gen.UniqueVariableNamer;
 import org.androidtransfuse.model.TypedExpression;
-import org.parceler.ParcelConverter;
-import org.parceler.ParcelWrapper;
-import org.parceler.ParcelerRuntimeException;
-import org.parceler.Parcels;
+import org.parceler.*;
 import org.parceler.internal.generator.ConverterWrapperReadWriteGenerator;
 import org.parceler.internal.generator.EnumReadWriteGenerator;
 import org.parceler.internal.generator.ParcelReadWriteGenerator;
 import org.parceler.internal.generator.ReadWriteGenerator;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -104,7 +104,7 @@ public class ParcelableGenerator {
             ReadWriteGenerator rootGenerator = getRootReadWriteGenerator(type);
 
             JBlock writeToParcelMethodBody = writeToParcelMethod.body();
-            buildWriteMethod(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(HashSet.class).narrow(Integer.class)));
+            buildWriteMethod(parcelableClass, writeToParcelMethodBody, wtParcelParam, flags, type, wrapped, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(IdentityCollection.class)));
 
             //@Parcel input
             JMethod inputConstructor = parcelableClass.constructor(JMod.PUBLIC);
@@ -133,7 +133,7 @@ public class ParcelableGenerator {
 
             createFromParcelMethod.body()._return(
                     JExpr._new(parcelableClass).arg(
-                            buildReadMethod(cfpParcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(HashMap.class).narrow(Integer.class, Object.class)))));
+                            buildReadMethod(cfpParcelParam, parcelableClass, type, parcelableDescriptor.getParcelConverterType(), rootGenerator, JExpr._new(codeModel.ref(IdentityCollection.class)))));
 
             //newArray method
             JMethod newArrayMethod = creatorClass.method(JMod.PUBLIC, parcelableClass.array(), NEW_ARRAY);
@@ -162,16 +162,16 @@ public class ParcelableGenerator {
                 readFromParcelBody.assign(wrapped, constructorInvocation);
             }
             else {
-                readFromParcelBody.add(writeIdentityMap.invoke("put").arg(identity).arg(JExpr._null()));
+                JVar reservationId = readFromParcelBody.decl(codeModel.INT, variableNamer.generateName("reservation"), writeIdentityMap.invoke("reserve"));
                 if(constructorPair.getConstructor() != null){
                     buildReadFromParcelConstructor(parcelableClass, readFromParcelBody, wrapped, constructorPair, type, parcelParam, identity, writeIdentityMap);
                 }
                 else if(constructorPair.getFactoryMethod() != null){
                     buildReadFromParcelFactoryMethod(parcelableClass, readFromParcelBody, wrapped, constructorPair, type, parcelParam, identity, writeIdentityMap);
                 }
+                //add to identity map
+                readFromParcelBody.add(writeIdentityMap.invoke("put").arg(reservationId).arg(wrapped));
             }
-            //add to identity map
-            readFromParcelBody.add(writeIdentityMap.invoke("put").arg(identity).arg(wrapped));
             //field
             for (ReferencePair<FieldReference> fieldPair : parcelableDescriptor.getFieldPairs()) {
                 buildReadFromParcel(parcelableClass, readFromParcelBody, type, wrapped, fieldPair.getReference(), parcelParam, fieldPair.getConverter(), identity, writeIdentityMap);
@@ -334,33 +334,27 @@ public class ParcelableGenerator {
     }
 
     public JExpression buildReadMethod(JVar inputParcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter, ReadWriteGenerator overrideGenerator, JExpression readIdentityMap) {
-        JType inputType = generationUtil.ref(type);
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method
         JMethod readMethod = parcelableClass.method(JMod.PUBLIC | JMod.STATIC, generationUtil.ref(type), READ_METHOD);
         JBlock readMethodBody = readMethod.body();
 
         JVar parcelParam = readMethod.param(parcelType, variableNamer.generateName(parcelType));
-        JVar identityParam = readMethod.param(codeModel.ref(Map.class).narrow(Integer.class, Object.class), variableNamer.generateName("identityMap"));
+        JVar identityParam = readMethod.param(codeModel.ref(IdentityCollection.class), variableNamer.generateName("identityMap"));
 
-        JVar readWrapped = readMethodBody.decl(inputType, variableNamer.generateName(type));
         JVar identity = readMethodBody.decl(codeModel.INT, variableNamer.generateName("identity"), parcelParam.invoke("readInt"));
 
-        JBlock containsKeyBody = readMethodBody._if(identityParam.invoke("containsKey").arg(identity))._then();
-        JVar value = containsKeyBody.decl(inputType, variableNamer.generateName(inputType), JExpr.cast(inputType, identityParam.invoke("get").arg(identity)));
-        containsKeyBody._if(value.eq(JExpr._null()).cand(identity.ne(JExpr.lit(0))))._then()._throw(JExpr._new(generationUtil.ref(ParcelerRuntimeException.class))
+        JConditional containsKeyConditional = readMethodBody._if(identityParam.invoke("containsKey").arg(identity));
+
+        JBlock containsBlock = containsKeyConditional._then();
+
+        containsBlock._if(identityParam.invoke("isReserved").arg(identity))._then()._throw(JExpr._new(generationUtil.ref(ParcelerRuntimeException.class))
                 .arg("An instance loop was detected whild building Parcelable and deseralization cannot continue.  This error is most likely due to using @ParcelConstructor or @ParcelFactory."));
-        containsKeyBody._return(value);
+        containsBlock._return(identityParam.invoke("get").arg(identity));
 
-        JConditional nullCondition = readMethodBody._if(parcelParam.invoke("readInt").eq(JExpr.lit(-1)));
-        JBlock nullBlock = nullCondition._then();
+        JBlock doesntContainBlock = containsKeyConditional._else();
 
-        nullBlock.assign(readWrapped, JExpr._null());
-        nullBlock.add(identityParam.invoke("put").arg(identity).arg(JExpr._null()));
-
-        nullCondition._else().assign(readWrapped, buildReadFromParcelExpression(nullCondition._else(), parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
-
-        readMethodBody._return(readWrapped);
+        doesntContainBlock._return(buildReadFromParcelExpression(doesntContainBlock, parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
 
         return JExpr.invoke(readMethod).arg(inputParcelParam).arg(readIdentityMap);
     }
@@ -376,21 +370,19 @@ public class ParcelableGenerator {
         JVar writeInputVar = writeMethod.param(inputType, variableNamer.generateName(inputType));
         JVar parcelParam = writeMethod.param(parcelType, variableNamer.generateName(parcelType));
         JVar flagsParam = writeMethod.param(int.class, variableNamer.generateName("flags"));
-        JVar identityParam = writeMethod.param(codeModel.ref(Set.class).narrow(Integer.class), variableNamer.generateName("identitySet"));
+        JVar identityParam = writeMethod.param(codeModel.ref(IdentityCollection.class), variableNamer.generateName("identityMap"));
 
-        JVar identity = writeMethodBody.decl(codeModel.INT, variableNamer.generateName("identity"), generationUtil.ref(System.class).staticInvoke("identityHashCode").arg(writeInputVar));
-        writeMethodBody.add(parcelParam.invoke("writeInt").arg(identity));
+        JConditional containsValueConditional = writeMethodBody._if(identityParam.invoke("containsValue").arg(writeInputVar));
 
-        JBlock buildBody = writeMethodBody._if(identityParam.invoke("contains").arg(identity).not())._then();
-        buildBody.add(identityParam.invoke("add").arg(identity));
+        containsValueConditional._then().invoke(parcelParam, "writeInt").arg(identityParam.invoke("getKey").arg(writeInputVar));
 
-        JConditional nullCondition = buildBody._if(writeInputVar.eq(JExpr._null()));
-        nullCondition._then().add(parcelParam.invoke("writeInt").arg(JExpr.lit(-1)));
-        JBlock nonNullCondition = nullCondition._else();
-        nonNullCondition.add(parcelParam.invoke("writeInt").arg(JExpr.lit(1)));
+        JBlock notContainsBlock = containsValueConditional._else();
 
-        buildWriteToParcelExpression(parcelableClass, nonNullCondition, parcelParam, flagsParam, type, writeInputVar, converter, overrideGenerator, identityParam);
+        notContainsBlock.invoke(parcelParam, "writeInt").arg(identityParam.invoke("put").arg(writeInputVar));
 
+        buildWriteToParcelExpression(parcelableClass, notContainsBlock, parcelParam, flagsParam, type, writeInputVar, converter, overrideGenerator, identityParam);
+
+        //invoke this generated method
         body.invoke(writeMethod).arg(targetExpression).arg(parcel).arg(flags).arg(writeIdentitySet);
     }
 }

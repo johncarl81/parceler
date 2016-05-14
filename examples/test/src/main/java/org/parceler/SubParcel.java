@@ -62,6 +62,9 @@ public class SubParcel implements Comparable<SubParcel> {
 
     @Override
     public int compareTo(SubParcel that) {
-        return name.compareTo(that.name);
+        if(name != null) {
+            return name.compareTo(that.name);
+        }
+        return -1;
     }
 }

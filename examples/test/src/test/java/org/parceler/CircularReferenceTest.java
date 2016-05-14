@@ -123,7 +123,7 @@ public class CircularReferenceTest {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof Three)) return false;
+            if (!(o instanceof Four)) return false;
             Four four = (Four) o;
             return EqualsBuilder.reflectionEquals(this, four, new String[]{"three"});
         }
