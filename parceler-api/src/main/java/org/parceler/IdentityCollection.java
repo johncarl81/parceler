@@ -15,7 +15,9 @@
  */
 package org.parceler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,8 +27,7 @@ public final class IdentityCollection {
 
     private static final Object RESERVATION = new Object();
     private int sequence = 0;
-    private final Map<Integer, Object> values = new HashMap<Integer, Object>();
-    private final Map<Object, Integer> keys = new HashMap<Object, Integer>();
+    private final List<Object> values = new ArrayList<Object>();
 
     public IdentityCollection() {
         put(null);
@@ -37,13 +38,11 @@ public final class IdentityCollection {
     }
 
     public boolean containsValue(Object value){
-        return keys.containsKey(value);
+        return values.contains(value);
     }
 
     public int reserve() {
-        int current = sequence++;
-        values.put(current, RESERVATION);
-        return current;
+        return put(RESERVATION);
     }
 
     public boolean isReserved(int id) {
@@ -51,8 +50,7 @@ public final class IdentityCollection {
     }
 
     public void put(int id, Object input){
-        values.put(id, input);
-        keys.put(input, id);
+        values.add(id, input);
     }
 
     public int put(Object input) {
@@ -67,6 +65,6 @@ public final class IdentityCollection {
     }
 
     public int getKey(Object input) {
-        return keys.get(input);
+        return values.indexOf(input);
     }
 }
