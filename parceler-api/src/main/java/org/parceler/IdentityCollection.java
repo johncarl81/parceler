@@ -35,7 +35,7 @@ public final class IdentityCollection {
     }
 
     public boolean containsValue(Object value){
-        return values.contains(value);
+        return getKey(value) != -1;
     }
 
     public int reserve() {
@@ -62,6 +62,11 @@ public final class IdentityCollection {
     }
 
     public int getKey(Object input) {
-        return values.indexOf(input);
+        for(int i = 0; i < values.size(); i++) {
+            if(values.get(i) == input) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
