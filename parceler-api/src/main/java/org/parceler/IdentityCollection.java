@@ -34,10 +34,6 @@ public final class IdentityCollection {
         return id < values.size();
     }
 
-    public boolean containsValue(Object value){
-        return getKey(value) != -1;
-    }
-
     public int reserve() {
         return put(RESERVATION);
     }
