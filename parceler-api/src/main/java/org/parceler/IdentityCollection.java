@@ -16,9 +16,7 @@
 package org.parceler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author John Ericksen
@@ -26,7 +24,6 @@ import java.util.Map;
 public final class IdentityCollection {
 
     private static final Object RESERVATION = new Object();
-    private int sequence = 0;
     private final List<Object> values = new ArrayList<Object>();
 
     public IdentityCollection() {
@@ -34,7 +31,7 @@ public final class IdentityCollection {
     }
 
     public boolean containsKey(int id){
-        return id < sequence;
+        return id < values.size();
     }
 
     public boolean containsValue(Object value){
@@ -50,13 +47,13 @@ public final class IdentityCollection {
     }
 
     public void put(int id, Object input){
+        values.remove(id);
         values.add(id, input);
     }
 
     public int put(Object input) {
-        int current = sequence++;
-        put(current, input);
-        return current;
+        values.add(input);
+        return values.size() - 1;
     }
 
     @SuppressWarnings("unchecked")
