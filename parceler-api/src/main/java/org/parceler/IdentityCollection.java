@@ -15,8 +15,8 @@
  */
 package org.parceler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author John Ericksen
@@ -24,26 +24,18 @@ import java.util.Map;
 public final class IdentityCollection {
 
     private static final Object RESERVATION = new Object();
-    private int sequence = 0;
-    private final Map<Integer, Object> values = new HashMap<Integer, Object>();
-    private final Map<Object, Integer> keys = new HashMap<Object, Integer>();
+    private final List<Object> values = new ArrayList<Object>();
 
     public IdentityCollection() {
         put(null);
     }
 
     public boolean containsKey(int id){
-        return id < sequence;
-    }
-
-    public boolean containsValue(Object value){
-        return keys.containsKey(value);
+        return id < values.size();
     }
 
     public int reserve() {
-        int current = sequence++;
-        values.put(current, RESERVATION);
-        return current;
+        return put(RESERVATION);
     }
 
     public boolean isReserved(int id) {
@@ -51,14 +43,13 @@ public final class IdentityCollection {
     }
 
     public void put(int id, Object input){
-        values.put(id, input);
-        keys.put(input, id);
+        values.remove(id);
+        values.add(id, input);
     }
 
     public int put(Object input) {
-        int current = sequence++;
-        put(current, input);
-        return current;
+        values.add(input);
+        return values.size() - 1;
     }
 
     @SuppressWarnings("unchecked")
@@ -67,6 +58,11 @@ public final class IdentityCollection {
     }
 
     public int getKey(Object input) {
-        return keys.get(input);
+        for(int i = 0; i < values.size(); i++) {
+            if(values.get(i) == input) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

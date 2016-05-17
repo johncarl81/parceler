@@ -380,9 +380,11 @@ public class ParcelableGenerator {
         JVar flagsParam = writeMethod.param(int.class, variableNamer.generateName("flags"));
         JVar identityParam = writeMethod.param(codeModel.ref(IdentityCollection.class), variableNamer.generateName("identityMap"));
 
-        JConditional containsValueConditional = writeMethodBody._if(identityParam.invoke("containsValue").arg(writeInputVar));
+        JVar identityKey = writeMethodBody.decl(codeModel.INT, variableNamer.generateName("identity"), identityParam.invoke("getKey").arg(writeInputVar));
 
-        containsValueConditional._then().invoke(parcelParam, "writeInt").arg(identityParam.invoke("getKey").arg(writeInputVar));
+        JConditional containsValueConditional = writeMethodBody._if(identityKey.ne(JExpr.lit(-1)));
+
+        containsValueConditional._then().invoke(parcelParam, "writeInt").arg(identityKey);
 
         JBlock notContainsBlock = containsValueConditional._else();
 
