@@ -92,6 +92,15 @@ public class ParcelableGenerator {
             parcelableClass._implements(generationUtil.ref("android.os.Parcelable"))
                     ._implements(generationUtil.ref(ParcelWrapper.class).narrow(inputType));
 
+            for (ASTType extension : parcelableDescriptor.getExtraImplementations()) {
+                JDefinedClass extensionClass = generationUtil.defineClass(ClassNamer.className(extension).append(Parcels.IMPL_EXT).build())
+                        ._extends(parcelableClass);
+
+                JMethod extensionConstructor = extensionClass.constructor(JMod.PUBLIC);
+                JVar inputParam = extensionConstructor.param(generationUtil.ref(extension), variableNamer.generateName(type));
+                extensionConstructor.body().invoke("super").arg(inputParam);
+            }
+
             //wrapped @Parcel
             JFieldVar wrapped = parcelableClass.field(JMod.PRIVATE, inputType, variableNamer.generateName(type));
 

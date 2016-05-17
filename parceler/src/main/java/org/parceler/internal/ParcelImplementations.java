@@ -15,11 +15,11 @@
  */
 package org.parceler.internal;
 
+import com.google.common.collect.ImmutableList;
 import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,13 +31,13 @@ public class ParcelImplementations {
     private final List<ASTType> extraImplementations = new ArrayList<ASTType>();
 
     public ParcelImplementations(JDefinedClass definedClass) {
-        this(definedClass, new ASTType[0]);
+        this(definedClass, ImmutableList.<ASTType>of());
     }
 
-    public ParcelImplementations(JDefinedClass definedClass, ASTType[] extraImplementations) {
+    public ParcelImplementations(JDefinedClass definedClass, List<ASTType> extraImplementations) {
         this.definedClass = definedClass;
         if(extraImplementations != null){
-            this.extraImplementations.addAll(Arrays.asList(extraImplementations));
+            this.extraImplementations.addAll(extraImplementations);
         }
     }
 
