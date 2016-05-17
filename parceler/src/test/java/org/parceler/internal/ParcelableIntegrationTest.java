@@ -17,12 +17,11 @@ package org.parceler.internal;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
-import org.androidtransfuse.util.Providers;
+import org.androidtransfuse.gen.ClassNamer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,11 +30,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -71,16 +67,12 @@ public class ParcelableIntegrationTest {
         ParcelableDescriptor parcelableDescriptor = parcelableAnalysis.analyze(mockParcelASTType);
         ParcelableDescriptor parcelableTwoDescriptor = parcelableAnalysis.analyze(mockParcelTwoASTType);
 
-        JDefinedClass parcelableDefinedClass = parcelableGenerator.generateParcelable(mockParcelASTType, parcelableDescriptor);
-        JDefinedClass parcelableTwoDefinedClass = parcelableGenerator.generateParcelable(mockParcelTwoASTType, parcelableTwoDescriptor);
-
-        Map<Provider<ASTType>, ParcelImplementations> generated = new HashMap<Provider<ASTType>, ParcelImplementations>();
-        generated.put(Providers.of(mockParcelASTType), new ParcelImplementations(parcelableDefinedClass));
-        generated.put(Providers.of(mockParcelTwoASTType), new ParcelImplementations(parcelableTwoDefinedClass));
+        parcelableGenerator.generateParcelable(mockParcelASTType, parcelableDescriptor);
+        parcelableGenerator.generateParcelable(mockParcelTwoASTType, parcelableTwoDescriptor);
 
         ClassLoader classLoader = codeGenerationUtil.build();
 
-        parcelableClass = (Class<Parcelable>) classLoader.loadClass(parcelableDefinedClass.fullName());
+        parcelableClass = (Class<Parcelable>) classLoader.loadClass(ClassNamer.className(mockParcelASTType).append(Parcels.IMPL_EXT).build().toString());
 
         parcel = Parcel.obtain();
     }

@@ -15,7 +15,6 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.transaction.AbstractCompletionTransactionWorker;
@@ -29,7 +28,7 @@ import javax.inject.Provider;
  *
  * @author John Ericksen
  */
-public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, ParcelImplementations> {
+public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker<Provider<ASTType>, Void> {
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
@@ -41,7 +40,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
     }
 
     @Override
-    public ParcelImplementations innerRun(Provider<ASTType> valueProvider) {
+    public Void innerRun(Provider<ASTType> valueProvider) {
 
         ASTType value = valueProvider.get();
         ASTAnnotation parcelASTAnnotation = value.getASTAnnotation(Parcel.class);
@@ -49,9 +48,7 @@ public class ParcelTransactionWorker extends AbstractCompletionTransactionWorker
         ParcelableDescriptor analysis = parcelableAnalysis.analyze(value, parcelASTAnnotation);
 
         if(analysis != null) {
-            JDefinedClass definedClass = parcelableGenerator.generateParcelable(value, analysis);
-
-            return new ParcelImplementations(definedClass, analysis.getExtraImplementations());
+            parcelableGenerator.generateParcelable(value, analysis);
         }
         return null;
     }

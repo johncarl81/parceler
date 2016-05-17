@@ -27,7 +27,6 @@ import org.parceler.ParcelClasses;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,8 +36,8 @@ public class ParcelProcessor {
 
     private final TransactionProcessor processor;
     private final TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor;
-    private final TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor;
-    private final TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor;
+    private final TransactionProcessorPool<Provider<ASTType>, Void> externalParcelProcessor;
+    private final TransactionProcessorPool<Provider<ASTType>, Void> parcelProcessor;
     private final Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider;
     private final Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider;
     private final Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider;
@@ -48,8 +47,8 @@ public class ParcelProcessor {
 
     public ParcelProcessor(TransactionProcessor processor,
                            TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor,
-                           TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor,
-                           TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor,
+                           TransactionProcessorPool<Provider<ASTType>, Void> externalParcelProcessor,
+                           TransactionProcessorPool<Provider<ASTType>, Void> parcelProcessor,
                            Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
                            Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                            Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,

@@ -84,7 +84,7 @@ public class ParcelableGenerator {
         this.parcelReadWriteGenerator = parcelReadWriteGenerator;
     }
 
-    public JDefinedClass generateParcelable(final ASTType type, ParcelableDescriptor parcelableDescriptor) {
+    public void generateParcelable(final ASTType type, ParcelableDescriptor parcelableDescriptor) {
         try {
             JType inputType = generationUtil.ref(type);
 
@@ -155,7 +155,6 @@ public class ParcelableGenerator {
             JFieldVar creatorField = parcelableClass.field(JMod.PUBLIC | JMod.STATIC | JMod.FINAL, creatorClass, CREATOR_CLASS_NAME, JExpr._new(creatorClass));
             creatorField.annotate(SuppressWarnings.class).param("value", "UnusedDeclaration");
 
-            return parcelableClass;
         } catch (JClassAlreadyExistsException e) {
             throw new TransfuseAnalysisException("Class Already Exists: " + ClassNamer.className(type).append(Parcels.IMPL_EXT).build(), e);
         }

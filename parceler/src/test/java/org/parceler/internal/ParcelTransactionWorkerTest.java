@@ -15,7 +15,6 @@
  */
 package org.parceler.internal;
 
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTAnnotation;
 import org.androidtransfuse.adapter.ASTType;
 import org.junit.Before;
@@ -23,10 +22,10 @@ import org.junit.Test;
 
 import javax.inject.Provider;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * @author John Ericksen
@@ -40,7 +39,6 @@ public class ParcelTransactionWorkerTest {
     private Provider inputProvider;
     private ASTType input;
     private ASTAnnotation mockASTAnnotation;
-    private JDefinedClass output;
 
     @Before
     public void setup() {
@@ -50,7 +48,6 @@ public class ParcelTransactionWorkerTest {
         mockASTAnnotation = mock(ASTAnnotation.class);
         inputProvider = mock(Provider.class);
         input = mock(ASTType.class);
-        output = mock(JDefinedClass.class);
 
         parcelTransaction = new ParcelTransactionWorker(mockAnalysis, mockGenerator);
     }
@@ -60,12 +57,12 @@ public class ParcelTransactionWorkerTest {
         when(inputProvider.get()).thenReturn(input);
         when(input.getASTAnnotation(any(Class.class))).thenReturn(mockASTAnnotation);
         when(mockAnalysis.analyze(input, mockASTAnnotation)).thenReturn(mockDescriptor);
-        when(mockGenerator.generateParcelable(input, mockDescriptor)).thenReturn(output);
 
         assertFalse(parcelTransaction.isComplete());
 
-        assertEquals(output, parcelTransaction.run(inputProvider).getDefinedClass());
+        parcelTransaction.run(inputProvider);
 
+        verify(mockGenerator).generateParcelable(input, mockDescriptor);
         assertTrue(parcelTransaction.isComplete());
     }
 }
