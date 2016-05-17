@@ -8,4 +8,4 @@ target
 tmp
 out
 .gradle
-examples/gradle/gradleParceler/build/*
+build
