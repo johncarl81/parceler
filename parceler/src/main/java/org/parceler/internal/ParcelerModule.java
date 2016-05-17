@@ -143,9 +143,9 @@ public class ParcelerModule {
 
         TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>> externalParcelRepositoryProcessor =
                 new TransactionProcessorPool<Provider<ASTType>, Provider<ASTType>>();
-        TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>> externalParcelProcessor =
-                new TransactionProcessorPool<Provider<ASTType>, Map<Provider<ASTType>, ParcelImplementations>>();
-        TransactionProcessorPool<Provider<ASTType>, ParcelImplementations> parcelProcessor = new TransactionProcessorPool<Provider<ASTType>, ParcelImplementations>();
+        TransactionProcessorPool<Provider<ASTType>, Void> externalParcelProcessor =
+                new TransactionProcessorPool<Provider<ASTType>, Void>();
+        TransactionProcessorPool<Provider<ASTType>, Void> parcelProcessor = new TransactionProcessorPool<Provider<ASTType>, Void>();
 
         TransactionProcessor processor = new TransactionProcessorComposite(ImmutableSet.of(externalParcelRepositoryProcessor,
                                 externalParcelProcessor,

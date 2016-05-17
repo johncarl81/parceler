@@ -18,7 +18,6 @@ package org.parceler.internal;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.common.collect.ImmutableSet;
-import com.sun.codemodel.JDefinedClass;
 import org.androidtransfuse.adapter.ASTConstructor;
 import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTParameter;
@@ -26,6 +25,7 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
+import org.androidtransfuse.gen.ClassNamer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -238,10 +238,10 @@ public class ParcelableGeneratorTest {
     }
 
     private void testSerialization(ParcelableDescriptor descriptor) throws Exception {
-        JDefinedClass targetGenerated = generator.generateParcelable(targetType, descriptor);
+        generator.generateParcelable(targetType, descriptor);
 
         ClassLoader classLoader = codeGenerationUtil.build();
-        Class<Parcelable> parcelableClass = (Class<Parcelable>) classLoader.loadClass(targetGenerated.fullName());
+        Class<Parcelable> parcelableClass = (Class<Parcelable>) classLoader.loadClass(ClassNamer.className(targetType).append(Parcels.IMPL_EXT).build().toString());
 
         Parcelable outputParcelable = parcelableClass.getConstructor(Target.class).newInstance(target);
 

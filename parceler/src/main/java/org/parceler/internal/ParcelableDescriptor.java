@@ -19,6 +19,7 @@ import org.androidtransfuse.adapter.ASTMethod;
 import org.androidtransfuse.adapter.ASTType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,12 +31,12 @@ public class ParcelableDescriptor {
     private final List<ReferencePair<FieldReference>> fieldPairs = new ArrayList<ReferencePair<FieldReference>>();
     private final List<ReferencePair<MethodReference>> methodPairs = new ArrayList<ReferencePair<MethodReference>>();
     private final ASTType parcelConverterType;
-    private ASTType[] extraImplementations;
+    private List<ASTType> extraImplementations = new ArrayList<ASTType>();
     private List<ASTMethod> wrapCallbacks = new ArrayList<ASTMethod>();
     private List<ASTMethod> unwrapCallbacks = new ArrayList<ASTMethod>();
 
     public ParcelableDescriptor() {
-        this(new ASTType[0]);
+        this(null);
     }
 
     public ParcelableDescriptor(ASTType[] extraImplementations) {
@@ -44,7 +45,9 @@ public class ParcelableDescriptor {
 
     public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType) {
         this.parcelConverterType = parcelConverterType;
-        this.extraImplementations = extraImplementations;
+        if(extraImplementations != null) {
+            this.extraImplementations.addAll(Arrays.asList(extraImplementations));
+        }
     }
 
     public List<ReferencePair<FieldReference>> getFieldPairs() {
@@ -67,7 +70,7 @@ public class ParcelableDescriptor {
         return constructorPair;
     }
 
-    public ASTType[] getExtraImplementations() {
+    public List<ASTType> getExtraImplementations() {
         return extraImplementations;
     }
 
