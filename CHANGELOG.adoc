@@ -3,7 +3,7 @@
 == Release 1.1.4 (2016-05-16)
 
 Bug Fixes::
-  * Reimplmeneted implementation parameter
+  * Re-implemented implementation parameter
   * Fixed identity handling in object graphs by using list instead of map
 
 == Release 1.1.3 (2016-05-14)
