@@ -1,5 +1,11 @@
 = Parceler Changelog
 
+== Upcoming Release 1.1.5
+
+Bug Fixes::
+  * Fixes issue with using non-local target classes' classloader 
+  * Fixes issue with checking Parcelable inheritance
+
 == Release 1.1.4 (2016-05-16)
 
 Bug Fixes::
