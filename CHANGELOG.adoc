@@ -1,6 +1,6 @@
 = Parceler Changelog
 
-== Upcoming Release 1.1.5
+== Release 1.1.5 (2016-05-25)
 
 Bug Fixes::
   * Fixes issue with using non-local target classes' classloader 
