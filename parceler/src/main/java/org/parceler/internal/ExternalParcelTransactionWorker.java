@@ -24,6 +24,8 @@ import org.parceler.ParcelClasses;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Executes the analysis and generation of an annotated @Parcel class.
@@ -34,6 +36,7 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
     private final ParcelableAnalysis parcelableAnalysis;
     private final ParcelableGenerator parcelableGenerator;
+    private final Set<ASTType> analyzed = new HashSet<ASTType>();
 
     @Inject
     public ExternalParcelTransactionWorker(ParcelableAnalysis parcelableAnalysis, ParcelableGenerator parcelableGenerator) {
@@ -65,27 +68,16 @@ public class ExternalParcelTransactionWorker extends AbstractCompletionTransacti
 
     private void analyze(ASTAnnotation astAnnotation){
         ASTType parcelType = astAnnotation.getProperty("value", ASTType.class);
-        ASTAnnotation parcelASTAnnotation = astAnnotation.getProperty("annotation", ASTAnnotation.class);
-        if(parcelASTAnnotation == null){
-            parcelASTAnnotation = parcelType.getASTAnnotation(Parcel.class);
-        }
-        ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, parcelASTAnnotation);
-        if(analysis != null) {
-            parcelableGenerator.generateParcelable(parcelType, analysis);
-        }
-    }
-
-    private static final class ASTTypeProvider implements Provider<ASTType>{
-
-        private ASTType parcelType;
-
-        private ASTTypeProvider(ASTType parcelType) {
-            this.parcelType = parcelType;
-        }
-
-        @Override
-        public ASTType get() {
-            return parcelType;
+        if(!analyzed.contains(parcelType)) {
+            analyzed.add(parcelType);
+            ASTAnnotation parcelASTAnnotation = astAnnotation.getProperty("annotation", ASTAnnotation.class);
+            if (parcelASTAnnotation == null) {
+                parcelASTAnnotation = parcelType.getASTAnnotation(Parcel.class);
+            }
+            ParcelableDescriptor analysis = parcelableAnalysis.analyze(parcelType, parcelASTAnnotation);
+            if (analysis != null) {
+                parcelableGenerator.generateParcelable(parcelType, analysis);
+            }
         }
     }
 }
