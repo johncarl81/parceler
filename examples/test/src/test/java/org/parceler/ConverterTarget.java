@@ -15,6 +15,8 @@
  */
 package org.parceler;
 
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.SparseArray;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -82,6 +84,12 @@ public class ConverterTarget {
     HashSet<String[]> stringHashSetArray;
     Integer[][] multidimensionalArray;
     SparseArray<String> sparseArray;
+    @PodamStrategyValue(RealParcelableStrategy.class)
+    Parcelable parcelable;
+    @PodamStrategyValue(RealParcelableStrategy.class)
+    RealParcelable realParcelable;
+    Enums.Values enums;
+    Bundle bundle;
 
     public byte getB() {
         return b;
@@ -433,6 +441,30 @@ public class ConverterTarget {
 
     public void setBobja(Boolean[] bobja) {
         this.bobja = bobja;
+    }
+
+    public Parcelable getParcelable() {
+        return parcelable;
+    }
+
+    public void setParcelable(Parcelable parcelable) {
+        this.parcelable = parcelable;
+    }
+
+    public RealParcelable getRealParcelable() {
+        return realParcelable;
+    }
+
+    public void setRealParcelable(RealParcelable realParcelable) {
+        this.realParcelable = realParcelable;
+    }
+
+    public Enums.Values getEnums() {
+        return enums;
+    }
+
+    public void setEnums(Enums.Values enums) {
+        this.enums = enums;
     }
 
     @Override

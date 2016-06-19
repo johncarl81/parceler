@@ -29,8 +29,8 @@ public class NullCheckReadWriteLazyLookupGenerator extends NullCheckReadWriteGen
     private final ASTType unboxedType;
     private final Generators generators;
 
-    public NullCheckReadWriteLazyLookupGenerator(ASTType boxedType, JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTType unboxedType) {
-        super(boxedType, codeModel, generationUtil, namer);
+    public NullCheckReadWriteLazyLookupGenerator(JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTType unboxedType) {
+        super(codeModel, generationUtil, namer);
         this.unboxedType = unboxedType;
         this.generators = generators;
     }

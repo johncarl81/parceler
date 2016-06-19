@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.parceler.internal.generator;
+package org.parceler;
 
-import com.sun.codemodel.JCodeModel;
-import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.UniqueVariableNamer;
+import android.os.Parcelable;
+import org.apache.commons.lang.RandomStringUtils;
+import uk.co.jemos.podam.common.AttributeStrategy;
+import uk.co.jemos.podam.exceptions.PodamMockeryException;
 
 /**
  * @author John Ericksen
  */
-public class NullCheckReadWriteGeneratorDecorator extends NullCheckReadWriteGenerator {
-
-    private final ReadWriteGenerator generator;
-
-    public NullCheckReadWriteGeneratorDecorator(JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer, ReadWriteGenerator generator) {
-        super(codeModel, generationUtil, namer);
-        this.generator = generator;
-    }
-
+public class RealParcelableStrategy implements AttributeStrategy<Parcelable> {
     @Override
-    protected ReadWriteGenerator getGenerator() {
-        return generator;
+    public Parcelable getValue() throws PodamMockeryException {
+        return new RealParcelable(RandomStringUtils.random(10));
     }
 }
