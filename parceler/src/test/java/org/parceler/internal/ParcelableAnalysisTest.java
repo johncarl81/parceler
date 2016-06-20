@@ -68,6 +68,22 @@ public class ParcelableAnalysisTest {
         }
     }
 
+    @Parcel(describeContents = 42)
+    static class DescribedContents {}
+
+    @Test
+    public void testDescribeContents() {
+        ParcelableDescriptor analysis = analyze(DescribedContents.class);
+
+        assertNull(analysis.getParcelConverterType());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        assertTrue(42 == analysis.getDescribeContents());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
     @Parcel
     static class FieldSerialization {
         String value;
