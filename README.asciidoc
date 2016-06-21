@@ -1,5 +1,7 @@
 = Parceler
 
+image:https://badges.gitter.im/johncarl81/parceler.svg[link="https://gitter.im/johncarl81/parceler?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+
 image:https://travis-ci.org/johncarl81/parceler.png?branch=master["Build Status", link="https://travis-ci.org/johncarl81/parceler"]
 image:https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api/badge.svg["Maven Central", link="https://maven-badges.herokuapp.com/maven-central/org.parceler/parceler-api"]
 
