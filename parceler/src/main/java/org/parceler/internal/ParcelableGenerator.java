@@ -52,7 +52,6 @@ public class ParcelableGenerator {
 
     private final JCodeModel codeModel;
     private final UniqueVariableNamer variableNamer;
-    private final ClassNamer classNamer;
     private final ClassGenerationUtil generationUtil;
     private final ReadReferenceVisitor readFromParcelVisitor;
     private final WriteReferenceVisitor writeToParcelVisitor;
@@ -65,7 +64,6 @@ public class ParcelableGenerator {
     @Inject
     public ParcelableGenerator(JCodeModel codeModel,
                                UniqueVariableNamer variableNamer,
-                               ClassNamer classNamer,
                                ClassGenerationUtil generationUtil,
                                ReadReferenceVisitor readFromParcelVisitor,
                                WriteReferenceVisitor writeToParcelVisitor,
@@ -74,7 +72,6 @@ public class ParcelableGenerator {
                                EnumReadWriteGenerator enumReadWriteGenerator, ParcelReadWriteGenerator parcelReadWriteGenerator) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
-        this.classNamer = classNamer;
         this.generationUtil = generationUtil;
         this.readFromParcelVisitor = readFromParcelVisitor;
         this.writeToParcelVisitor = writeToParcelVisitor;
@@ -136,9 +133,7 @@ public class ParcelableGenerator {
             getWrappedMethod.body()._return(wrapped);
 
             //public static final CREATOR = ...
-            JDefinedClass creatorClass = parcelableClass._class(JMod.PUBLIC | JMod.STATIC | JMod.FINAL, classNamer.numberedClassName(new ASTStringType("android.os.Parcelable.Creator")).build().getClassName());
-
-            creatorClass._implements(generationUtil.ref("android.os.Parcelable.Creator").narrow(parcelableClass));
+            JDefinedClass creatorClass = codeModel.anonymousClass(generationUtil.ref("android.os.Parcelable.Creator").narrow(parcelableClass));
 
             //createFromParcel method
             JMethod createFromParcelMethod = creatorClass.method(JMod.PUBLIC, parcelableClass, CREATE_FROM_PARCEL);
