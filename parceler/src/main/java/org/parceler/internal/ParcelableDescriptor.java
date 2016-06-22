@@ -34,17 +34,19 @@ public class ParcelableDescriptor {
     private List<ASTType> extraImplementations = new ArrayList<ASTType>();
     private List<ASTMethod> wrapCallbacks = new ArrayList<ASTMethod>();
     private List<ASTMethod> unwrapCallbacks = new ArrayList<ASTMethod>();
+    private final Integer describeContents;
 
     public ParcelableDescriptor() {
-        this(null);
+        this(null, null);
     }
 
-    public ParcelableDescriptor(ASTType[] extraImplementations) {
-        this(extraImplementations, null);
+    public ParcelableDescriptor(ASTType[] extraImplementations, Integer describeContents) {
+        this(extraImplementations, null, describeContents);
     }
 
-    public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType) {
+    public ParcelableDescriptor(ASTType[] extraImplementations, ASTType parcelConverterType, Integer describeContents) {
         this.parcelConverterType = parcelConverterType;
+        this.describeContents = describeContents;
         if(extraImplementations != null) {
             this.extraImplementations.addAll(Arrays.asList(extraImplementations));
         }
@@ -80,5 +82,9 @@ public class ParcelableDescriptor {
 
     public List<ASTMethod> getUnwrapCallbacks() {
         return unwrapCallbacks;
+    }
+
+    public Integer getDescribeContents() {
+        return describeContents;
     }
 }

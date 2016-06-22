@@ -5,6 +5,7 @@
 Enhancements::
   * Added supported options to annotation processor
   * Changed Parcelable implementations use CREATOR directly
+  * Added describeContents option on `@Parcel` to set generated return value to `describeContents()` method.
 
 == Release 1.1.5 (2016-05-25)
 

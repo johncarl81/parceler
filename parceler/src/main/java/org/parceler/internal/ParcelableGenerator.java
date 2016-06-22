@@ -123,7 +123,12 @@ public class ParcelableGenerator {
             //describeContents()
             JMethod describeContentsMethod = parcelableClass.method(JMod.PUBLIC, codeModel.INT, DESCRIBE_CONTENTS);
             describeContentsMethod.annotate(Override.class);
-            describeContentsMethod.body()._return(JExpr.lit(0));
+            if(parcelableDescriptor.getDescribeContents() == null) {
+                describeContentsMethod.body()._return(JExpr.lit(0));
+            }
+            else {
+                describeContentsMethod.body()._return(JExpr.lit(parcelableDescriptor.getDescribeContents()));
+            }
 
             //ParcelWrapper.getParcel()
             JMethod getWrappedMethod = parcelableClass.method(JMod.PUBLIC, inputType, ParcelWrapper.GET_PARCEL);

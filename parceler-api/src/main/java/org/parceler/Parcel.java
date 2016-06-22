@@ -91,6 +91,14 @@ public @interface Parcel {
      */
     Class<? extends TypeRangeParcelConverter> converter() default ParcelConverter.EmptyConverter.class;
 
+    /**
+     * Value to be returned by the generated `describeContents()` method.
+     *
+     * @return bitmask value indicating marshalled object types.
+     * @see https://developer.android.com/reference/android/os/Parcelable.html#describeContents()[Parcelable.describeContents()]
+     */
+    int describeContents() default 0;
+
     enum Serialization {
         /**
          * Read and write fields directly.
