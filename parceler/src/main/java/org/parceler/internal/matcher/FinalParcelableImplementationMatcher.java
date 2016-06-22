@@ -8,14 +8,14 @@ import org.androidtransfuse.util.matcher.Matcher;
 /**
  * @author John Ericksen
  */
-public class ParcelableImplementationMatcher implements Matcher<ASTType> {
+public class FinalParcelableImplementationMatcher implements Matcher<ASTType> {
 
     private static final ASTType CREATOR_TYPE = new ASTStringType("android.os.Parcelable.Creator");
     private static final ASTType PARCELABLE_TYPE = new ASTStringType("android.os.Parcelable");
 
     @Override
     public boolean matches(ASTType input) {
-        return input.inheritsFrom(PARCELABLE_TYPE) && isCreatorFieldImplemented(input);
+        return input.isFinal() && input.inheritsFrom(PARCELABLE_TYPE) && isCreatorFieldImplemented(input);
     }
 
     private boolean isCreatorFieldImplemented(ASTType type) {
