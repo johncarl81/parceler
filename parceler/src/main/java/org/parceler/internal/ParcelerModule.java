@@ -37,17 +37,13 @@ import org.androidtransfuse.transaction.*;
 import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.util.MessagerLogger;
 import org.androidtransfuse.util.matcher.ASTArrayMatcher;
-import org.androidtransfuse.util.matcher.ImplementsMatcher;
 import org.androidtransfuse.util.matcher.InheritsMatcher;
 import org.androidtransfuse.util.matcher.Matchers;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.EnumMatcher;
-import org.parceler.internal.matcher.GenericCollectionMatcher;
-import org.parceler.internal.matcher.InheritsParcelableMatcher;
-import org.parceler.internal.matcher.ParcelMatcher;
+import org.parceler.internal.matcher.*;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -184,19 +180,19 @@ public class ParcelerModule {
                                            EnumReadWriteGenerator enumReadWriteGenerator){
 
         generators.addPair(byte.class, "readByte", "writeByte");
-        generators.addPair(Byte.class, nullCheckFactory.get(Byte.class, generators, byte.class));
+        generators.addPair(Byte.class, nullCheckFactory.get(generators, byte.class));
         generators.addPair(double.class, "readDouble", "writeDouble");
-        generators.addPair(Double.class, nullCheckFactory.get(Double.class, generators, double.class));
+        generators.addPair(Double.class, nullCheckFactory.get(generators, double.class));
         generators.addPair(float.class, "readFloat", "writeFloat");
-        generators.addPair(Float.class, nullCheckFactory.get(Float.class, generators, float.class));
+        generators.addPair(Float.class, nullCheckFactory.get(generators, float.class));
         generators.addPair(int.class, "readInt", "writeInt");
-        generators.addPair(Integer.class, nullCheckFactory.get(Integer.class, generators, int.class));
+        generators.addPair(Integer.class, nullCheckFactory.get(generators, int.class));
         generators.addPair(long.class, "readLong", "writeLong");
-        generators.addPair(Long.class, nullCheckFactory.get(Long.class, generators, long.class));
+        generators.addPair(Long.class, nullCheckFactory.get(generators, long.class));
         generators.addPair(char.class, new SingleEntryArrayReadWriteGenerator("createCharArray", "writeCharArray", char.class, codeModel));
-        generators.addPair(Character.class, nullCheckFactory.get(Character.class, generators, char.class));
+        generators.addPair(Character.class, nullCheckFactory.get(generators, char.class));
         generators.addPair(boolean.class, new BooleanEntryReadWriteGenerator(codeModel));
-        generators.addPair(Boolean.class, nullCheckFactory.get(Boolean.class, generators, boolean.class));
+        generators.addPair(Boolean.class, nullCheckFactory.get(generators, boolean.class));
         generators.addPair(byte[].class, "createByteArray", "writeByteArray");
         generators.addPair(char[].class, "createCharArray", "writeCharArray");
         generators.addPair(boolean[].class, "createBooleanArray", "writeBooleanArray");
@@ -205,6 +201,7 @@ public class ParcelerModule {
         generators.add(Matchers.type(new ASTStringType("android.os.Bundle")).ignoreGenerics().build(), new BundleReadWriteGenerator("readBundle", "writeBundle", "android.os.Bundle"));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
+        generators.add(new ParcelableImplementationMatcher(), nullCheckFactory.get(new ParcelableImplementationReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable")));
         generators.add(new InheritsParcelableMatcher(), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.add(new EnumMatcher(), enumReadWriteGenerator);
         generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);

@@ -41,11 +41,11 @@ public class NullCheckFactory {
         this.astClassFactory = astClassFactory;
     }
 
-    public NullCheckReadWriteGenerator get(Class boxedType, Generators generators, Class unboxed){
-        return new NullCheckReadWriteLazyLookupGenerator(astClassFactory.getType(boxedType), codeModel, generationUtil, namer, generators, astClassFactory.getType(unboxed));
+    public NullCheckReadWriteGenerator get(Generators generators, Class unboxed){
+        return new NullCheckReadWriteLazyLookupGenerator(codeModel, generationUtil, namer, generators, astClassFactory.getType(unboxed));
     }
 
-    public NullCheckReadWriteGenerator get(Class boxedType, ReadWriteGenerator generator){
-        return new NullCheckReadWriteGeneratorDecorator(astClassFactory.getType(boxedType), codeModel, generationUtil, namer, generator);
+    public NullCheckReadWriteGenerator get(ReadWriteGenerator generator){
+        return new NullCheckReadWriteGeneratorDecorator(codeModel, generationUtil, namer, generator);
     }
 }

@@ -28,10 +28,8 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
     private final JCodeModel codeModel;
     private final ClassGenerationUtil generationUtil;
     private final UniqueVariableNamer namer;
-    private final ASTType boxedType;
 
-    public NullCheckReadWriteGenerator(ASTType boxedType, JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer) {
-        this.boxedType = boxedType;
+    public NullCheckReadWriteGenerator(JCodeModel codeModel, ClassGenerationUtil generationUtil, UniqueVariableNamer namer) {
         this.codeModel = codeModel;
         this.generationUtil = generationUtil;
         this.namer = namer;
@@ -42,7 +40,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
 
         JVar sizeVar = body.decl(codeModel.INT, namer.generateName(codeModel.INT), parcelParam.invoke("readInt"));
 
-        JVar value = body.decl(generationUtil.ref(boxedType), namer.generateName(boxedType));
+        JVar value = body.decl(generationUtil.ref(type), namer.generateName(type));
 
         JConditional nullInputConditional = body._if(sizeVar.lt(JExpr.lit(0)));
 
