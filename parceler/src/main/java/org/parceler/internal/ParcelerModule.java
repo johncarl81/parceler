@@ -201,7 +201,6 @@ public class ParcelerModule {
         generators.add(Matchers.type(new ASTStringType("android.os.Bundle")).ignoreGenerics().build(), new BundleReadWriteGenerator("readBundle", "writeBundle", "android.os.Bundle"));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(new FinalParcelableImplementationMatcher(), nullCheckFactory.get(new ParcelableImplementationReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable")));
         generators.add(new InheritsParcelableMatcher(), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.add(new EnumMatcher(), enumReadWriteGenerator);
         generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);
