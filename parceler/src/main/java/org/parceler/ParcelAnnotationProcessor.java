@@ -27,10 +27,12 @@ import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.androidtransfuse.scope.ScopeKey;
 import org.parceler.internal.ParcelProcessor;
+import org.parceler.internal.ParcelerModule;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -52,6 +54,10 @@ import java.util.Set;
 @SupportedAnnotations({Parcel.class, ParcelClass.class, ParcelClasses.class})
 @Bootstrap
 @AutoService(Processor.class)
+@SupportedOptions({
+        ParcelerModule.DEBUG,
+        ParcelerModule.STACKTRACE
+})
 public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
 
     @Inject
