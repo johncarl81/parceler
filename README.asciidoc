@@ -399,6 +399,8 @@ To configure Proguard, add the following lines to your proguard configuration fi
 
 ----
 # Parcel library
+-keep interface org.parceler.Parcel
+-keep @org.parceler.Parcel class * { *; }
 -keep class **$$Parcelable { *; }
 ----
 
