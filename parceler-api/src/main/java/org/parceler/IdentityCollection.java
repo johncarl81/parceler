@@ -43,7 +43,9 @@ public final class IdentityCollection {
     }
 
     public void put(int id, Object input){
-        values.remove(id);
+        if(values.size() > id) {
+            values.remove(id);
+        }
         values.add(id, input);
     }
 
