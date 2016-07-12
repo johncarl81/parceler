@@ -43,7 +43,10 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.*;
+import org.parceler.internal.matcher.EnumMatcher;
+import org.parceler.internal.matcher.GenericCollectionMatcher;
+import org.parceler.internal.matcher.ObservableFieldMatcher;
+import org.parceler.internal.matcher.ParcelMatcher;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -130,6 +133,12 @@ public class ParcelerModule {
     }
 
     @Provides
+    @Named("namespace")
+    public String getNamespace() {
+        return "Parceler";
+    }
+
+    @Provides
     public ParcelProcessor getParcelProcessor(Provider<ParcelTransactionWorker> parcelTransactionWorkerProvider,
                                               Provider<ExternalParcelTransactionWorker> externalParcelTransactionWorkerProvider,
                                               Provider<ExternalParcelRepositoryTransactionWorker> externalParcelRepositoryTransactionWorkerProvider,
@@ -202,7 +211,7 @@ public class ParcelerModule {
         generators.add(new ObservableFieldMatcher(generators), nullCheckFactory.get(new ObservableFieldReadWriteGenerator(generators, generationUtil)));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
-        generators.add(new InheritsParcelableMatcher(), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
+        generators.add(new InheritsMatcher(new ASTStringType("android.os.Parcelable")), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
         generators.add(new EnumMatcher(), enumReadWriteGenerator);
         generators.add(new ParcelMatcher(externalParcelRepository), parcelReadWriteGenerator);
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
