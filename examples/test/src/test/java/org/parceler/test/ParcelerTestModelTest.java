@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.parceler.internal.matcher;
+package org.parceler.test;
 
-import org.androidtransfuse.adapter.ASTStringType;
-import org.androidtransfuse.adapter.ASTType;
-import org.androidtransfuse.util.matcher.Matcher;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.parceler.Parcels;
+import org.parceler.ParcelsTestUtil;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
-/**
- * @author John Ericksen
- */
-public class InheritsParcelableMatcher implements Matcher<ASTType> {
+import java.util.Date;
 
-    private static final ASTType PARCELABLE_TYPE = new ASTStringType("android.os.Parcelable");
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
+public class ParcelerTestModelTest {
 
-    @Override
-    public boolean matches(ASTType input) {
-        return input.inheritsFrom(PARCELABLE_TYPE);
+    @Test
+    public void parcelUnparcel() {
+        Date date = new Date();
+        ParcelerTestModel model = new ParcelerTestModel(date, date, "Test");
+        Parcels.unwrap(ParcelsTestUtil.wrap(model));
     }
+
 }

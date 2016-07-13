@@ -344,7 +344,8 @@ public class ParcelableGenerator {
     public JExpression buildReadMethod(JVar inputParcelParam, JDefinedClass parcelableClass, ASTType type, ASTType converter, ReadWriteGenerator overrideGenerator, JExpression readIdentityMap) {
         JType parcelType = generationUtil.ref(ANDROID_PARCEL);
         //write method
-        JMethod readMethod = parcelableClass.method(JMod.PUBLIC | JMod.STATIC, generationUtil.ref(type), READ_METHOD);
+        JClass typeRef = generationUtil.ref(type);
+        JMethod readMethod = parcelableClass.method(JMod.PUBLIC | JMod.STATIC, typeRef, READ_METHOD);
         JBlock readMethodBody = readMethod.body();
 
         JVar parcelParam = readMethod.param(parcelType, variableNamer.generateName(parcelType));
@@ -362,7 +363,11 @@ public class ParcelableGenerator {
 
         JBlock doesntContainBlock = containsKeyConditional._else();
 
-        doesntContainBlock._return(buildReadFromParcelExpression(doesntContainBlock, parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
+        JVar expressionVariable = doesntContainBlock.decl(typeRef, variableNamer.generateName(typeRef), buildReadFromParcelExpression(doesntContainBlock, parcelParam, parcelableClass, type, converter, overrideGenerator, identity, identityParam).getExpression());
+
+        doesntContainBlock.invoke(identityParam, "put").arg(identity).arg(expressionVariable);
+
+        doesntContainBlock._return(expressionVariable);
 
         return JExpr.invoke(readMethod).arg(inputParcelParam).arg(readIdentityMap);
     }

@@ -7,6 +7,9 @@ Enhancements::
   * Added describeContents option on `@Parcel` to set generated return value to `describeContents()` method.
   * Changed CREATOR to anonymous inner class
 
+Bug Fixes::
+  * Fixes issue reading identical objects within the same bean.
+
 == Release 1.1.5 (2016-05-25)
 
 Bug Fixes::
