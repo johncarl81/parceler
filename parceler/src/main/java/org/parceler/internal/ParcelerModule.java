@@ -199,6 +199,7 @@ public class ParcelerModule {
         generators.addPair(String.class, "readString", "writeString");
         generators.addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
         generators.add(Matchers.type(new ASTStringType("android.os.Bundle")).ignoreGenerics().build(), new BundleReadWriteGenerator("readBundle", "writeBundle", "android.os.Bundle"));
+        generators.add(new ObservableFieldMatcher(generators), nullCheckFactory.get(new ObservableFieldReadWriteGenerator(generators, generationUtil)));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new InheritsParcelableMatcher(), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));

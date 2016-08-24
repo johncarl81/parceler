@@ -3,9 +3,11 @@
 == Upcoming Release
 
 Enhancements::
-  * Added supported options to annotation processor
+  * Added supported options to annotation processor.
+  * Changed Parcelable implementations use CREATOR directly.
   * Added describeContents option on `@Parcel` to set generated return value to `describeContents()` method.
-  * Changed CREATOR to anonymous inner class
+  * Changed CREATOR to anonymous inner class.
+  * Added ObservableField serialization support.
 
 Bug Fixes::
   * Fixes issue reading identical objects within the same bean.
@@ -13,28 +15,28 @@ Bug Fixes::
 == Release 1.1.5 (2016-05-25)
 
 Bug Fixes::
-  * Fixes issue with using non-local target classes' classloader 
-  * Fixes issue with checking Parcelable inheritance
+  * Fixes issue with using non-local target classes' classloader.
+  * Fixes issue with checking Parcelable inheritance.
 
 == Release 1.1.4 (2016-05-16)
 
 Bug Fixes::
-  * Re-implemented implementation parameter
-  * Fixed identity handling in object graphs by using list instead of map
+  * Re-implemented implementation parameter.
+  * Fixed identity handling in object graphs by using list instead of map.
 
 == Release 1.1.3 (2016-05-14)
 
 Bug Fixes::
-  * Fixed identity handling by using IdentityCollection
+  * Fixed identity handling by using IdentityCollection.
 
 Depreciations::
-  * Removed METHOD serialization strategy
-  * Removed `parcelsIndex` configuration option on `Parcel` annotation
+  * Removed METHOD serialization strategy.
+  * Removed `parcelsIndex` configuration option on `Parcel` annotation.
 
 == Release 1.1.2 (2016-04-30)
 
 Bug Fixes::
-  * Fixed issue generating Parcelable classes from the output of other annotation processors
+  * Fixed issue generating Parcelable classes from the output of other annotation processors.
 
 == Release 1.1.1 (2016-04-11)
 
