@@ -43,10 +43,7 @@ import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
 import org.parceler.internal.generator.*;
-import org.parceler.internal.matcher.EnumMatcher;
-import org.parceler.internal.matcher.GenericCollectionMatcher;
-import org.parceler.internal.matcher.ObservableFieldMatcher;
-import org.parceler.internal.matcher.ParcelMatcher;
+import org.parceler.internal.matcher.*;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
