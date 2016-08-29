@@ -36,11 +36,15 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Generators generators;
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
-    private final Class<? extends Map> mapType;
+    private final ASTType mapType;
     private final boolean mapInitialCapacityArgument;
 
     @Inject
     public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType, boolean mapInitialCapacityArgument) {
+        this(generationUtil, namer, generators, astClassFactory, codeModel, astClassFactory.getType(mapType), mapInitialCapacityArgument);
+    }
+
+    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, ASTType mapType, boolean mapInitialCapacityArgument) {
         super("readHashMap", new Class[]{ClassLoader.class}, "writeMap", new Class[]{Map.class});
         this.generationUtil = generationUtil;
         this.generators = generators;

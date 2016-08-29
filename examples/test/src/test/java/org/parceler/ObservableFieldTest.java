@@ -15,6 +15,8 @@
  */
 package org.parceler;
 
+import android.databinding.ObservableArrayList;
+import android.databinding.ObservableArrayMap;
 import android.databinding.ObservableField;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ public class ObservableFieldTest {
     @Parcel
     public static class ObservableTestTarget {
         ObservableField<TestParcel> test;
+        ObservableArrayList<TestParcel> list;
+        ObservableArrayMap<String, TestParcel> map;
     }
 
     @Parcel
