@@ -280,6 +280,7 @@ public class ParcelableAnalysis {
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
                         if(propertyConverter == null){
                             validateType(methodReference.getType(), methodReference.getMethod(), methodReference.getOwner().getName() + "#" + methodReference.getName());
+                            validateTypeMatches(propertyName, methodReference.getType(), methodReference.getMethod(), readReferences.get(propertyName));
                         }
                         parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(propertyName, methodReference, readReferences.get(propertyName), propertyConverter));
                     }
@@ -316,6 +317,9 @@ public class ParcelableAnalysis {
                             validator.error("No corresponding property found for constructor parameter " + parameter.getName())
                                     .element(parameter).build();
                         }
+                        else {
+                            validateTypeMatches(parameter.getName(), parameter.getASTType(), parameter, constructorReference.getWriteReference(parameter));
+                        }
                     }
                 }
                 else if (constructorReference.getFactoryMethod() != null){
@@ -323,6 +327,9 @@ public class ParcelableAnalysis {
                         if(!constructorReference.containsWriteReference(parameter)){
                             validator.error("No corresponding property found for factory method parameter " + parameter.getName())
                                     .element(parameter).build();
+                        }
+                        else {
+                            validateTypeMatches(parameter.getName(), parameter.getASTType(), parameter, constructorReference.getWriteReference(parameter));
                         }
                     }
                 }
@@ -616,6 +623,32 @@ public class ParcelableAnalysis {
             validator.error("Unable to find read/write generator for type " + type + " for " + where)
                     .element(mutator)
                     .build();
+        }
+    }
+
+    private void validateTypeMatches(final String name, ASTType readType, ASTBase accessor, AccessibleReference mutatorReference){
+        if(!readType.equals(mutatorReference.getType())){
+            validator.error("Types do not match for property " + name)
+                    .element(accessor)
+                    .build();
+
+            mutatorReference.accept(new ReferenceVisitor<Void, Void>() {
+                @Override
+                public Void visit(FieldReference fieldReference, Void input) {
+                    validator.error("Types do not match for property " + name)
+                            .element(fieldReference.getField())
+                            .build();
+                    return null;
+                }
+
+                @Override
+                public Void visit(MethodReference methodReference, Void input) {
+                    validator.error("Types do not match for property " + name)
+                            .element(methodReference.getMethod())
+                            .build();
+                    return null;
+                }
+            }, null);
         }
     }
 

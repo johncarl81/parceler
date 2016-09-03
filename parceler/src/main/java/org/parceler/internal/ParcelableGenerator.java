@@ -41,8 +41,8 @@ import java.util.Map;
  */
 public class ParcelableGenerator {
 
-    public static final String WRITE_METHOD = "write";
-    public static final String READ_METHOD = "read";
+    private static final String WRITE_METHOD = "write";
+    private static final String READ_METHOD = "read";
     private static final String ANDROID_PARCEL = "android.os.Parcel";
     private static final String CREATOR_CLASS_NAME = "CREATOR";
     private static final String CREATE_FROM_PARCEL = "createFromParcel";
