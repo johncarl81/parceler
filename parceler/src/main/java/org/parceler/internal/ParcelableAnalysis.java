@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimaps;
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.*;
+import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.*;
 
@@ -47,11 +48,13 @@ public class ParcelableAnalysis {
     private final Map<ASTType, ParcelableDescriptor> parcelableCache = new HashMap<ASTType, ParcelableDescriptor>();
     private final Validator validator;
     private final Provider<Generators> generatorsProvider;
+    private final ASTClassFactory astClassFactory;
 
     @Inject
-    public ParcelableAnalysis(Validator validator, Provider<Generators> generatorsProvider) {
+    public ParcelableAnalysis(Validator validator, Provider<Generators> generatorsProvider, ASTClassFactory astClassFactory) {
         this.validator = validator;
         this.generatorsProvider = generatorsProvider;
+        this.astClassFactory = astClassFactory;
     }
 
     public ParcelableDescriptor analyze(ASTType astType) {
@@ -628,27 +631,37 @@ public class ParcelableAnalysis {
 
     private void validateTypeMatches(final String name, ASTType readType, ASTBase accessor, AccessibleReference mutatorReference){
         if(!readType.equals(mutatorReference.getType())){
-            validator.error("Types do not match for property " + name)
-                    .element(accessor)
-                    .build();
-
-            mutatorReference.accept(new ReferenceVisitor<Void, Void>() {
-                @Override
-                public Void visit(FieldReference fieldReference, Void input) {
-                    validator.error("Types do not match for property " + name)
-                            .element(fieldReference.getField())
-                            .build();
-                    return null;
+            boolean isAutoboxed = false;
+            for (ASTPrimitiveType primitiveType : ASTPrimitiveType.values()) {
+                if(mutatorReference.getType().equals(primitiveType)){
+                    isAutoboxed = readType.equals(astClassFactory.getType(primitiveType.getObjectClass()));
                 }
 
-                @Override
-                public Void visit(MethodReference methodReference, Void input) {
-                    validator.error("Types do not match for property " + name)
-                            .element(methodReference.getMethod())
-                            .build();
-                    return null;
-                }
-            }, null);
+            }
+            if(!isAutoboxed) {
+
+                validator.error("Types do not match for property " + name)
+                        .element(accessor)
+                        .build();
+
+                mutatorReference.accept(new ReferenceVisitor<Void, Void>() {
+                    @Override
+                    public Void visit(FieldReference fieldReference, Void input) {
+                        validator.error("Types do not match for property " + name)
+                                .element(fieldReference.getField())
+                                .build();
+                        return null;
+                    }
+
+                    @Override
+                    public Void visit(MethodReference methodReference, Void input) {
+                        validator.error("Types do not match for property " + name)
+                                .element(methodReference.getMethod())
+                                .build();
+                        return null;
+                    }
+                }, null);
+            }
         }
     }
 

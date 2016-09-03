@@ -1381,6 +1381,11 @@ public class ParcelableAnalysisTest {
         }
     }
 
+    @Test
+    public void testMismatchedPrimitiveBeanTypes() {
+        errors(MismatchedPrimitiveBeanTypes.class);
+    }
+
     @Parcel(Serialization.BEAN)
     static class MismatchedPrimitiveBeanTypes2 {
         int value;
@@ -1394,9 +1399,9 @@ public class ParcelableAnalysisTest {
     }
 
     @Test
-    public void testMismatchedPrimitiveBeanTypes() {
-        errors(MismatchedPrimitiveBeanTypes.class);
-        errors(MismatchedPrimitiveBeanTypes2.class);
+    public void testmismatchedPrimitiveBeanTypes2() {
+        analyze(MismatchedPrimitiveBeanTypes2.class);
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     private void errors(Class clazz){
