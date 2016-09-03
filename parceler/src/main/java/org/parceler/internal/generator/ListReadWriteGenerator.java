@@ -35,11 +35,15 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
     private final Generators generators;
     private final ASTClassFactory astClassFactory;
     private final JCodeModel codeModel;
-    private final Class<? extends List> listType;
+    private final ASTType listType;
     private final boolean listInitialCapacityArgument;
 
     @Inject
     public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends List> listType, boolean listInitialCapacityArgument) {
+        this(generationUtil, namer, generators, astClassFactory, codeModel, astClassFactory.getType(listType), listInitialCapacityArgument);
+    }
+
+    public ListReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, ASTType listType, boolean listInitialCapacityArgument) {
         super("readArrayList", new Class[]{ClassLoader.class}, "writeList", new Class[]{List.class});
         this.generationUtil = generationUtil;
         this.generators = generators;

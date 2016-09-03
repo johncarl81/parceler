@@ -199,6 +199,7 @@ public class ParcelerModule {
         generators.addPair(String.class, "readString", "writeString");
         generators.addPair("android.os.IBinder", "readStrongBinder", "writeStrongBinder");
         generators.add(Matchers.type(new ASTStringType("android.os.Bundle")).ignoreGenerics().build(), new BundleReadWriteGenerator("readBundle", "writeBundle", "android.os.Bundle"));
+        generators.add(new ObservableFieldMatcher(generators), nullCheckFactory.get(new ObservableFieldReadWriteGenerator(generators, generationUtil)));
         generators.addPair("android.util.SparseBooleanArray", "readSparseBooleanArray", "writeSparseBooleanArray");
         generators.add(Matchers.type(new ASTStringType("android.util.SparseArray")).ignoreGenerics().build(), new SparseArrayReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel));
         generators.add(new InheritsParcelableMatcher(), new ParcelableReadWriteGenerator("readParcelable", "writeParcelable", "android.os.Parcelable"));
@@ -207,12 +208,14 @@ public class ParcelerModule {
         generators.add(new ASTArrayMatcher(), new ArrayReadWriteGenerator(generationUtil, namer, generators, codeModel));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(List.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(ArrayList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, ArrayList.class, true));
+        generators.add(new GenericCollectionMatcher(new ASTStringType("android.databinding.ObservableArrayList"), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, new ASTStringType("android.databinding.ObservableArrayList"), false));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(LinkedList.class), generators, 1), new ListReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, LinkedList.class, false));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(Map.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashMap.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(HashMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashMap.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(LinkedHashMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, LinkedHashMap.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(SortedMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, TreeMap.class, false));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(TreeMap.class), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, TreeMap.class, false));
+        generators.add(new GenericCollectionMatcher(new ASTStringType("android.databinding.ObservableArrayMap"), generators, 2), new MapReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, new ASTStringType("android.databinding.ObservableArrayMap"), false));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(Set.class), generators, 1), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashSet.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(HashSet.class), generators, 1), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, HashSet.class, true));
         generators.add(new GenericCollectionMatcher(astClassFactory.getType(SortedSet.class), generators, 1), new SetReadWriteGenerator(generationUtil, namer, generators, astClassFactory, codeModel, TreeSet.class, false));

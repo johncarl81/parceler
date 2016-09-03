@@ -50,7 +50,7 @@ public abstract class NullCheckReadWriteGenerator implements ReadWriteGenerator 
 
         JBlock nonNullBody = nullInputConditional._else();
 
-        nonNullBody.assign(value, getGenerator().generateReader(body, parcelParam, type, returnJClassRef, parcelableClass, identity, readIdentityMap));
+        nonNullBody.assign(value, getGenerator().generateReader(nonNullBody, parcelParam, type, returnJClassRef, parcelableClass, identity, readIdentityMap));
 
         return value;
     }
