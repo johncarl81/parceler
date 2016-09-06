@@ -11,6 +11,7 @@ Enhancements::
 
 Bug Fixes::
   * Fixes issue reading identical objects within the same bean.
+  * Fixes issue associating read and write property types, now they must be identical.
 
 == Release 1.1.5 (2016-05-25)
 

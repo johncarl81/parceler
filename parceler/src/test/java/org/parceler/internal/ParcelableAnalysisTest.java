@@ -842,7 +842,7 @@ public class ParcelableAnalysisTest {
         TargetSubType value;
 
         @ParcelConstructor
-        public CollidingConstructorParameterConverterSerialization(@ParcelPropertyConverter(TargetSubTypeWriterConverter.class) TargetSubType value){
+        public CollidingConstructorParameterConverterSerialization(@ParcelPropertyConverter(TargetSubTypeWriterConverter.class) @ASTClassFactory.ASTParameterName("value") TargetSubType value){
             this.value = value;
         }
     }
@@ -1118,7 +1118,7 @@ public class ParcelableAnalysisTest {
         String value;
 
         @ParcelConstructor
-        public MismatchedTypes(Integer value) {}
+        public MismatchedTypes(@ASTClassFactory.ASTParameterName("value") Integer value) {}
     }
 
     @Test
@@ -1350,6 +1350,58 @@ public class ParcelableAnalysisTest {
     @Test
     public void testCallbackUnwrapAcceptValue() {
         errors(CallbackUnwrapReturnNonNull.class);
+    }
+
+    @Parcel(Serialization.BEAN)
+    static class MismatchedBeanTypes {
+        Integer value;
+
+        @ParcelConstructor
+        public MismatchedBeanTypes(@ASTClassFactory.ASTParameterName("value") int value) {}
+
+        public Integer getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testMismatchedBeanTypes(){
+        errors(MismatchedBeanTypes.class);
+    }
+
+    @Parcel(Serialization.BEAN)
+    static class MismatchedPrimitiveBeanTypes {
+        Integer value;
+
+        @ParcelConstructor
+        public MismatchedPrimitiveBeanTypes(@ASTClassFactory.ASTParameterName("value") int value) {}
+
+        public Integer getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testMismatchedPrimitiveBeanTypes() {
+        errors(MismatchedPrimitiveBeanTypes.class);
+    }
+
+    @Parcel(Serialization.BEAN)
+    static class MismatchedPrimitiveBeanTypes2 {
+        int value;
+
+        @ParcelConstructor
+        public MismatchedPrimitiveBeanTypes2(@ASTClassFactory.ASTParameterName("value") Integer value) {}
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    @Test
+    public void testmismatchedPrimitiveBeanTypes2() {
+        analyze(MismatchedPrimitiveBeanTypes2.class);
+        assertFalse(messager.getMessage(), messager.isErrored());
     }
 
     private void errors(Class clazz){
