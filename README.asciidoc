@@ -99,6 +99,7 @@ The following list includes the mapped types:
  * `Bundle`
  * `SparseArray` of any of the mapped types*
  * `SparseBooleanArray`
+ * `ObservableField`
  * `List`, `ArrayList` and `LinkedList` of any of the mapped types*
  * `Map`, `HashMap`, `LinkedHashMap`, `SortedMap`, and `TreeMap` of any of the mapped types*
  * `Set`, `HashSet`, `SortedSet`, `TreeSet`, `LinkedHashSet` of any of the mapped types*
@@ -396,9 +397,9 @@ Parcels.wrap(Example.class, proxy);
 ==== Configuring Proguard
 
 To configure Proguard, add the following lines to your proguard configuration file.  These will keep files related to the `Parcels` utilty class and the `Parcelable` `CREATOR` instance:
-
+er
 ----
-# Parcel library
+# Parceler library
 -keep interface org.parceler.Parcel
 -keep @org.parceler.Parcel class * { *; }
 -keep class **$$Parcelable { *; }
