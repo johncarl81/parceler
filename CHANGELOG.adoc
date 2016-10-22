@@ -1,6 +1,6 @@
 = Parceler Changelog
 
-== Upcoming Release
+== Release 1.1.6 (2016-10-22)
 
 Enhancements::
   * Added supported options to annotation processor.
