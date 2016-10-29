@@ -147,7 +147,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
 
         writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
 
-        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), ((JExpression)JExpr.cast(generationUtil.narrowRef(type), getExpression)).invoke("entrySet"));
+        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression.invoke("entrySet"));
 
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);
