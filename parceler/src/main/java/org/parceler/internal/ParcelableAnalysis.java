@@ -91,6 +91,9 @@ public class ParcelableAnalysis {
             Set<ASTConstructor> constructors = findConstructors(astType, true);
             Set<ASTMethod> factoryMethods = findFactoryMethods(astType);
             ConstructorReference constructorReference = null;
+            if(astType.isInterface()) {
+                validator.error("@Parcel cannot annotate an interface.").element(astType).build();
+            }
             if(!astType.isStatic() && astType.isInnerClass()){
                 validator.error("Inner Classes annotated with @Parcel must be static.").element(astType).build();
             }
@@ -114,6 +117,9 @@ public class ParcelableAnalysis {
                 validator.error("Too many @ParcelFactory annotated factory methods.").element(astType).build();
             }
             else if(constructors.size() == 1){
+                if(astType.isAbstract()) {
+                    validator.error("@Parcel annotated classes must not be abstract.").element(astType).build();
+                }
                 writeParameters.putAll(findConstructorParameters(constructors.iterator().next()));
                 constructorReference = new ConstructorReference(constructors.iterator().next());
 

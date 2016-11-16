@@ -68,6 +68,50 @@ public class ParcelableAnalysisTest {
         }
     }
 
+    @Parcel
+    static abstract class AbstractParcel{}
+
+    @Parcel
+    static abstract class AbstractParcelWithConstructtor{
+        @ParcelConstructor AbstractParcelWithConstructtor(){}
+    }
+
+    @Test
+    public void testAbstractParcel() {
+        errors(AbstractParcel.class);
+        errors(AbstractParcelWithConstructtor.class);
+    }
+
+    @Parcel
+    static abstract class AbstractParcelWithFactory{
+        @ParcelFactory
+        public static AbstractParcelWithFactory build(){
+            return null;
+        }
+    }
+
+    @Test
+    public void testAbstractParcelWitFactory() {
+        ParcelableDescriptor analysis = analyze(AbstractParcelWithFactory.class);
+
+        assertNull(analysis.getParcelConverterType());
+
+        assertNotNull(analysis.getConstructorPair());
+        assertNotNull(analysis.getConstructorPair().getFactoryMethod());
+        assertNull(analysis.getConstructorPair().getConstructor());
+        assertEquals(0, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    interface InterfaceParcel{}
+
+    @Test
+    public void tesInterfaceParcel() {
+        errors(InterfaceParcel.class);
+    }
+
     @Parcel(describeContents = 42)
     static class DescribedContents {}
 
