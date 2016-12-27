@@ -1,8 +1,4 @@
 apply plugin: 'java'
-apply plugin: 'eradle'
-
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
 
 dependencies {
   compile 'com.google.android:android:4.0.1.2'

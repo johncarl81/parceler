@@ -1,9 +1,5 @@
 apply plugin: 'java'
-// apply plugin: 'eradle'
 apply plugin: "net.ltgt.apt"
-
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
 
 dependencies {
   compile 'com.google.android:android:4.0.1.2'
@@ -14,19 +10,4 @@ dependencies {
   apt 'org.androidtransfuse:transfuse-bootstrap:0.3.0-beta-9'
 
   compile 'com.google.auto.service:auto-service:1.0-rc2'
-}
-
-apply plugin: 'maven'
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: "file:/Users/peacepassion/Desktop/maven_repo")
-      pom {
-        setGroupId 'me.ele'
-        setArtifactId 'parceler'
-        setVersion '0.0.1'
-        setPackaging 'jar'
-      }
-    }
-  }
 }

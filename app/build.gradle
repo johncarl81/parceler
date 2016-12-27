@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'eradle'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
@@ -29,8 +28,6 @@ dependencies {
   compile project(':parceler-api')
   
    apt project(':parceler')
-  // apt 'me.ele:parceler:0.0.1'
-//  apt 'org.parceler:parceler:1.1.6'
 }
 
 apt {
