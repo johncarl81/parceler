@@ -58,8 +58,8 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 1){
-            componentType = type.getGenericParameters().iterator().next();
+        if(type.getGenericArgumentTypes().size() == 1){
+            componentType = type.getGenericArgumentTypes().iterator().next();
             setImplType = setImplType.narrow(generationUtil.narrowRef(componentType));
         }
 
@@ -101,8 +101,8 @@ public class SetReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 1){
-            componentType = type.getGenericParameters().iterator().next();
+        if(type.getGenericArgumentTypes().size() == 1){
+            componentType = type.getGenericArgumentTypes().iterator().next();
         }
         JClass inputType = generationUtil.narrowRef(componentType);
 

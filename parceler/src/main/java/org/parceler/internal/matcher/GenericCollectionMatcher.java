@@ -43,8 +43,8 @@ public class GenericCollectionMatcher implements Matcher<ASTType> {
     public boolean matches(ASTType input) {
 
         return collectionMatcher.matches(input) &&
-            input.getGenericParameters().size() == parameterCount &&
-            FluentIterable.from(input.getGenericParameters()).allMatch(new Predicate<ASTType>() {
+            input.getGenericArgumentTypes().size() == parameterCount &&
+            FluentIterable.from(input.getGenericArgumentTypes()).allMatch(new Predicate<ASTType>() {
                 public boolean apply(ASTType astType) {
                     return generators.matches(astType);
                 }

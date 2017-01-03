@@ -68,8 +68,8 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         JClass keyType = generationUtil.ref(Object.class);
         JClass valueType = generationUtil.ref(Object.class);
 
-        if(type.getGenericParameters().size() == 2){
-            UnmodifiableIterator<ASTType> iterator = type.getGenericParameters().iterator();
+        if(type.getGenericArgumentTypes().size() == 2){
+            UnmodifiableIterator<ASTType> iterator = type.getGenericArgumentTypes().iterator();
             keyComponentType = iterator.next();
             valueComponentType = iterator.next();
             keyType = generationUtil.narrowRef(keyComponentType);
@@ -129,8 +129,8 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 2){
-            UnmodifiableIterator<ASTType> iterator = type.getGenericParameters().iterator();
+        if(type.getGenericArgumentTypes().size() == 2){
+            UnmodifiableIterator<ASTType> iterator = type.getGenericArgumentTypes().iterator();
             keyComponentType = iterator.next();
             valueComponentType = iterator.next();
         }
