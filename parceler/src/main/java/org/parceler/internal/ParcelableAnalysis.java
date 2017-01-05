@@ -210,7 +210,8 @@ public class ParcelableAnalysis {
 
                 for (String methodKey : defaultReadMethods.keys()) {
                     ASTReference<ASTMethod> methodASTReference = defaultReadMethods.get(methodKey).iterator().next();
-                    readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getReturnType(), methodASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, methodASTReference.getReference().getReturnType());
+                    readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, type, methodASTReference.getReference()));
                     if(methodASTReference.getConverter() != null){
                         converters.put(methodKey, methodASTReference.getConverter());
                     }
@@ -218,8 +219,9 @@ public class ParcelableAnalysis {
                 //overwrite with field accessor
                 for (String fieldKey : defaultFields.keys()){
                     ASTReference<ASTField> fieldASTReference = defaultFields.get(fieldKey).iterator().next();
-                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
-                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, fieldASTReference.getReference().getASTType());
+                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference(), type));
+                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference(), type));
                     if(fieldASTReference.getConverter() != null){
                         converters.put(fieldKey, fieldASTReference.getConverter());
                     }
@@ -227,7 +229,8 @@ public class ParcelableAnalysis {
                 //overwrite with property methods
                 for (String methodKey : propertyReadMethods.keys()) {
                     ASTReference<ASTMethod> methodASTReference = propertyReadMethods.get(methodKey).iterator().next();
-                    readReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getReturnType(), methodASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, methodASTReference.getReference().getReturnType());
+                    readReferences.put(methodKey, new MethodReference(type, hierarchyLoop, methodKey, type, methodASTReference.getReference()));
                     if(methodASTReference.getConverter() != null){
                         converters.put(methodKey, methodASTReference.getConverter());
                     }
@@ -235,8 +238,9 @@ public class ParcelableAnalysis {
                 //overwrite with property fields
                 for (String fieldKey : propertyFields.keys()){
                     ASTReference<ASTField> fieldASTReference = propertyFields.get(fieldKey).iterator().next();
-                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
-                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, fieldASTReference.getReference().getASTType());
+                    readReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference(), type));
+                    fieldWriteReferences.put(fieldKey, new FieldReference(hierarchyLoop, fieldKey, fieldASTReference.getReference(), type));
                     if(fieldASTReference.getConverter() != null){
                         converters.put(fieldKey, fieldASTReference.getConverter());
                     }
@@ -244,7 +248,8 @@ public class ParcelableAnalysis {
                 //default write via methods
                 for (String methodKey : defaultWriteMethods.keys()) {
                     ASTReference<ASTMethod> methodASTReference = defaultWriteMethods.get(methodKey).iterator().next();
-                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getParameters().iterator().next().getASTType(), methodASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, methodASTReference.getReference().getParameters().iterator().next().getASTType());
+                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, type, methodASTReference.getReference()));
                     if(methodASTReference.getConverter() != null){
                         converters.put(methodKey, methodASTReference.getConverter());
                     }
@@ -252,7 +257,8 @@ public class ParcelableAnalysis {
                 //overwrite with property methods
                 for (String methodKey : propertyWriteMethods.keys()) {
                     ASTReference<ASTMethod> methodASTReference = propertyWriteMethods.get(methodKey).iterator().next();
-                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, methodASTReference.getReference().getParameters().iterator().next().getASTType(), methodASTReference.getReference()));
+                    ASTType type = resolveType(astType, hierarchyLoop, methodASTReference.getReference().getParameters().iterator().next().getASTType());
+                    methodWriteReferences.put(methodKey, new MethodReference(astType, hierarchyLoop, methodKey, type, methodASTReference.getReference()));
                     if(methodASTReference.getConverter() != null){
                         converters.put(methodKey, methodASTReference.getConverter());
                     }
@@ -288,8 +294,9 @@ public class ParcelableAnalysis {
                         validateReadReference(readReferences, methodReference.getMethod(), propertyName);
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
                         if(propertyConverter == null){
-                            validateType(methodReference.getType(), methodReference.getMethod(), methodReference.getOwner().getName() + "#" + methodReference.getName());
-                            validateTypeMatches(propertyName, methodReference.getType(), methodReference.getMethod(), readReferences.get(propertyName));
+                            validateType(resolveType(astType, hierarchyLoop, methodReference.getType()), methodReference.getMethod(), methodReference.getOwner().getName() + "#" + methodReference.getName());
+                            ASTType type = resolveType(astType, hierarchyLoop, methodReference.getType());
+                            validateTypeMatches(propertyName, type, methodReference.getMethod(), readReferences.get(propertyName));
                         }
                         parcelableDescriptor.getMethodPairs().add(new ReferencePair<MethodReference>(propertyName, methodReference, readReferences.get(propertyName), propertyConverter));
                     }
@@ -304,7 +311,7 @@ public class ParcelableAnalysis {
                         validateReadReference(readReferences, fieldReference.getField(), propertyName);
                         ASTType propertyConverter = converters.containsKey(propertyName) ? converters.get(propertyName) : null;
                         if(propertyConverter == null){
-                            validateType(fieldReference.getType(), fieldReference.getField(), fieldReference.getOwner().getName() + "." + fieldReference.getName());
+                            validateType(resolveType(astType, hierarchyLoop, fieldReference.getType()), fieldReference.getField(), fieldReference.getOwner().getName() + "." + fieldReference.getName());
                         }
                         parcelableDescriptor.getFieldPairs().add(new ReferencePair<FieldReference>(propertyName, fieldReference, readReferences.get(propertyName), propertyConverter));
                     }
@@ -350,6 +357,10 @@ public class ParcelableAnalysis {
         }
 
         return parcelableDescriptor;
+    }
+
+    private ASTType resolveType(ASTType astType, ASTType ownerType, ASTType toResolve) {
+        return GenericsUtil.getInstance().getType(astType, ownerType, toResolve);
     }
 
     private Set<ASTMethod> findFactoryMethods(ASTType astType) {
@@ -635,7 +646,7 @@ public class ParcelableAnalysis {
         }
     }
 
-    private void validateTypeMatches(final String name, ASTType readType, ASTBase accessor, AccessibleReference mutatorReference){
+    private void validateTypeMatches(final String name, final ASTType readType, ASTBase accessor, final AccessibleReference mutatorReference){
         if(!readType.equals(mutatorReference.getType())){
             boolean isAutoboxed = false;
             for (ASTPrimitiveType primitiveType : ASTPrimitiveType.values()) {
@@ -646,14 +657,14 @@ public class ParcelableAnalysis {
             }
             if(!isAutoboxed) {
 
-                validator.error("Types do not match for property " + name)
+                validator.error("Types do not match for property " + name + " " + readType + " " + mutatorReference.getType())
                         .element(accessor)
                         .build();
 
                 mutatorReference.accept(new ReferenceVisitor<Void, Void>() {
                     @Override
                     public Void visit(FieldReference fieldReference, Void input) {
-                        validator.error("Types do not match for property " + name)
+                        validator.error("Types do not match for property " + name + " " + readType + " " + mutatorReference.getType())
                                 .element(fieldReference.getField())
                                 .build();
                         return null;
@@ -661,7 +672,7 @@ public class ParcelableAnalysis {
 
                     @Override
                     public Void visit(MethodReference methodReference, Void input) {
-                        validator.error("Types do not match for property " + name)
+                        validator.error("Types do not match for property " + name + " " + readType + " " + mutatorReference.getType())
                                 .element(methodReference.getMethod())
                                 .build();
                         return null;

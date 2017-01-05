@@ -1304,14 +1304,32 @@ public class ParcelableAnalysisTest {
 
     static class BaseGenericClass<T> {
         T value;
+
+        public T getValue(){return null;}
+        public void setValue(T value){}
     }
 
     @Parcel static class Value {}
     @Parcel static class Concrete extends BaseGenericClass<Value> {}
+    @Parcel(Serialization.BEAN) static class ConcreteBean extends BaseGenericClass<Value> {}
 
     @Test
     public void testGenericDeclaredType() {
         ParcelableDescriptor analysis = analyze(Concrete.class);
+
+        assertFalse(messager.getMessage(), messager.isErrored());
+        assertNull(analysis.getParcelConverterType());
+        assertNotNull(analysis.getConstructorPair());
+        assertEquals(1, analysis.getFieldPairs().size());
+        assertEquals(0, analysis.getMethodPairs().size());
+        assertEquals(0, analysis.getConstructorPair().getWriteReferences().size());
+        fieldsContain(analysis, "value");
+        assertEquals(astClassFactory.getType(Value.class), analysis.getFieldPairs().get(0).getReference().getType());
+    }
+
+    @Test
+    public void testGenericMethodDeclaredType() {
+        ParcelableDescriptor analysis = analyze(ConcreteBean.class);
 
         assertFalse(messager.getMessage(), messager.isErrored());
         assertNull(analysis.getParcelConverterType());
