@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+  lintOptions {
+    abortOnError false
+    disable "InvalidR2Usage"
+  }
+  dexOptions {
+    javaMaxHeapSize "4g"
+  }
+  aaptOptions {
+    cruncherEnabled false
+  }
+  compileSdkVersion 23
+  buildToolsVersion '23.0.2'
+  defaultConfig {
+    minSdkVersion 14
+    targetSdkVersion 23
+  }
+}
+
+dependencies {
+  compile project(':parceler-api')
+  
+   apt project(':parceler')
+}
+
+apt {
+  arguments {
+    debug true
+  }
+}

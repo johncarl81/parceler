@@ -9,3 +9,5 @@ tmp
 out
 .gradle
 build
+
+local.properties

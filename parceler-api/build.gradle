@@ -1,0 +1,6 @@
+apply plugin: 'java'
+
+dependencies {
+  compile 'com.google.android:android:4.0.1.2'
+  compile 'org.androidtransfuse:transfuse-bootstrap:0.3.0-beta-9'
+}

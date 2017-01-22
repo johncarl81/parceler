@@ -69,6 +69,8 @@ public class ParcelAnnotationProcessor extends AnnotationProcessorBase {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
+        System.out.println("################# INIT");
+
         Bootstraps.getInjector(ParcelAnnotationProcessor.class)
                 .add(Singleton.class, ScopeKey.of(ProcessingEnvironment.class), processingEnv)
                 .inject(this);
