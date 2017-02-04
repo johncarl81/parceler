@@ -21,6 +21,7 @@ import org.androidtransfuse.adapter.ASTType;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.gen.ClassGenerationUtil;
 import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.parceler.MapsUtil;
 import org.parceler.internal.Generators;
 
 import javax.inject.Inject;
@@ -38,13 +39,14 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
     private final JCodeModel codeModel;
     private final ASTType mapType;
     private final boolean mapInitialCapacityArgument;
+    private final boolean initialCapacityLoadFactor;
 
     @Inject
-    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType, boolean mapInitialCapacityArgument) {
-        this(generationUtil, namer, generators, astClassFactory, codeModel, astClassFactory.getType(mapType), mapInitialCapacityArgument);
+    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, Class<? extends Map> mapType, boolean mapInitialCapacityArgument, boolean initialCapacityLoadFactor) {
+        this(generationUtil, namer, generators, astClassFactory, codeModel, astClassFactory.getType(mapType), mapInitialCapacityArgument, initialCapacityLoadFactor);
     }
 
-    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, ASTType mapType, boolean mapInitialCapacityArgument) {
+    public MapReadWriteGenerator(ClassGenerationUtil generationUtil, UniqueVariableNamer namer, Generators generators, ASTClassFactory astClassFactory, JCodeModel codeModel, ASTType mapType, boolean mapInitialCapacityArgument, boolean initialCapacityLoadFactor) {
         super("readHashMap", new Class[]{ClassLoader.class}, "writeMap", new Class[]{Map.class});
         this.generationUtil = generationUtil;
         this.generators = generators;
@@ -53,6 +55,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         this.codeModel = codeModel;
         this.mapType = mapType;
         this.mapInitialCapacityArgument = mapInitialCapacityArgument;
+        this.initialCapacityLoadFactor = initialCapacityLoadFactor;
     }
 
     @Override
@@ -88,7 +91,14 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JInvocation mapConstruction = JExpr._new(mapImplType);
         if(mapInitialCapacityArgument) {
-            mapConstruction = mapConstruction.arg(sizeVar);
+            JExpression initialCapacityExpression;
+            if(initialCapacityLoadFactor) {
+                initialCapacityExpression = generationUtil.ref(MapsUtil.class).staticInvoke(MapsUtil.INITIAL_HASH_MAP_CAPACITY_METHOD).arg(sizeVar);
+            }
+            else{
+                initialCapacityExpression = sizeVar;
+            }
+            mapConstruction = mapConstruction.arg(initialCapacityExpression);
         }
 
         nonNullBody.assign(outputVar, mapConstruction);
