@@ -18,10 +18,7 @@ package org.parceler.internal;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.common.collect.ImmutableSet;
-import org.androidtransfuse.adapter.ASTConstructor;
-import org.androidtransfuse.adapter.ASTMethod;
-import org.androidtransfuse.adapter.ASTParameter;
-import org.androidtransfuse.adapter.ASTType;
+import org.androidtransfuse.adapter.*;
 import org.androidtransfuse.adapter.classes.ASTClassFactory;
 import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
@@ -74,10 +71,12 @@ public class ParcelableGeneratorTest {
     public void testFieldSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         descriptor.getFieldPairs().add(
                 new ReferencePair<FieldReference>("value",
-                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()),
-                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()), null));
+                        new FieldReference(targetType, "value", astField, astField.getASTType()),
+                        new FieldReference(targetType, "value", astField, astField.getASTType()), null));
 
         testSerialization(descriptor);
     }
@@ -86,10 +85,12 @@ public class ParcelableGeneratorTest {
     public void testFieldConverterSerialization() throws Exception {
         ParcelableDescriptor descriptor = new ParcelableDescriptor();
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         descriptor.getFieldPairs().add(
                 new ReferencePair<FieldReference>("value",
-                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()),
-                        new FieldReference(targetType, "value", targetType.getFields().iterator().next()), converterType));
+                        new FieldReference(targetType, "value", astField, astField.getASTType()),
+                        new FieldReference(targetType, "value", astField, astField.getASTType()), converterType));
 
         testSerialization(descriptor);
     }
@@ -136,8 +137,10 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", astField, astField.getASTType()));
 
         descriptor.setConstructorPair(constructorReference);
 
@@ -154,8 +157,10 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", astField, astField.getASTType()));
 
         constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 
@@ -175,8 +180,10 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", astField, astField.getASTType()));
 
         descriptor.setConstructorPair(constructorReference);
 
@@ -194,8 +201,10 @@ public class ParcelableGeneratorTest {
 
         ConstructorReference constructorReference = new ConstructorReference(constructor);
 
+        ASTField astField = targetType.getFields().iterator().next();
+
         constructorReference.putReference(constructor.getParameters().get(0),
-                new FieldReference(targetType, "value", targetType.getFields().iterator().next()));
+                new FieldReference(targetType, "value", astField, astField.getASTType()));
 
         constructorReference.putConverter(constructor.getParameters().get(0), converterType);
 

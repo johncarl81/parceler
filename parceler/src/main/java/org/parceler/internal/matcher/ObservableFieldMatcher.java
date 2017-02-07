@@ -40,8 +40,8 @@ public class ObservableFieldMatcher implements Matcher<ASTType> {
     @Override
     public boolean matches(ASTType input) {
         return OBSERVABLE_FIELD_TYPE_MATCHER.matches(input) &&
-                input.getGenericParameters().size() == 1 &&
-                FluentIterable.from(input.getGenericParameters()).allMatch(new Predicate<ASTType>() {
+                input.getGenericArgumentTypes().size() == 1 &&
+                FluentIterable.from(input.getGenericArgumentTypes()).allMatch(new Predicate<ASTType>() {
                     public boolean apply(ASTType astType) {
                         return generators.matches(astType);
                     }

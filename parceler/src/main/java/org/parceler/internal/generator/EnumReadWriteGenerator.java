@@ -45,7 +45,7 @@ public class EnumReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JVar localVar = body.decl(stringRef, namer.generateName(enumClassRef), parcelParam.invoke(getReadMethod()));
 
-        return JExpr.cast(returnJClassRef, JOp.cond(localVar.eq(JExpr._null()), JExpr._null(), enumRef.staticInvoke("valueOf").arg(enumClassRef.dotclass()).arg(localVar)));
+        return JOp.cond(localVar.eq(JExpr._null()), JExpr._null(), enumRef.staticInvoke("valueOf").arg(enumClassRef.dotclass()).arg(localVar));
     }
 
     @Override

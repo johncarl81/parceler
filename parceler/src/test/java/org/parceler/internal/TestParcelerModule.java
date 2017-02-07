@@ -34,7 +34,10 @@ import org.androidtransfuse.util.Logger;
 import org.androidtransfuse.validation.Validator;
 import org.parceler.Generated;
 import org.parceler.ParcelAnnotationProcessor;
-import org.parceler.internal.generator.*;
+import org.parceler.internal.generator.EnumReadWriteGenerator;
+import org.parceler.internal.generator.LinkParcelReadWriteGenerator;
+import org.parceler.internal.generator.NullCheckFactory;
+import org.parceler.internal.generator.SerializableReadWriteGenerator;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -87,6 +90,12 @@ public class TestParcelerModule {
     @Named(Validator.LOG_PREPEND)
     public String getLogPreprend(){
         return "Parceler: ";
+    }
+
+    @Provides
+    @Named("namespace")
+    public String getNamespace() {
+        return "Parceler";
     }
 
     @Provides

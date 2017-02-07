@@ -68,8 +68,8 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         JClass keyType = generationUtil.ref(Object.class);
         JClass valueType = generationUtil.ref(Object.class);
 
-        if(type.getGenericParameters().size() == 2){
-            UnmodifiableIterator<ASTType> iterator = type.getGenericParameters().iterator();
+        if(type.getGenericArgumentTypes().size() == 2){
+            UnmodifiableIterator<ASTType> iterator = type.getGenericArgumentTypes().iterator();
             keyComponentType = iterator.next();
             valueComponentType = iterator.next();
             keyType = generationUtil.narrowRef(keyComponentType);
@@ -129,8 +129,8 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
         ASTType keyComponentType = astClassFactory.getType(Object.class);
         ASTType valueComponentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 2){
-            UnmodifiableIterator<ASTType> iterator = type.getGenericParameters().iterator();
+        if(type.getGenericArgumentTypes().size() == 2){
+            UnmodifiableIterator<ASTType> iterator = type.getGenericArgumentTypes().iterator();
             keyComponentType = iterator.next();
             valueComponentType = iterator.next();
         }
@@ -147,7 +147,7 @@ public class MapReadWriteGenerator extends ReadWriteGeneratorBase {
 
         writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
 
-        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), ((JExpression)JExpr.cast(generationUtil.narrowRef(type), getExpression)).invoke("entrySet"));
+        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression.invoke("entrySet"));
 
         ReadWriteGenerator keyGenerator = generators.getGenerator(keyComponentType);
         ReadWriteGenerator valueGenerator = generators.getGenerator(valueComponentType);

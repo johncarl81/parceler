@@ -61,8 +61,8 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 1){
-            componentType = type.getGenericParameters().iterator().next();
+        if(type.getGenericArgumentTypes().size() == 1){
+            componentType = type.getGenericArgumentTypes().iterator().next();
             arrayListType = arrayListType.narrow(generationUtil.narrowRef(componentType));
         }
 
@@ -106,8 +106,8 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
 
         ASTType componentType = astClassFactory.getType(Object.class);
 
-        if(type.getGenericParameters().size() == 1){
-            componentType = type.getGenericParameters().iterator().next();
+        if(type.getGenericArgumentTypes().size() == 1){
+            componentType = type.getGenericArgumentTypes().iterator().next();
         }
         JClass inputType = generationUtil.narrowRef(componentType);
 
@@ -118,7 +118,7 @@ public class ListReadWriteGenerator extends ReadWriteGeneratorBase {
         JBlock writeBody = nullConditional._else();
 
         writeBody.invoke(parcel, "writeInt").arg(getExpression.invoke("size"));
-        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), JExpr.cast(generationUtil.narrowRef(type), getExpression));
+        JForEach forEach = writeBody.forEach(inputType, namer.generateName(inputType), getExpression);
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 

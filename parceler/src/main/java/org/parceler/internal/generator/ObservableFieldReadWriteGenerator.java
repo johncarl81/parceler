@@ -43,7 +43,7 @@ public class ObservableFieldReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public JExpression generateReader(JBlock body, JVar parcelParam, ASTType type, JClass returnJClassRef, JDefinedClass parcelableClass, JVar identity, JVar readIdentityMap) {
 
-        ASTType componentType = type.getGenericParameters().get(0);
+        ASTType componentType = type.getGenericArgumentTypes().get(0);
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 
@@ -55,7 +55,7 @@ public class ObservableFieldReadWriteGenerator extends ReadWriteGeneratorBase {
     @Override
     public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
 
-        ASTType componentType = type.getGenericParameters().get(0);
+        ASTType componentType = type.getGenericArgumentTypes().get(0);
 
         ReadWriteGenerator generator = generators.getGenerator(componentType);
 

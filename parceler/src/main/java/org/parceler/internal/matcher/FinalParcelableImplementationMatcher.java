@@ -30,12 +30,12 @@ public class FinalParcelableImplementationMatcher implements Matcher<ASTType> {
 
     @Override
     public boolean matches(ASTType input) {
-        return input.isFinal() && input.inheritsFrom(PARCELABLE_TYPE) && isCreatorFieldImplemented(input);
+        return input.isFinal() && input.inherits(PARCELABLE_TYPE) && isCreatorFieldImplemented(input);
     }
 
     private boolean isCreatorFieldImplemented(ASTType type) {
         ASTType creatorType = getTypeForField(type, "CREATOR");
-        return creatorType != null && creatorType.extendsFrom(CREATOR_TYPE);
+        return creatorType != null && creatorType.inherits(CREATOR_TYPE);
     }
 
     private ASTType getTypeForField(ASTType type, String name) {
