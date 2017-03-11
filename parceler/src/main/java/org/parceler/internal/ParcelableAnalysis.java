@@ -39,6 +39,7 @@ import java.util.*;
 @Singleton
 public class ParcelableAnalysis {
 
+    private static final ASTType KOTLIN_TRANSIENT = new ASTStringType("kotlin.jvm.Transient");
     private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
     private static final String GET = "get";
     private static final String IS = "is";
@@ -451,6 +452,7 @@ public class ParcelableAnalysis {
                     public boolean apply(ASTMethod astMethod) {
                         return !astMethod.isStatic() &&
                                 !astMethod.isAnnotated(Transient.class) &&
+                                !astMethod.isAnnotated(KOTLIN_TRANSIENT) &&
                                 !definedMethods.contains(new MethodSignature(astMethod)) &&
                                 (declaredProperty == astMethod.isAnnotated(ParcelProperty.class));
                     }
@@ -477,6 +479,7 @@ public class ParcelableAnalysis {
                     public boolean apply(ASTField astField) {
                         return !astField.isStatic() &&
                                 !astField.isAnnotated(Transient.class) &&
+                                !astField.isAnnotated(KOTLIN_TRANSIENT) &&
                                 !astField.isTransient() &&
                                 (declaredProperty == astField.isAnnotated(ParcelProperty.class));
                     }
