@@ -79,6 +79,7 @@ This wrapping and unwrapping technique plays well with the Intent Factory patter
 In addition, Parceler is supported by the following libraries:
 
  * http://androidtransfuse.org/documentation.html#parcel[Transfuse] - Allows `@Parcel` annotated beans to be used with the `@Extra` injection.
+ * https://github.com/MarcinMoskala/ActivityStarter/wiki/Parceler-Arg-Converter-usage[ActivityStarter] - Uses ParcelarArgConverter to allow to use Parceler objects as an arguments passed to Activities (Fragments, Services etc.).
  * https://github.com/sockeqwe/fragmentargs#argsbundler[FragmentArgs] - Uses the `ParcelerArgsBundler` adapter to wrap and unwrap `@Parcel` annotated beans with fragment parameters.
  * https://github.com/f2prateek/dart[Dart] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@InjectExtra`.
  * http://androidannotations.org/[AndroidAnnotations] - Autodetects `@Parcel` annotated beans and https://github.com/excilys/androidannotations/wiki/ParcelerIntegration[automatically wraps/unwraps] them when using `@Extra`, `@FragmentArg`, `@InstanceState` and other `Bundle` related annotations.
