@@ -1,5 +1,11 @@
 = Parceler Changelog
 
+== Release 1.1.7 (2017-05-07)
+
+Ehancements::
+  * Support for Kotlin transient.
+  * Better generic support. 
+
 == Release 1.1.6 (2016-10-22)
 
 Enhancements::
