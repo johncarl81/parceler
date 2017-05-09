@@ -37,7 +37,7 @@ public final class MapsUtil {
      * @param expectedSize
      * @return HashMap capacity that avoids rehashing.
      */
-    static int initialHashMapCapacity(int expectedSize) {
+    public static int initialHashMapCapacity(int expectedSize) {
         if (expectedSize < 0) {
             throw new ParcelerRuntimeException("Expected size must be non-negative");
         }
