@@ -162,12 +162,16 @@ To configure default method serialization, simply configure the `@Parcel` annota
 public class Example {
     private String name;
     private int age;
+    private boolean enable;
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public int getAge() { return age; }
     public void setAge(int age) { this.age = age; }
+    
+    public boolean isEnable() { return enable; }
+    public void setEnable(boolean enable) { this.enable = enable; }
 }
 ----
 
@@ -179,16 +183,20 @@ To use a constructor with serialization, annotate the desired constructor with t
 public class Example {
     private final String name;
     private final int age;
+    private boolean enable;
 
     @ParcelConstructor
-    public Example(int age, String name) {
+    public Example(int age, String name, boolean enable) {
         this.age = age;
         this.name = name;
+        this.enable = enable;
     }
 
     public String getName() { return name; }
 
     public int getAge() { return age; }
+    
+    public boolean isEnable() { return enable; }
 }
 ----
 
