@@ -433,6 +433,23 @@ You may download Parceler as a Maven dependency:
 ----
 
 or Gradle:
+
+Add the following classpath to your top-level build.gradle file
+
+[source,groovy]
+----
+classpath 'com.neenbedankt.gradle.plugins:android-apt:${androidaptVersion}'
+----
+
+Apply the plugin in your app/build.gradle file
+
+[source,groovy]
+----
+apply plugin: 'com.neenbedankt.android-apt'
+----
+
+Mention dependency in app/build.gradle file
+
 [source,groovy]
 ----
 compile 'org.parceler:parceler-api:1.1.8'
