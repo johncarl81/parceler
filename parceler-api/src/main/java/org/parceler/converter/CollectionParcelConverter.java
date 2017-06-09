@@ -29,13 +29,13 @@ public abstract class CollectionParcelConverter<T, C extends Collection<T>> impl
     private static final int NULL = -1;
 
     @Override
-    public void toParcel(Collection<T> input, Parcel parcel) {
+    public void toParcel(Collection<T> input, Parcel parcel, int flags) {
         if (input == null) {
             parcel.writeInt(NULL);
         } else {
             parcel.writeInt(input.size());
             for (T item : input) {
-                itemToParcel(item, parcel);
+                itemToParcel(item, parcel, flags);
             }
         }
     }
@@ -55,7 +55,7 @@ public abstract class CollectionParcelConverter<T, C extends Collection<T>> impl
         return list;
     }
 
-    public abstract void itemToParcel(T input, Parcel parcel);
+    public abstract void itemToParcel(T input, Parcel parcel, int flags);
     public abstract T itemFromParcel(Parcel parcel);
     public abstract C createCollection();
 }
