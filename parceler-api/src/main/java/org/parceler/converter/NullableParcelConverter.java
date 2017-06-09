@@ -29,12 +29,12 @@ public abstract class NullableParcelConverter<T> implements ParcelConverter<T> {
     private static final int NOT_NULL = 1;
 
     @Override
-    public void toParcel(T input, Parcel parcel) {
+    public void toParcel(T input, Parcel parcel, int flags) {
         if (input == null) {
             parcel.writeInt(NULL);
         } else {
             parcel.writeInt(NOT_NULL);
-            nullSafeToParcel(input, parcel);
+            nullSafeToParcel(input, parcel,flags);
         }
     }
 
@@ -49,6 +49,6 @@ public abstract class NullableParcelConverter<T> implements ParcelConverter<T> {
         return result;
     }
 
-    public abstract void nullSafeToParcel(T input, Parcel parcel);
+    public abstract void nullSafeToParcel(T input, Parcel parcel, int flags);
     public abstract T nullSafeFromParcel(Parcel parcel);
 }

@@ -28,7 +28,7 @@ public class ParcelConverterTest {
 
     @Test
     public void verifyMethodNames() throws NoSuchMethodException {
-        Method translateToMethod = ParcelConverter.class.getMethod(ParcelConverter.CONVERT_TO_PARCEL, new Class[]{Object.class, android.os.Parcel.class});
+        Method translateToMethod = ParcelConverter.class.getMethod(ParcelConverter.CONVERT_TO_PARCEL, new Class[]{Object.class, android.os.Parcel.class, int.class});
         assertNotNull(translateToMethod);
         Method translateFromMethod = ParcelConverter.class.getMethod(ParcelConverter.CONVERT_FROM_PARCEL, new Class[]{android.os.Parcel.class});
         assertNotNull(translateFromMethod);

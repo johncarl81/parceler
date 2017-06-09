@@ -24,14 +24,14 @@ import org.parceler.ParcelConverter;
  */
 public abstract class SparseArrayParcelConverter<T> implements ParcelConverter<SparseArray<T>> {
     @Override
-    public void toParcel(SparseArray<T> input, Parcel parcel) {
+    public void toParcel(SparseArray<T> input, Parcel parcel, int flags) {
         if (input == null) {
             parcel.writeInt(-1);
         } else {
             parcel.writeInt(input.size());
             for (int i = 0; (i < input.size()); i++) {
                 parcel.writeInt(input.keyAt(i));
-                itemToParcel(input.valueAt(i), parcel);
+                itemToParcel(input.valueAt(i), parcel, flags);
             }
         }
     }
@@ -52,6 +52,6 @@ public abstract class SparseArrayParcelConverter<T> implements ParcelConverter<S
         return array;
     }
 
-    public abstract void itemToParcel(T input, Parcel parcel);
+    public abstract void itemToParcel(T input, Parcel parcel, int flags);
     public abstract T itemFromParcel(Parcel parcel);
 }

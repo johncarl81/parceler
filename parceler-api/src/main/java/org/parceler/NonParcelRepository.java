@@ -284,8 +284,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -324,8 +324,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -359,13 +359,13 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         private static final HashMapParcelConverter CONVERTER = new HashMapParcelConverter() {
 
             @Override
-            public void mapKeyToParcel(Object key, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(key), 0);
+            public void mapKeyToParcel(Object key, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(key), flags);
             }
 
             @Override
-            public void mapValueToParcel(Object value, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(value), 0);
+            public void mapValueToParcel(Object value, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(value), flags);
             }
 
             @Override
@@ -410,13 +410,13 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         private static final LinkedHashMapParcelConverter CONVERTER = new LinkedHashMapParcelConverter() {
 
             @Override
-            public void mapKeyToParcel(Object key, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(key), 0);
+            public void mapKeyToParcel(Object key, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(key), flags);
             }
 
             @Override
-            public void mapValueToParcel(Object value, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(value), 0);
+            public void mapValueToParcel(Object value, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(value), flags);
             }
 
             @Override
@@ -461,13 +461,13 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
         private static final TreeMapParcelConverter CONVERTER = new TreeMapParcelConverter() {
 
             @Override
-            public void mapKeyToParcel(Object key, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(key), 0);
+            public void mapKeyToParcel(Object key, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(key), flags);
             }
 
             @Override
-            public void mapValueToParcel(Object value, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(value), 0);
+            public void mapValueToParcel(Object value, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(value), flags);
             }
 
             @Override
@@ -517,8 +517,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -557,8 +557,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -597,8 +597,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -637,8 +637,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -677,8 +677,8 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void itemToParcel(Object input, Parcel parcel) {
-                parcel.writeParcelable(Parcels.wrap(input), 0);
+            public void itemToParcel(Object input, Parcel parcel, int flags) {
+                parcel.writeParcelable(Parcels.wrap(input), flags);
             }
         };
 
@@ -717,7 +717,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(SparseBooleanArray input, Parcel parcel) {
+            public void nullSafeToParcel(SparseBooleanArray input, Parcel parcel, int flags) {
                 parcel.writeSparseBooleanArray(input);
             }
         };
@@ -757,7 +757,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Integer input, Parcel parcel) {
+            public void nullSafeToParcel(Integer input, Parcel parcel, int flags) {
                 parcel.writeInt(input);
             }
         };
@@ -797,7 +797,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Long input, Parcel parcel) {
+            public void nullSafeToParcel(Long input, Parcel parcel, int flags) {
                 parcel.writeLong(input);
             }
         };
@@ -837,7 +837,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Double input, Parcel parcel) {
+            public void nullSafeToParcel(Double input, Parcel parcel, int flags) {
                 parcel.writeDouble(input);
             }
         };
@@ -877,7 +877,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Float input, Parcel parcel) {
+            public void nullSafeToParcel(Float input, Parcel parcel, int flags) {
                 parcel.writeFloat(input);
             }
         };
@@ -917,7 +917,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Byte input, Parcel parcel) {
+            public void nullSafeToParcel(Byte input, Parcel parcel, int flags) {
                 parcel.writeByte(input);
             }
         };
@@ -957,7 +957,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(IBinder input, Parcel parcel) {
+            public void nullSafeToParcel(IBinder input, Parcel parcel, int flags) {
                 parcel.writeStrongBinder(input);
             }
         };
@@ -997,7 +997,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(byte[] input, Parcel parcel) {
+            public void nullSafeToParcel(byte[] input, Parcel parcel, int flags) {
                 parcel.writeByteArray(input);
             }
         };
@@ -1066,7 +1066,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Boolean input, Parcel parcel) {
+            public void nullSafeToParcel(Boolean input, Parcel parcel, int flags) {
                 parcel.writeBooleanArray(new boolean[]{input});
             }
         };
@@ -1135,7 +1135,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
             }
 
             @Override
-            public void nullSafeToParcel(Character input, Parcel parcel) {
+            public void nullSafeToParcel(Character input, Parcel parcel, int flags) {
                 parcel.writeCharArray(new char[]{input});
             }
         };
@@ -1227,7 +1227,7 @@ final class NonParcelRepository implements Repository<Parcels.ParcelableFactory>
 
         @Override
         public void writeToParcel(android.os.Parcel parcel, int flags) {
-            converter.toParcel(value, parcel);
+            converter.toParcel(value, parcel, flags);
         }
 
         @Override
