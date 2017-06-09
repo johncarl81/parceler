@@ -27,7 +27,7 @@ public class CharArrayParcelConverter implements ParcelConverter<char[]> {
     private static final int NULL = -1;
 
     @Override
-    public void toParcel(char[] array, Parcel parcel) {
+    public void toParcel(char[] array, Parcel parcel, int flags) {
         if (array == null) {
             parcel.writeInt(NULL);
         } else {

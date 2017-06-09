@@ -27,16 +27,16 @@ import java.util.Map;
 public abstract class MapParcelConverter<K, V, M extends Map<K, V>> implements TypeRangeParcelConverter<Map<K, V>, M> {
 
     private static final int NULL = -1;
-    
+
     @Override
-    public void toParcel(Map<K, V> input, Parcel parcel) {
+    public void toParcel(Map<K, V> input, Parcel parcel, int flags) {
         if (input == null) {
             parcel.writeInt(NULL);
         } else {
             parcel.writeInt(input.size());
             for (Map.Entry<K, V> entry : input.entrySet()) {
-                mapKeyToParcel(entry.getKey(), parcel);
-                mapValueToParcel(entry.getValue(), parcel);
+                mapKeyToParcel(entry.getKey(), parcel, flags);
+                mapValueToParcel(entry.getValue(), parcel, flags);
             }
         }
     }
@@ -60,8 +60,8 @@ public abstract class MapParcelConverter<K, V, M extends Map<K, V>> implements T
 
     public abstract M createMap();
 
-    public abstract void mapKeyToParcel(K key, Parcel parcel);
-    public abstract void mapValueToParcel(V value, Parcel parcel);
+    public abstract void mapKeyToParcel(K key, Parcel parcel, int flags);
+    public abstract void mapValueToParcel(V value, Parcel parcel, int flags);
 
     public abstract K mapKeyFromParcel(Parcel parcel);
     public abstract V mapValueFromParcel(Parcel parcel);

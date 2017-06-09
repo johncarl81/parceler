@@ -31,7 +31,7 @@ public interface ParcelConverter<T> extends TypeRangeParcelConverter<T, T> {
      */
     class EmptyConverter implements ParcelConverter<Object> {
         @Override
-        public void toParcel(Object input, android.os.Parcel destinationParcel) {
+        public void toParcel(Object input, android.os.Parcel destinationParcel, int flags) {
             throw new ParcelerRuntimeException("Empty Converter should not be used.");
         }
 

@@ -56,7 +56,7 @@ public class ParcelableAnalysisTest {
     static class TargetSubTypeWriterConverter implements ParcelConverter<ParcelableAnalysisTest.TargetSubType> {
 
         @Override
-        public void toParcel(ParcelableAnalysisTest.TargetSubType input, android.os.Parcel parcel) {
+        public void toParcel(ParcelableAnalysisTest.TargetSubType input, android.os.Parcel parcel, int flags) {
             parcel.writeString(input.value);
         }
 
@@ -495,7 +495,7 @@ public class ParcelableAnalysisTest {
 
     public static class Converter implements ParcelConverter {
         @Override
-        public void toParcel(Object input, android.os.Parcel destinationParcel) {
+        public void toParcel(Object input, android.os.Parcel destinationParcel, int flags) {
         }
 
         @Override
