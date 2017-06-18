@@ -38,7 +38,7 @@ public class MutableLiveDataReadWriteGenerator extends ReadWriteGeneratorBase {
 
         JVar outputVar = body.decl(mutableLiveDataType, namer.generateName(mutableLiveDataType));
 
-        body.assign(outputVar, JExpr._new(generationUtil.ref(TYPE)));
+        body.assign(outputVar, JExpr._new(mutableLiveDataType));
 
         body.invoke(outputVar, "setValue").arg(readExpression);
 
