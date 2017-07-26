@@ -82,7 +82,7 @@ In addition, Parceler is supported by the following libraries:
  * https://github.com/sockeqwe/fragmentargs#argsbundler[FragmentArgs] - Uses the `ParcelerArgsBundler` adapter to wrap and unwrap `@Parcel` annotated beans with fragment parameters.
  * https://github.com/f2prateek/dart[Dart] - Autodetects `@Parcel` annotated beans and automatically unwraps them when using `@InjectExtra`.
  * http://androidannotations.org/[AndroidAnnotations] - Autodetects `@Parcel` annotated beans and https://github.com/excilys/androidannotations/wiki/ParcelerIntegration[automatically wraps/unwraps] them when using `@Extra`, `@FragmentArg`, `@InstanceState` and other `Bundle` related annotations.
- * https://github.com/MarcinMoskala/ActivityStarter/wiki/Parceler-Arg-Converter-usage[ActivityStarter] - Uses `ParcelarArgConverter` to allow use Parceler objects as arguments passed to Activities,  Fragments, Services, etc.
+ * https://github.com/MarcinMoskala/ActivityStarter/wiki/Parceler-Arg-Converter-usage[ActivityStarter] - Supports natively Parceler objects as arguments to Activities, Fragments, Services, etc.
 
 === Parcel attribute types
 Only a select number of types may be used as attributes of a `@Parcel` class.
