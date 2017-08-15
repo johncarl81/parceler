@@ -1,5 +1,10 @@
 = Parceler Changelog
 
+== Upcoming Release
+
+Bug Fixes::
+  * Fixes issue accessing collections with generics in separate packages via package helpers.
+
 == Release 1.1.9 (2017-06-27)
 
 Enhancements::
@@ -7,7 +12,7 @@ Enhancements::
   
 Bug Fixes::
   * Fixed issue unrolling generic collections.
-  
+
 == Release 1.1.8 (2017-05-08)
 
 Bug Fixes::
