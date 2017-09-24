@@ -27,7 +27,7 @@ public class BooleanArrayParcelConverter implements ParcelConverter<boolean[]> {
     private static final int NULL = -1;
 
     @Override
-    public void toParcel(boolean[] array, Parcel parcel) {
+    public void toParcel(boolean[] array, Parcel parcel, int flags) {
         if (array == null) {
             parcel.writeInt(NULL);
         } else {

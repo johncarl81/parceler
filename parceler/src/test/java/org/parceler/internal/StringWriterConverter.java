@@ -24,7 +24,7 @@ import org.parceler.ParcelConverter;
 public class StringWriterConverter implements ParcelConverter<String> {
 
     @Override
-    public void toParcel(String input, Parcel parcel) {
+    public void toParcel(String input, Parcel parcel, int flags) {
         parcel.writeString(input);
     }
 

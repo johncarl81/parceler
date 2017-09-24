@@ -26,7 +26,7 @@ public interface TypeRangeParcelConverter<L, U extends L> {
      * @param input U instance
      * @param parcel Parcel to write to
      */
-    void toParcel(L input, android.os.Parcel parcel);
+    void toParcel(L input, android.os.Parcel parcel, int flags);
 
     /**
      * Generates an instance from the values provided in the given parcel.

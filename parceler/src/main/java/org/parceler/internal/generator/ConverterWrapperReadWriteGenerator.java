@@ -37,6 +37,6 @@ public class ConverterWrapperReadWriteGenerator implements ReadWriteGenerator {
 
     @Override
     public void generateWriter(JBlock body, JExpression parcel, JVar flags, ASTType type, JExpression getExpression, JDefinedClass parcelableClass, JVar writeIdentitySet) {
-        body.invoke(JExpr._new(converter), ParcelConverter.CONVERT_TO_PARCEL).arg(getExpression).arg(parcel);
+        body.invoke(JExpr._new(converter), ParcelConverter.CONVERT_TO_PARCEL).arg(getExpression).arg(parcel).arg(flags);
     }
 }
