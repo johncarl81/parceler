@@ -23,6 +23,7 @@ import org.androidtransfuse.bootstrap.Bootstrap;
 import org.androidtransfuse.bootstrap.Bootstraps;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.parceler.*;
 import org.parceler.Parcel.Serialization;
 
@@ -1485,6 +1486,17 @@ public class ParcelableAnalysisTest {
     public void testmismatchedPrimitiveBeanTypes2() {
         analyze(MismatchedPrimitiveBeanTypes2.class);
         assertFalse(messager.getMessage(), messager.isErrored());
+    }
+
+    @Parcel
+    static class UndefinedGeneric<T> {
+        T value;
+    }
+
+    @Test
+    public void testUndefinedGeneric() {
+        analyze(UndefinedGeneric.class);
+        assertTrue(messager.getMessage(), messager.isErrored());
     }
 
     private void errors(Class clazz){
