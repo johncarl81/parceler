@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.lang.ClassLoader;
 
 /**
  * Static utility class used to wrap an `@Parcel` annotated class with the generated `Parcelable` wrapper.
@@ -140,7 +141,7 @@ public final class Parcels {
         public ParcelableFactory get(Class clazz){
             ParcelableFactory result = generatedMap.get(clazz);
             if (result == null) {
-                ParcelableFactory value = findClass(clazz);
+                ParcelableFactory value = findClass(clazz, clazz.getClassLoader());
 
                 if (Parcelable.class.isAssignableFrom(clazz)) {
                     value = new NonParcelRepository.ParcelableParcelableFactory();
@@ -167,9 +168,9 @@ public final class Parcels {
         }
 
         @SuppressWarnings("unchecked")
-        public ParcelableFactory findClass(Class clazz){
+        public ParcelableFactory findClass(Class clazz, ClassLoader classLoader){
             try {
-                Class parcelWrapperClass = Class.forName(buildParcelableImplName(clazz));
+                Class parcelWrapperClass = classLoader.loadClass(buildParcelableImplName(clazz));
                 return new ParcelableFactoryReflectionProxy(clazz, parcelWrapperClass);
             } catch (ClassNotFoundException e) {
                 return null;
