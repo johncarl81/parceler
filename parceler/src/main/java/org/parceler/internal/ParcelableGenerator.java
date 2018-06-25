@@ -18,10 +18,7 @@ package org.parceler.internal;
 import com.sun.codemodel.*;
 import org.androidtransfuse.TransfuseAnalysisException;
 import org.androidtransfuse.adapter.*;
-import org.androidtransfuse.gen.ClassGenerationUtil;
-import org.androidtransfuse.gen.ClassNamer;
-import org.androidtransfuse.gen.InvocationBuilder;
-import org.androidtransfuse.gen.UniqueVariableNamer;
+import org.androidtransfuse.gen.*;
 import org.androidtransfuse.model.TypedExpression;
 import org.parceler.*;
 import org.parceler.internal.generator.ConverterWrapperReadWriteGenerator;
@@ -59,6 +56,7 @@ public class ParcelableGenerator {
     private final Generators generators;
     private final EnumReadWriteGenerator enumReadWriteGenerator;
     private final ParcelReadWriteGenerator parcelReadWriteGenerator;
+    private final Originating originating;
 
 
     @Inject
@@ -69,7 +67,9 @@ public class ParcelableGenerator {
                                WriteReferenceVisitor writeToParcelVisitor,
                                InvocationBuilder invocationBuilder,
                                Generators generators,
-                               EnumReadWriteGenerator enumReadWriteGenerator, ParcelReadWriteGenerator parcelReadWriteGenerator) {
+                               EnumReadWriteGenerator enumReadWriteGenerator,
+                               ParcelReadWriteGenerator parcelReadWriteGenerator,
+                               Originating originating) {
         this.codeModel = codeModel;
         this.variableNamer = variableNamer;
         this.generationUtil = generationUtil;
@@ -79,6 +79,7 @@ public class ParcelableGenerator {
         this.generators = generators;
         this.enumReadWriteGenerator = enumReadWriteGenerator;
         this.parcelReadWriteGenerator = parcelReadWriteGenerator;
+        this.originating = originating;
     }
 
     public void generateParcelable(final ASTType type, ParcelableDescriptor parcelableDescriptor) {
@@ -86,12 +87,14 @@ public class ParcelableGenerator {
             JType inputType = generationUtil.ref(type);
 
             JDefinedClass parcelableClass = generationUtil.defineClass(ClassNamer.className(type).append(Parcels.IMPL_EXT).build());
+            originating.associate(parcelableClass.fullName(), type);
             parcelableClass._implements(generationUtil.ref("android.os.Parcelable"))
                     ._implements(generationUtil.ref(ParcelWrapper.class).narrow(inputType));
 
             for (ASTType extension : parcelableDescriptor.getExtraImplementations()) {
                 JDefinedClass extensionClass = generationUtil.defineClass(ClassNamer.className(extension).append(Parcels.IMPL_EXT).build())
                         ._extends(parcelableClass);
+                originating.associate(parcelableClass.fullName(), type);
 
                 JMethod extensionConstructor = extensionClass.constructor(JMod.PUBLIC);
                 JVar inputParam = extensionConstructor.param(generationUtil.ref(extension), variableNamer.generateName(type));
