@@ -2,6 +2,9 @@
 
 == Upcoming Release
 
+Enhancements::
+  * Added gradle specific incremental annotation processing
+
 Bug Fixes::
   * Fixes issue accessing collections with generics in separate packages via package helpers.
 
