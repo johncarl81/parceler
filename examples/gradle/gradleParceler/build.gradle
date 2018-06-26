@@ -1,14 +1,14 @@
 buildscript {
     repositories {
         mavenCentral()
+        google()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
     mavenLocal()
@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.parceler:parceler-api:1.1.7-SNAPSHOT'
-    apt 'org.parceler:parceler:1.1.7-SNAPSHOT'
+    compile 'org.parceler:parceler-api:1.1.11-SNAPSHOT'
+    annotationProcessor 'org.parceler:parceler:1.1.11-SNAPSHOT'
 }
 
 android {
