@@ -2,8 +2,15 @@
 
 == Upcoming Release
 
+== Release 1.1.11 (2017-06-28)
+
 Enhancements::
-  * Added gradle specific incremental annotation processing
+  * Added gradle specific incremental annotation processing.
+
+Bug Fixes::
+  * Fixes issue with Parcels utility class classloader reference.
+
+== Release 1.1.10 (2018-12-30)
 
 Bug Fixes::
   * Fixes issue accessing collections with generics in separate packages via package helpers.
