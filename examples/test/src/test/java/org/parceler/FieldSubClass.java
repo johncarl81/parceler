@@ -26,6 +26,7 @@ public class FieldSubClass extends SuperClass {
     public String one;
     String two;
     protected String three;
+    @SuppressWarnings("parceler")
     private String four;
 
     public String getOne() {

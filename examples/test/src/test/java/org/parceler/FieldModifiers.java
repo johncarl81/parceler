@@ -23,6 +23,7 @@ public class FieldModifiers {
     public String one;
     String two;
     protected String three;
+    @SuppressWarnings("parceler")
     private String four;
 
     public String getOne() {

@@ -20,6 +20,7 @@ import org.parceler.Transient;
 /**
  * @author John Ericksen
  */
+@SuppressWarnings("parceler")
 public abstract class SuperClass {
 
     public String one;

@@ -24,7 +24,7 @@ public class PrivateConstructorModifier {
 
     public PrivateConstructorModifier(){}
 
-    @ParcelConstructor
+    @ParcelConstructor @SuppressWarnings("parceler")
     private PrivateConstructorModifier(String one){
         this.one = one;
     }

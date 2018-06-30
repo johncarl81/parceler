@@ -2,6 +2,9 @@
 
 == Upcoming Release
 
+Enhancements::
+  * Added ability to suppress warnings with `@SuppressWarnings("parceler")`
+
 == Release 1.1.11 (2017-06-28)
 
 Enhancements::

@@ -39,6 +39,7 @@ import java.util.*;
 @Singleton
 public class ParcelableAnalysis {
 
+    private static final String PARCELER_SUPPRESSION_NAME = "parceler";
     private static final ASTType KOTLIN_TRANSIENT = new ASTStringType("kotlin.jvm.Transient");
     private static final ASTType EMPTY_CONVERTER_TYPE = new ASTStringType(ParcelConverter.EmptyConverter.class.getCanonicalName());
     private static final String GET = "get";
@@ -78,6 +79,8 @@ public class ParcelableAnalysis {
         ASTType[] interfaces = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("implementations", ASTType[].class) : new ASTType[0];
         ASTType[] analyze = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("analyze", ASTType[].class) : new ASTType[0];
         Integer describeContents = parcelASTAnnotation != null ? parcelASTAnnotation.getProperty("describeContents", int.class) : null;
+
+        setupSuppressions(astType);
 
         ParcelableDescriptor parcelableDescriptor;
 
@@ -358,6 +361,51 @@ public class ParcelableAnalysis {
         }
 
         return parcelableDescriptor;
+    }
+
+    private void setupSuppressions(ASTType astType) {
+        boolean classLevelSuppression = isSuppressAnnotated(astType);
+        if(classLevelSuppression) {
+            validator.addSuppression(astType);
+        }
+        if(astType.getSuperClass() != null) {
+            setupSuppressions(astType.getSuperClass());
+        }
+        setupSuppressions(astType.getConstructors(), classLevelSuppression);
+        for(ASTConstructor constructor : astType.getConstructors()) {
+            if(classLevelSuppression || isSuppressAnnotated(constructor)) {
+                for(ASTParameter parameter : constructor.getParameters()) {
+                    validator.addSuppression(parameter);
+                }
+            }
+        }
+        setupSuppressions(astType.getMethods(), classLevelSuppression);
+        setupSuppressions(astType.getFields(), classLevelSuppression);
+        for(ASTMethod method : astType.getMethods()) {
+            if(classLevelSuppression || isSuppressAnnotated(method)) {
+                validator.addSuppression(method);
+            }
+        }
+    }
+
+    private void setupSuppressions(ImmutableSet<? extends ASTBase> asts, boolean classLevelSuppression) {
+        for(ASTBase ast : asts) {
+            if(classLevelSuppression || isSuppressAnnotated(ast)) {
+                validator.addSuppression(ast);
+            }
+        }
+    }
+
+    private boolean isSuppressAnnotated(ASTBase ast) {
+        if(ast.isAnnotated(SuppressWarnings.class)) {
+            SuppressWarnings suppressAnnotation = ast.getAnnotation(SuppressWarnings.class);
+            for(String name : suppressAnnotation.value()) {
+                if(PARCELER_SUPPRESSION_NAME.equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private ASTType resolveType(ASTType astType, ASTType ownerType, ASTType toResolve) {
