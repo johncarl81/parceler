@@ -2,7 +2,7 @@
 
 == Upcoming Release
 
-== Release 1.1.11 (2017-06-28)
+== Release 1.1.11 (2018-06-28)
 
 Enhancements::
   * Added gradle specific incremental annotation processing.
