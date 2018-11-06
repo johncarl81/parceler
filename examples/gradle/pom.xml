@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parceler-gradle</artifactId>
-    <version>1.1.10-SNAPSHOT</version>
+    <version>1.1.12-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Parceler Gradle Example</name>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.parceler</groupId>
         <artifactId>parceler-examples</artifactId>
-        <version>1.1.10-SNAPSHOT</version>
+        <version>1.1.12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -27,13 +27,13 @@
             <plugin>
                 <groupId>org.fortasoft</groupId>
                 <artifactId>gradle-maven-plugin</artifactId>
-                <version>1.0.7</version>
+                <version>1.0.8</version>
                 <configuration>
                     <tasks>
                         <task>clean</task>
                         <task>build</task>
                     </tasks>
-                    <gradleVersion>2.12</gradleVersion>
+                    <gradleVersion>4.8</gradleVersion>
                 </configuration>
                 <executions>
                     <execution>

@@ -1,5 +1,5 @@
-.idea/*
-_site/*
+.idea
+_site
 *~
 *.iml
 dependency-reduced-pom.xml
@@ -10,3 +10,4 @@ out
 .gradle
 build
 .DS_Store
+local.properties
