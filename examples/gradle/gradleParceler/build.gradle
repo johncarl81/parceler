@@ -1,42 +1,20 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-    }
-}
 apply plugin: 'com.android.application'
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-}
-
 dependencies {
-    compile 'org.parceler:parceler-api:1.1.11-SNAPSHOT'
-    annotationProcessor 'org.parceler:parceler:1.1.11-SNAPSHOT'
+    implementation 'org.parceler:parceler-api:1.1.12-SNAPSHOT'
+    annotationProcessor 'org.parceler:parceler:1.1.12-SNAPSHOT'
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
+        minSdkVersion 19
+        targetSdkVersion 28
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
-    }
-    lintOptions {
-        abortOnError false
     }
 }
