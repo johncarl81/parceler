@@ -725,9 +725,10 @@ public class ParcelableAnalysis {
         }
 
         for (String prepend : PREPENDS) {
-            if (methodName.startsWith(prepend)) {
+            if (methodName.startsWith(prepend) && methodName.length() - prepend.length() > 0) {
                 String name = methodName.substring(prepend.length());
-                return name.substring(0, 1).toLowerCase(Locale.getDefault()) + name.substring(1);
+                return name.substring(0, 1).toLowerCase(Locale.getDefault()) +
+                        (name.length() > 1 ? name.substring(1) : "");
             }
         }
         throw new TransfuseAnalysisException("Unable to convert Method name " + methodName);
