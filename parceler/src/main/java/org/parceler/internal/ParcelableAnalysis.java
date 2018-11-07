@@ -693,7 +693,8 @@ public class ParcelableAnalysis {
         return astMethod.getParameters().size() == 0 &&
                 !astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier ||
-                (astMethod.getName().startsWith(GET) || astMethod.getName().startsWith(IS)) &&
+                ((astMethod.getName().startsWith(GET) && astMethod.getName().length() > GET.length()) ||
+                        (astMethod.getName().startsWith(IS) && astMethod.getName().length() > IS.length())) &&
                         astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
@@ -707,7 +708,7 @@ public class ParcelableAnalysis {
         return astMethod.getParameters().size() == 1 &&
                 astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier ||
-                        (astMethod.getName().startsWith(SET) &&
+                        ((astMethod.getName().startsWith(SET) && astMethod.getName().length() > SET.length()) &&
                                 astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC)));
     }
 
@@ -725,7 +726,7 @@ public class ParcelableAnalysis {
         }
 
         for (String prepend : PREPENDS) {
-            if (methodName.startsWith(prepend) && methodName.length() - prepend.length() > 0) {
+            if (methodName.startsWith(prepend)) {
                 String name = methodName.substring(prepend.length());
                 return name.substring(0, 1).toLowerCase(Locale.getDefault()) +
                         (name.length() > 1 ? name.substring(1) : "");
