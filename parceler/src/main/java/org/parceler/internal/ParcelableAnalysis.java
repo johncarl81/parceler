@@ -693,7 +693,8 @@ public class ParcelableAnalysis {
         return astMethod.getParameters().size() == 0 &&
                 !astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier ||
-                (astMethod.getName().startsWith(GET) || astMethod.getName().startsWith(IS)) &&
+                ((astMethod.getName().startsWith(GET) && astMethod.getName().length() > GET.length()) ||
+                        (astMethod.getName().startsWith(IS) && astMethod.getName().length() > IS.length())) &&
                         astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC));
     }
 
@@ -707,7 +708,7 @@ public class ParcelableAnalysis {
         return astMethod.getParameters().size() == 1 &&
                 astMethod.getReturnType().equals(ASTVoidType.VOID) &&
                 (ignoreModifier ||
-                        (astMethod.getName().startsWith(SET) &&
+                        ((astMethod.getName().startsWith(SET) && astMethod.getName().length() > SET.length()) &&
                                 astMethod.getAccessModifier().equals(ASTAccessModifier.PUBLIC)));
     }
 
