@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation 'org.parceler:parceler-api:1.1.12-SNAPSHOT'
-    annotationProcessor 'org.parceler:parceler:1.1.12-SNAPSHOT'
+    implementation 'org.parceler:parceler-api:1.1.13-SNAPSHOT'
+    annotationProcessor 'org.parceler:parceler:1.1.13-SNAPSHOT'
 }
 
 android {
