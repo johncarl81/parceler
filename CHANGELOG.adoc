@@ -2,6 +2,12 @@
 
 == Upcoming Release
 
+
+== Release 1.1.12 (2018-11-30)
+
+Bug Fixes::
+  * Fixes a `StringOutOfBoundsException` when handling method names "set", "get", and "is" without a specific property name. 
+
 == Release 1.1.11 (2018-06-28)
 
 Enhancements::
