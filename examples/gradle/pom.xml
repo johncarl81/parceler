@@ -18,7 +18,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>jcenter</id>
-            <url>http://jcenter.bintray.com/</url>
+            <url>https://jcenter.bintray.com/</url>
         </pluginRepository>
     </pluginRepositories>
 
