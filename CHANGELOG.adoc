@@ -2,6 +2,10 @@
 
 == Upcoming Release
 
+== Release 1.1.13 (2020-02-06)
+
+Buf Fixes::
+  * Fixes memory leak with Transfuse bootstrap injector repository.
 
 == Release 1.1.12 (2018-11-30)
 
