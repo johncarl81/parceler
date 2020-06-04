@@ -139,10 +139,26 @@ public class Example {
 
 [source,java]
 ----
-Example example = new Example(new Child());
-System.out.println("%b", example.p instanceof Child); // true
-example = Parcels.unwrap(Parcels.wrap(example));
-System.out.println("%b", example.p instanceof Child); // false
+@Override
+public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+
+    Example example = new Example(new Child());
+    System.out.println(example.p instanceof Child); // true
+
+    Parcelable parcelable = Parcels.wrap(example);
+    outState.putParcelable("example", parcelable);
+}
+
+@Override
+public void onRestoreInstanceState(Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+
+    Parcelable parcelable = savedInstanceState.getParcelable("example");
+    Example example = Parcels.unwrap(parcelable);
+
+    System.out.println(example.p instanceof Child); // false
+}
 ----
 
 Refer to the <<custom-serialization,Custom Serialization>> section for an example of working with polymorphic fields.
