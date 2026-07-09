@@ -151,10 +151,15 @@
                                     <pattern>com.sun_.codemodel</pattern>
                                     <shadedPattern>org.parceler.codemodel</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>javax.inject</pattern>
-                                    <shadedPattern>org.parceler.javaxinject</shadedPattern>
-                                </relocation>
+                                <!-- javax.inject is deliberately NOT relocated. Transfuse identifies
+                                     injection annotations by name (ASTStringType("javax.inject.Inject"),
+                                     see transfuse-core InjectionAnnotations), and maven-shade rewrites
+                                     String constants that match a relocation pattern. Relocating
+                                     javax.inject rewrote those literals to org.parceler.javaxinject.*,
+                                     so the processor stopped recognizing the user's javax.inject
+                                     annotations while still matching the un-relocated jakarta.inject
+                                     ones. The javax.inject:1 classes ship unrelocated, as jakarta.inject
+                                     already does. -->
                                 <relocation>
                                     <pattern>javax_.annotation</pattern>
                                     <shadedPattern>org.parceler.javaxannotation</shadedPattern>
