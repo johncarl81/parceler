@@ -25,43 +25,97 @@
         <dependency>
             <groupId>org.androidtransfuse</groupId>
             <artifactId>transfuse-bootstrap</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>${transfuse.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
-            <version>4.1.1.4</version>
+            <version>${android.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>2.0.2-beta</version>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.robolectric</groupId>
             <artifactId>robolectric</artifactId>
-            <version>2.4</version>
+            <version>${robolectric.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.android.support</groupId>
-                    <artifactId>support-v4</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
-            <version>1.0-rc2</version>
+            <version>${auto-service.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service-annotations</artifactId>
+            <version>${auto-service.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Robolectric 4.x resolves androidx.test classes (InstrumentationRegistry) at runtime.
+             They ship as aars, so pull them in and unpack classes.jar onto the surefire classpath. -->
+        <dependency>
+            <groupId>androidx.test</groupId>
+            <artifactId>monitor</artifactId>
+            <version>${androidx.test.monitor.version}</version>
+            <type>aar</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>androidx.test</groupId>
+            <artifactId>annotation</artifactId>
+            <version>${androidx.test.annotation.version}</version>
+            <type>aar</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>androidx.test.services</groupId>
+            <artifactId>storage</artifactId>
+            <version>${androidx.test.services.storage.version}</version>
+            <type>aar</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>androidx.tracing</groupId>
+            <artifactId>tracing</artifactId>
+            <version>${androidx.tracing.version}</version>
+            <type>aar</type>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -70,7 +124,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <version>${maven-shade-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -125,10 +179,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
                     <annotationProcessors>
                         <annotationProcessor>org.androidtransfuse.bootstrap.BootstrapProcessor</annotationProcessor>
                         <annotationProcessor>com.google.auto.service.processor.AutoServiceProcessor</annotationProcessor>
@@ -138,7 +189,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -151,23 +201,118 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>copy-androidx-test-aars</id>
+                        <phase>process-test-classes</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>copy</goal>
                         </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>androidx.test</groupId>
+                                    <artifactId>monitor</artifactId>
+                                    <version>${androidx.test.monitor.version}</version>
+                                    <type>aar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/aars</outputDirectory>
+                                    <destFileName>monitor.aar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>androidx.test</groupId>
+                                    <artifactId>annotation</artifactId>
+                                    <version>${androidx.test.annotation.version}</version>
+                                    <type>aar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/aars</outputDirectory>
+                                    <destFileName>annotation.aar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>androidx.test.services</groupId>
+                                    <artifactId>storage</artifactId>
+                                    <version>${androidx.test.services.storage.version}</version>
+                                    <type>aar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/aars</outputDirectory>
+                                    <destFileName>storage.aar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>androidx.tracing</groupId>
+                                    <artifactId>tracing</artifactId>
+                                    <version>${androidx.tracing.version}</version>
+                                    <type>aar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/aars</outputDirectory>
+                                    <destFileName>tracing.aar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>unpack-androidx-test-aars</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/unpacked/androidx-test-monitor"/>
+                                <mkdir dir="${project.build.directory}/unpacked/androidx-test-annotation"/>
+                                <mkdir dir="${project.build.directory}/unpacked/androidx-test-storage"/>
+                                <mkdir dir="${project.build.directory}/unpacked/androidx-tracing"/>
+                                <unzip src="${project.build.directory}/aars/monitor.aar" dest="${project.build.directory}/unpacked/androidx-test-monitor">
+                                    <patternset>
+                                        <include name="classes.jar"/>
+                                    </patternset>
+                                    <mapper type="flatten"/>
+                                </unzip>
+                                <unzip src="${project.build.directory}/aars/annotation.aar" dest="${project.build.directory}/unpacked/androidx-test-annotation">
+                                    <patternset>
+                                        <include name="classes.jar"/>
+                                    </patternset>
+                                    <mapper type="flatten"/>
+                                </unzip>
+                                <unzip src="${project.build.directory}/aars/storage.aar" dest="${project.build.directory}/unpacked/androidx-test-storage">
+                                    <patternset>
+                                        <include name="classes.jar"/>
+                                    </patternset>
+                                    <mapper type="flatten"/>
+                                </unzip>
+                                <unzip src="${project.build.directory}/aars/tracing.aar" dest="${project.build.directory}/unpacked/androidx-tracing">
+                                    <patternset>
+                                        <include name="classes.jar"/>
+                                    </patternset>
+                                    <mapper type="flatten"/>
+                                </unzip>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <doclet>org.asciidoctor.Asciidoclet</doclet>
-                    <docletArtifact>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoclet</artifactId>
-                        <version>1.5.6</version>
-                    </docletArtifact>
-                    <linksource>true</linksource>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${project.build.directory}/unpacked/androidx-test-monitor/classes.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${project.build.directory}/unpacked/androidx-test-annotation/classes.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${project.build.directory}/unpacked/androidx-test-storage/classes.jar</additionalClasspathElement>
+                        <additionalClasspathElement>${project.build.directory}/unpacked/androidx-tracing/classes.jar</additionalClasspathElement>
+                    </additionalClasspathElements>
                 </configuration>
             </plugin>
         </plugins>

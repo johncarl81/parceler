@@ -18,6 +18,32 @@
     <url>http://parceler.org</url>
     <description>An automatic Android Parcelable generator.</description>
 
+    <properties>
+        <!-- Processor bytecode target: Java 11 so the build runs on any JDK 11+ toolchain
+             (including modern Android/AGP 8 on JDK 17). parceler-api and generated code
+             stay on Java 8 (see parceler-api/pom.xml) for broad Android runtime compatibility. -->
+        <java.version>11</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-shade-plugin.version>3.5.3</maven-shade-plugin.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <asciidoclet.version>2.0.0</asciidoclet.version>
+        <androidx.test.annotation.version>1.0.1</androidx.test.annotation.version>
+        <androidx.test.monitor.version>1.6.1</androidx.test.monitor.version>
+        <androidx.test.services.storage.version>1.4.2</androidx.test.services.storage.version>
+        <androidx.tracing.version>1.0.0</androidx.tracing.version>
+        <transfuse.version>0.3.0-SNAPSHOT</transfuse.version>
+        <junit.version>4.13.1</junit.version>
+        <mockito.version>4.11.0</mockito.version>
+        <robolectric.version>4.11.1</robolectric.version>
+        <auto-service.version>1.1.1</auto-service.version>
+        <android.version>4.1.1.4</android.version>
+    </properties>
+
     <licenses>
         <license>
             <name>Apache 2.0</name>
@@ -45,8 +71,92 @@
         <!--<module>examples</module>-->
     </modules>
 
+    <repositories>
+        <repository>
+            <id>google</id>
+            <name>Google Maven</name>
+            <url>https://maven.google.com</url>
+        </repository>
+    </repositories>
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <release>${maven.compiler.release}</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                </plugin>
+                <!-- Centralized Javadoc config. asciidoclet 1.5.6 used the pre-JDK-9 com.sun.javadoc
+                     API and needed the removed tools.jar; asciidoclet 2.x moved to the modern
+                     jdk.javadoc.doclet API, so it builds on JDK 17 with a current javadoc plugin. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <doclet>org.asciidoctor.asciidoclet.Asciidoclet</doclet>
+                        <docletArtifact>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoclet</artifactId>
+                            <version>${asciidoclet.version}</version>
+                        </docletArtifact>
+                        <failOnError>false</failOnError>
+                        <quiet>true</quiet>
+                        <linksource>true</linksource>
+                        <!-- asciidoclet 2.x reaches into jdk.javadoc internals, strongly encapsulated
+                             since JDK 16; forward the opens to the javadoc tool JVM with -J so they
+                             apply to the JVM rather than as javac options (which clash with release). -->
+                        <additionalJOptions>
+                            <additionalJOption>-J--add-exports=jdk.javadoc/jdk.javadoc.internal.tool=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.javadoc/jdk.javadoc.internal.tool=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</additionalJOption>
+                            <additionalJOption>-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</additionalJOption>
+                        </additionalJOptions>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * @author John Ericksen
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest=Config.NONE)
+@Config(sdk = 30, manifest = Config.NONE)
 @Bootstrap
 public class ParcelableGeneratorTest {
 

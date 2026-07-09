@@ -138,7 +138,7 @@ public class ParcelableAnalysis {
                 analyzeSet = ImmutableSet.of();
             }
             else{
-                analyzeSet = FluentIterable.of(analyze).toSet();
+                analyzeSet = ImmutableSet.copyOf(analyze);
             }
 
             Iterator<ASTType> typeIterator = new ASTTypeHierarchyIterator(astType, analyzeSet);
